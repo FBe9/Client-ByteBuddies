@@ -44,11 +44,11 @@ public class ExerciseController {
     @FXML
     private TextField tfSearch, tfNumber, tfDescription, tfFileSolution, tfFile, tfHours;
     @FXML
-    private ComboBox<?> cbUnit, cbSearch, cbUnitCreate, cbLevelType;
+    private ComboBox cbUnit, cbSearch, cbUnitCreate, cbLevelType;
     @FXML
     private DatePicker dpDeadline;
     @FXML
-    private Button btmDelete, btmModify, btmCreate, btmDelete1;
+    private Button btmDelete, btmModify, btmCreate, btmSearch, btmClose, btmReturn;
 
     /**
      * Initializes the controller class.

@@ -11,25 +11,31 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1300.0" style="-fx-background-color: #ECF4FF;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.exercise.ExerciseController">
    <children>
-      <ImageView fitHeight="659.0" fitWidth="318.0" layoutX="-143.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="620.0" fitWidth="336.0" layoutX="-154.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@fotos%20exercise/7ab410bc8591cb818aa5577d64ab2ba8.jpg" />
+            <Image url="@../../resources/BlueWallpaper.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="196.0" fitWidth="197.0" layoutX="809.0" layoutY="60.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="415.0" fitWidth="436.0" layoutX="873.0" layoutY="93.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@fotos%20exercise/png/bf5526f447ac489e86dad42b0d01b0fd.png" />
+            <Image url="@../../resources/BlueStar.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="158.0" fitWidth="171.0" layoutX="1100.0" layoutY="442.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="311.0" fitWidth="349.0" layoutX="929.0" layoutY="152.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../Downloads/195b81a9b54702fc1a16c65dc531ebbe.png" />
+            <Image url="@../../resources/AllBlueStar.png" />
          </image>
       </ImageView>
-      <MenuBar layoutY="2.0" prefHeight="26.0" prefWidth="1310.0" style="-fx-background-color: #A4C7F4;">
+      <ImageView fitHeight="205.0" fitWidth="230.0" layoutX="983.0" layoutY="213.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../resources/AllWhiteStar.png" />
+         </image>
+      </ImageView>
+      <MenuBar layoutY="2.0" prefHeight="26.0" prefWidth="1310.0" style="-fx-background-color: #74B0E7;">
         <menus>
             <Menu mnemonicParsing="false" text="Subject" />
             <Menu mnemonicParsing="false" text="Exam" />
@@ -38,7 +44,7 @@
           <Menu mnemonicParsing="false" text="Help" />
         </menus>
       </MenuBar>
-      <TableView fx:id="tvExercise" layoutX="212.0" layoutY="158.0" prefHeight="305.0" prefWidth="673.0">
+      <TableView fx:id="tvExercise" layoutX="212.0" layoutY="158.0" prefHeight="305.0" prefWidth="673.0" style="-fx-border-color: #74B0E7;">
         <columns>
           <TableColumn fx:id="tcUnit" prefWidth="75.0" text="Unit" />
           <TableColumn fx:id="tcNumber" prefWidth="75.0" text="Number" />
@@ -53,21 +59,67 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <TextField fx:id="tfSearch" layoutX="212.0" layoutY="120.0" prefHeight="25.0" prefWidth="349.0" promptText="Search..." />
-      <ComboBox fx:id="cbUnit" layoutX="567.0" layoutY="120.0" prefHeight="25.0" prefWidth="121.0" />
-      <ComboBox fx:id="cbSearch" layoutX="688.0" layoutY="120.0" prefHeight="25.0" prefWidth="121.0" />
-      <TextField fx:id="tfNumber" layoutX="930.0" layoutY="225.0" promptText="Number" />
-      <TextField fx:id="tfDescription" alignment="TOP_LEFT" layoutX="1104.0" layoutY="225.0" prefHeight="205.0" prefWidth="150.0" promptText="Description" />
-      <ComboBox fx:id="cbUnitCreate" layoutX="929.0" layoutY="181.0" prefWidth="150.0" promptText="Unit" />
-      <ComboBox fx:id="cbLevelType" layoutX="1104.0" layoutY="181.0" prefWidth="150.0" promptText="Level type" />
-      <TextField fx:id="tfFileSolution" layoutX="930.0" layoutY="315.0" promptText="File Solution" />
-      <TextField fx:id="tfFile" layoutX="930.0" layoutY="272.0" promptText="File" />
+      <TextField fx:id="tfSearch" layoutX="212.0" layoutY="120.0" prefHeight="25.0" prefWidth="349.0" promptText="Search...">
+         <font>
+            <Font name="Goudy Old Style" size="14.0" />
+         </font></TextField>
+      <ComboBox fx:id="cbUnit" layoutX="567.0" layoutY="120.0" prefHeight="28.0" prefWidth="121.0" />
+      <ComboBox fx:id="cbSearch" layoutX="688.0" layoutY="120.0" prefHeight="28.0" prefWidth="121.0" />
+      <TextField fx:id="tfNumber" layoutX="930.0" layoutY="225.0" prefHeight="28.0" prefWidth="150.0" promptText="Number">
+         <font>
+            <Font name="Goudy Old Style" size="14.0" />
+         </font></TextField>
+      <TextField fx:id="tfDescription" alignment="TOP_LEFT" layoutX="1104.0" layoutY="225.0" prefHeight="205.0" prefWidth="150.0" promptText="Description...">
+         <font>
+            <Font name="Goudy Old Style" size="14.0" />
+         </font></TextField>
+      <ComboBox fx:id="cbUnitCreate" layoutX="929.0" layoutY="181.0" prefHeight="28.0" prefWidth="150.0" promptText="Unit" />
+      <ComboBox fx:id="cbLevelType" layoutX="1104.0" layoutY="181.0" prefHeight="28.0" prefWidth="150.0" promptText="Level type" />
+      <TextField fx:id="tfFileSolution" layoutX="930.0" layoutY="315.0" prefHeight="28.0" prefWidth="149.0" promptText="File Solution">
+         <font>
+            <Font name="Goudy Old Style" size="14.0" />
+         </font></TextField>
+      <TextField fx:id="tfFile" layoutX="930.0" layoutY="272.0" prefHeight="28.0" prefWidth="149.0" promptText="File">
+         <font>
+            <Font name="Goudy Old Style" size="14.0" />
+         </font></TextField>
       <DatePicker fx:id="dpDeadline" layoutX="930.0" layoutY="405.0" prefHeight="25.0" prefWidth="149.0" promptText="Deadline" />
-      <TextField fx:id="tfHours" layoutX="930.0" layoutY="360.0" promptText="Hours" />
-      <Button layoutX="815.0" layoutY="120.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Search" />
-      <Button fx:id="btmDelete" layoutX="212.0" layoutY="480.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Delete" />
-      <Button fx:id="btmModify" layoutX="1009.0" layoutY="480.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Modify" />
-      <Button fx:id="btmCreate" layoutX="1104.0" layoutY="480.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Create" />
-      <Button fx:id="btmDelete1" layoutX="25.0" layoutY="480.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Close" />
+      <TextField fx:id="tfHours" layoutX="930.0" layoutY="360.0" prefHeight="28.0" prefWidth="150.0" promptText="Hours">
+         <font>
+            <Font name="Goudy Old Style" size="14.0" />
+         </font></TextField>
+      <Button fx:id="btmSearch" layoutX="815.0" layoutY="120.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;">
+         <graphic>
+            <ImageView fitHeight="16.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../resources/searchIcon.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+      <Button fx:id="btmDelete" layoutX="212.0" layoutY="480.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Delete">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font></Button>
+      <Button fx:id="btmModify" layoutX="1009.0" layoutY="480.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Modify">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font></Button>
+      <Button fx:id="btmCreate" layoutX="1104.0" layoutY="480.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Create">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font></Button>
+      <Button fx:id="btmReturn" layoutX="25.0" layoutY="444.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #ECF4FF;">
+         <graphic>
+            <ImageView fitHeight="14.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../resources/returnIcon.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+      <Button fx:id="btmClose" layoutX="25.0" layoutY="480.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #ECF4FF;" text="Close">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font>
+      </Button>
    </children>
 </Pane>
