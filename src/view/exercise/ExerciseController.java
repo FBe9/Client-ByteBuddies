@@ -7,35 +7,21 @@ package view.exercise;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-import models.Exercise;
 
 /**
  * FXML Controller class
  *
  * @author Leire
  */
-public class ExerciseController {
-    
-    private static final Logger LOGGER = Logger.getLogger("view");
-    private Stage stage;
-    private User user;
-    private ObservableList<Exercise> exerciseData;
-    //private Exercise byID;
-    //private List<MentalDisease> byName = new ArrayList<>();
-    //iniciar factoria
-    ExerciseFactory exerciseFactory = new ExerciseFactory();
-    //obtener mediante la factoria la interface
-    ExerciseInterface exerciseInterface = exerciseFactory.getModel();
+public class ExerciseController implements Initializable {
 
     @FXML
     private TableView tvExercise;
@@ -44,11 +30,11 @@ public class ExerciseController {
     @FXML
     private TextField tfSearch, tfNumber, tfDescription, tfFileSolution, tfFile, tfHours;
     @FXML
-    private ComboBox cbUnit, cbSearch, cbUnitCreate, cbLevelType;
+    private ComboBox cbUnitSearch, cbSearchType, cbUnitCreate, cbLevelTypeCreate;
     @FXML
     private DatePicker dpDeadline;
     @FXML
-    private Button btmDelete, btmModify, btmCreate, btmSearch, btmClose, btmReturn;
+    private Button btmSearch, btmDelete, btmModify, btmCreate, btmPrint;
 
     /**
      * Initializes the controller class.
