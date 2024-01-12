@@ -9,9 +9,11 @@ import exceptions.*;
 import interfaces.UnitInterface;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.core.GenericType;
 import models.Unit;
 import services.UnitRESTClient;
 
@@ -36,7 +38,7 @@ public class UnitManagerImplementation implements UnitInterface {
 
         } catch (ClientErrorException e) {
             LOGGER.log(Level.SEVERE, "UnitManagerImplementation: Error creating a unit{0}", e.getMessage());
-            throw new CreateErrorException("Error creating a unit" +e.getMessage());
+            throw new CreateErrorException("Error creating a unit" + e.getMessage());
         }
     }
 
@@ -48,7 +50,8 @@ public class UnitManagerImplementation implements UnitInterface {
         } catch (ClientErrorException e) {
             LOGGER.log(Level.SEVERE, "UnitManagerImplementation: Error updating a unit{0}", e.getMessage());
             throw new UpdateErrorException("Error updating a unit" + e.getMessage());
-        }}
+        }
+    }
 
     @Override
     public void removeUnit(Unit unit) throws DeleteErrorException {
@@ -64,51 +67,140 @@ public class UnitManagerImplementation implements UnitInterface {
 
     @Override
     public Unit findUnitByID(Integer id) throws FindErrorException {
-    
+        Unit unit = null;
+        try {
+            unit = webClient.findUnitByID_XML(Unit.class, id);
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitByID(Integer id) {0}", e.getMessage());
+            throw new FindErrorException("Error finding subject" + e.getMessage());
+        }
+        return unit;
     }
 
     @Override
     public List<Unit> findAllUnits() throws FindErrorException {
+        List<Unit> units = null;
+        try {
+            units = webClient.findAllUnits_XML(new GenericType<List<Unit>>() {
+            });
+
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findAllUnits() {0}", e.getMessage());
+            throw new FindErrorException("Error finding subject" + e.getMessage());
+        }
+        return units;
     }
 
     @Override
     public List<Unit> findSubjectUnits(String name) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Unit> units = null;
+        try {
+            units = webClient.findSubjectUnits_XML(new GenericType<List<Unit>>() {
+            }, name);
+
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnits(String name) {0}", e.getMessage());
+            throw new FindErrorException("Error finding subject" + e.getMessage());
+        }
+        return units;
     }
 
     @Override
     public List<Unit> findSubjectUnitsByName(String name, String subject) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Unit> units = null;
+        try {
+            units = webClient.findAllUnits_XML(new GenericType<List<Unit>>() {
+            });
+
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByName(String name, String subject) {0}", e.getMessage());
+            throw new FindErrorException("Error finding subject" + e.getMessage());
+        }
+        return units;
     }
 
     @Override
     public Unit findOneSubjectUnitByName(String name, String subject) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Unit unit = null;
+        try {
+            unit = webClient.findOneSubjectUnitByName_XML(new GenericType<Unit>() {
+            }, name, subject);
+
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findOneSubjectUnitByName(String name, String subject) {0}", e.getMessage());
+            throw new FindErrorException("Error finding subject" + e.getMessage());
+        }
+        return unit;
     }
 
     @Override
     public List<Unit> findSubjectUnitsByDateInit(Date dateInit, String subject) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Unit> units = null;
+        try {
+            units = webClient.findSubjectUnitsByDateInit_XML(new GenericType<List<Unit>>() {
+            }, subject, subject);
+
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByDateInit(Date dateInit, String subject) {0}", e.getMessage());
+            throw new FindErrorException("Error finding subject" + e.getMessage());
+        }
+        return units;
     }
 
     @Override
     public List<Unit> findSubjectUnitsByDateEnd(Date dateEnd, String subject) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Unit> units = null;
+        try {
+            units = webClient.findSubjectUnitsByDateEnd_XML(new GenericType<List<Unit>>() {
+            }, subject, subject);
+
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByDateEnd(Date dateEnd, String subject) {0}", e.getMessage());
+            throw new FindErrorException("Error finding subject" + e.getMessage());
+        }
+        return units;
     }
 
     @Override
     public List<Unit> findSubjectUnitsByHours(Integer hours, String subject) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Unit> units = null;
+        try {
+            units = webClient.findSubjectUnitsByHours_XML(new GenericType<List<Unit>>() {
+            }, hours, subject);
+
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByHours(Integer hours, String subject) {0}", e.getMessage());
+            throw new FindErrorException("Error finding subject" + e.getMessage());
+        }
+        return units;
     }
 
     @Override
     public List<Unit> findUnitsFromTeacherSubjects(Integer userId) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Unit> units = null;
+        try {
+            units = webClient.findUnitsFromTeacherSubjects_XML(new GenericType<List<Unit>>() {
+            }, userId);
+
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitsFromTeacherSubjects(Integer userId) {0}", e.getMessage());
+            throw new FindErrorException("Error finding subject" + e.getMessage());
+        }
+        return units;
     }
 
     @Override
     public List<Unit> findUnitsFromStudentSubjects(Integer userId) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Unit> units = null;
+        try {
+            units = webClient.findUnitsFromStudentSubjects_XML(new GenericType<List<Unit>>() {
+            }, userId);
+
+        } catch (ClientErrorException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitsFromStudentSubjects(Integer userId) {0}", e.getMessage());
+            throw new FindErrorException("Error finding subject" + e.getMessage());
+        }
+        return units;
     }
 
 }
