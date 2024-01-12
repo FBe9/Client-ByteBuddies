@@ -5,7 +5,6 @@
  */
 package services;
 
-import interfaces.UnitInterface;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -21,15 +20,15 @@ import javax.ws.rs.client.WebTarget;
  *        client.close();
  * </pre>
  *
- * @author 2dam
+ * @author Nerea
  */
-public class UnitFacadeREST implements UnitInterface{
+public class UnitRESTClient{
 
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI = "http://localhost:8080/Server-ByteBuddies/webresources";
 
-    public UnitFacadeREST() {
+    public UnitRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.unit");
     }
@@ -78,19 +77,19 @@ public class UnitFacadeREST implements UnitInterface{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findUnitByID_XML(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findUnitByID_XML(Class<T> responseType, Integer id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findUnitByID_JSON(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T findUnitByID_JSON(Class<T> responseType, Integer id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public void removeUnit(String id) throws ClientErrorException {
+    public void removeUnit(Integer id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 
@@ -118,13 +117,13 @@ public class UnitFacadeREST implements UnitInterface{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findUnitsFromStudentSubjects_XML(Class<T> responseType, String userID) throws ClientErrorException {
+    public <T> T findUnitsFromStudentSubjects_XML(Class<T> responseType, Integer userID) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromStudentSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findUnitsFromStudentSubjects_JSON(Class<T> responseType, String userID) throws ClientErrorException {
+    public <T> T findUnitsFromStudentSubjects_JSON(Class<T> responseType, Integer userID) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromStudentSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
@@ -150,25 +149,25 @@ public class UnitFacadeREST implements UnitInterface{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findUnitsFromTeacherSubjects_XML(Class<T> responseType, String userID) throws ClientErrorException {
+    public <T> T findUnitsFromTeacherSubjects_XML(Class<T> responseType, Integer userID) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromTeacherSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findUnitsFromTeacherSubjects_JSON(Class<T> responseType, String userID) throws ClientErrorException {
+    public <T> T findUnitsFromTeacherSubjects_JSON(Class<T> responseType, Integer userID) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromTeacherSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findSubjectUnitsByHours_XML(Class<T> responseType, String hours, String subjectName) throws ClientErrorException {
+    public <T> T findSubjectUnitsByHours_XML(Class<T> responseType, Integer hours, String subjectName) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findSubjectUnitsByHours/{0}/{1}", new Object[]{hours, subjectName}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findSubjectUnitsByHours_JSON(Class<T> responseType, String hours, String subjectName) throws ClientErrorException {
+    public <T> T findSubjectUnitsByHours_JSON(Class<T> responseType, Integer hours, String subjectName) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findSubjectUnitsByHours/{0}/{1}", new Object[]{hours, subjectName}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);

@@ -4,9 +4,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -37,48 +34,7 @@
             <Image url="@../../resources/AllWhiteStar.png" />
          </image>
       </ImageView>
-      <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0" prefWidth="1366.0">
-         <children>
-            <MenuBar prefHeight="26.0" prefWidth="1366.0" style="-fx-background-color: #74B0E7;">
-               <menus>
-                  <Menu mnemonicParsing="false" text="Subject">
-                     <items>
-                        <MenuItem fx:id="miSubjects1" mnemonicParsing="false" text="Show Subjects" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Exam">
-                     <items>
-                        <MenuItem fx:id="miExams1" mnemonicParsing="false" text="Show Exams" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Unit">
-                     <items>
-                        <MenuItem fx:id="miUnits1" mnemonicParsing="false" text="Show Unit" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Exercise">
-                     <items>
-                        <MenuItem fx:id="miExercises1" mnemonicParsing="false" text="Show Exercise" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Help">
-                     <items>
-                        <MenuItem fx:id="miHelpSubjects1" mnemonicParsing="false" text="Help Subjects Window" />
-                        <MenuItem fx:id="miHelpExams1" mnemonicParsing="false" text="Help Exams Window" />
-                        <MenuItem fx:id="miHelpUnits1" mnemonicParsing="false" text="Help Units Window" />
-                        <MenuItem fx:id="miHelpExercises1" mnemonicParsing="false" text="Help Exercises Window" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Exit">
-                     <items>
-                        <MenuItem fx:id="miCloseApp1" mnemonicParsing="false" text="Close the application" />
-                        <MenuItem fx:id="miLogOut1" mnemonicParsing="false" text="Log Out" />
-                     </items>
-                  </Menu>
-               </menus>
-            </MenuBar>
-         </children>
-      </Pane>
+      <fx:include source="../MenuBar.fxml" />
       <TableView fx:id="tbvUnit" layoutX="228.0" layoutY="233.0" prefHeight="416.0" prefWidth="1076.0" style="-fx-border-color: #74B0E7;">
         <columns>
           <TableColumn fx:id="tbcName" prefWidth="238.0" text="Name" />

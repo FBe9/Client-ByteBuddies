@@ -5,19 +5,19 @@
  */
 package factories;
 
+import implementation.UnitManagerImplementation;
 import interfaces.UnitInterface;
-import services.UnitFacadeREST;
 
 /**
  *
- * @author 2dam
+ * @author Nerea
  */
 public class UnitFactory {
     public static UnitInterface model;
 
     public static UnitInterface getModel() {
         if (model == null) {
-            model = new UnitFacadeREST();
+            model = new UnitManagerImplementation();
         }
         return model;
     }
