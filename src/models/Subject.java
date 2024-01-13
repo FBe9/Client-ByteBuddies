@@ -10,6 +10,9 @@ import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -23,36 +26,30 @@ import javafx.collections.ObservableSet;
  *
  * @author irati
  */
+@XmlRootElement
 public class Subject implements Serializable {
 
     private SimpleIntegerProperty id;
     private SimpleStringProperty name;
-    private SimpleIntegerProperty hours;
+    private SimpleStringProperty hours;
     private SimpleObjectProperty<LevelType> levelType;
     private final SimpleObjectProperty<LanguageType> languageType;
     private final SimpleObjectProperty<Date> dateInit;
     private final SimpleObjectProperty<Date> dateEnd;
-    private final SimpleSetProperty<Teacher> teachers;
-    // private final SimpleSetProperty<Exam> exams;
-    private final SimpleSetProperty<Unit> units;
-    private final SimpleSetProperty<Enrolled> enrollments;
 
-    /**
-     * Default constructor for creating a SubjectBean object. Initializes all
-     * properties to their default values.
-     */
+    @XmlElementWrapper(name = "teachers")
+    @XmlElement(name = "teacher")
+    private final SimpleSetProperty<Teacher> teachersSet;
+
     public Subject() {
         this.id = new SimpleIntegerProperty();
         this.name = new SimpleStringProperty();
-        this.hours = new SimpleIntegerProperty();
-        this.levelType = new SimpleObjectProperty();
-        this.languageType = new SimpleObjectProperty();
-        this.dateInit = new SimpleObjectProperty();
-        this.dateEnd = new SimpleObjectProperty();
-        this.teachers = new SimpleSetProperty();
-        //this.exams = new SimpleSetProperty();
-        this.units = new SimpleSetProperty();
-        this.enrollments = new SimpleSetProperty();
+        this.hours = new SimpleStringProperty();
+        this.levelType = new SimpleObjectProperty<>();
+        this.languageType = new SimpleObjectProperty<>();
+        this.dateInit = new SimpleObjectProperty<>();
+        this.dateEnd = new SimpleObjectProperty<>();
+        this.teachersSet = new SimpleSetProperty<>(FXCollections.observableSet());
     }
 
     /**
@@ -67,18 +64,16 @@ public class Subject implements Serializable {
      * @param dateInit The start date of the subject.
      * @param dateEnd The end date of the subject.
      */
-    public Subject(Integer id, String name, Integer hours, LevelType levelType, LanguageType languageType, Date dateInit, Date dateEnd, ObservableSet<Teacher> teachers, ObservableSet<Exam> exams, ObservableSet<Unit> units, ObservableSet<Enrolled> enrollments) {
+    public Subject(Integer id, String name, String hours, LevelType levelType, LanguageType languageType, Date dateInit, Date dateEnd, ObservableSet<Teacher> teachers) {
         this.id = new SimpleIntegerProperty(id);
         this.name = new SimpleStringProperty(name);
-        this.hours = new SimpleIntegerProperty(hours);
+        this.hours = new SimpleStringProperty(hours);
         this.levelType = new SimpleObjectProperty(levelType);
         this.languageType = new SimpleObjectProperty(languageType);
         this.dateInit = new SimpleObjectProperty(dateInit);
         this.dateEnd = new SimpleObjectProperty(dateEnd);
-        this.teachers = new SimpleSetProperty(teachers);
-        // this.exams = new SimpleSetProperty(exams);
-        this.units = new SimpleSetProperty(units);
-        this.enrollments = new SimpleSetProperty(enrollments);
+        this.teachersSet = new SimpleSetProperty(teachers);
+
     }
 
     /**
@@ -122,7 +117,8 @@ public class Subject implements Serializable {
      *
      * @return The duration of the subject in hours.
      */
-    public Integer getHours() {
+    @XmlElement(name = "hours")
+    public String getHours() {
         return this.hours.get();
     }
 
@@ -131,7 +127,7 @@ public class Subject implements Serializable {
      *
      * @param hours The duration to be set.
      */
-    public void setHours(Integer hours) {
+    public void setHours(String hours) {
         this.hours.set(hours);
     }
 
@@ -151,6 +147,25 @@ public class Subject implements Serializable {
      */
     public void setLevelType(LevelType levelType) {
         this.levelType.set(levelType);
+    }
+
+    /**
+     * Gets the level type of the subject.
+     *
+     * @return The level type of the subject.
+     */
+    @XmlElement(name = "languageType")
+    public LanguageType getLanguageType() {
+        return this.languageType.get();
+    }
+
+    /**
+     * Sets the level type of the subject.
+     *
+     * @param levelType The level type to be set.
+     */
+    public void setLanguageType(LanguageType languageType) {
+        this.languageType.set(languageType);
     }
 
     /**
@@ -189,35 +204,14 @@ public class Subject implements Serializable {
         this.dateEnd.set(dateEnd);
     }
 
+    @XmlElement(name = "teachers")
     public ObservableSet<Teacher> getTeachers() {
-        return this.teachers.get();
+        return FXCollections.observableSet(teachersSet);
     }
 
     public void setTeachers(ObservableSet<Teacher> teachers) {
-        this.teachers.set(teachers);
-    }
-
-    /*  public ObservableSet<Exam> getExams() {
-        return this.exams.get();
-    }
-
-    public void setExams(ObservableSet<Exam> exams) {
-        this.exams.set(exams);
-    } */
-    public ObservableSet<Unit> getUnits() {
-        return this.units.get();
-    }
-
-    public void setUnits(ObservableSet<Unit> units) {
-        this.units.set(units);
-    }
-
-    public ObservableSet<Enrolled> getEnrollments() {
-        return this.enrollments.get();
-    }
-
-    public void setEnrollments(ObservableSet<Enrolled> enrollments) {
-        this.enrollments.set(enrollments);
+        this.teachersSet.clear();
+        this.teachersSet.addAll(teachers);
     }
 
     @Override
@@ -260,18 +254,10 @@ public class Subject implements Serializable {
         if (!Objects.equals(this.dateEnd, other.dateEnd)) {
             return false;
         }
-        if (!Objects.equals(this.teachers, other.teachers)) {
-            return false;
-        }
-/*        if (!Objects.equals(this.exams, other.exams)) {
+
+        /*        if (!Objects.equals(this.exams, other.exams)) {
             return false;
         } */
-        if (!Objects.equals(this.units, other.units)) {
-            return false;
-        }
-        if (!Objects.equals(this.enrollments, other.enrollments)) {
-            return false;
-        }
         return true;
     }
 

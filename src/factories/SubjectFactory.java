@@ -6,7 +6,6 @@
 package factories;
 
 import implementation.SubjectManagerImplementation;
-import services.SubjectRESTClient;
 import interfaces.SubjectManager;
 
 /**

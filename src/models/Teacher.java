@@ -9,31 +9,35 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableSet;
+import javax.persistence.DiscriminatorValue;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author irati
  */
+@XmlRootElement(name = "teacher")
 public class Teacher extends User {
+
     private final SimpleObjectProperty<StudiesType> studiesType;
     private final SimpleStringProperty qualifications;
     private final SimpleSetProperty<Subject> subjects;
 
-    public Teacher(){
+    public Teacher() {
         super();
         this.studiesType = new SimpleObjectProperty();
         this.qualifications = new SimpleStringProperty();
         this.subjects = new SimpleSetProperty();
     }
-    
+
     public Teacher(StudiesType studiesType, String qualifications, ObservableSet<Subject> subjects) {
         super();
-        this.studiesType =  new SimpleObjectProperty(studiesType);
+        this.studiesType = new SimpleObjectProperty(studiesType);
         this.qualifications = new SimpleStringProperty(qualifications);
         this.subjects = new SimpleSetProperty(subjects);
     }
-    
-      /**
+
+    /**
      * Gets the type of studies the teacher is qualified in.
      *
      * @return The studies type of the teacher.
@@ -61,7 +65,7 @@ public class Teacher extends User {
     }
 
     /**
-     * Sets the qualifications of  the teacher.
+     * Sets the qualifications of the teacher.
      *
      * @param qualifications The qualifications to set for the teacher.
      */
@@ -86,5 +90,10 @@ public class Teacher extends User {
     public void setSubjects(ObservableSet<Subject> subjects) {
         this.subjects.set(subjects);
     }
-    
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
 }

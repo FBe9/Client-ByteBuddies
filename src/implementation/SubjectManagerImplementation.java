@@ -33,11 +33,11 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     @Override
-    public Subject findSubjectById(Integer id) throws FindErrorException {
+    public Subject findSubjectById(String id) throws FindErrorException {
         Subject subject = null;
         try {
             LOGGER.info("Find the subject with id: " + id);
-            subject = webClient.findSubjectById_XML(Subject.class, id);
+            subject = webClient.find_XML(Subject.class, id);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Exception finding subject with id " + id + ": " + e.getMessage());
@@ -52,7 +52,7 @@ public class SubjectManagerImplementation implements SubjectManager {
         
          try {
             LOGGER.info("Find all subjects");
-            subjects = webClient.findAllSubjects_XML(new GenericType<Set<Subject>>() {});
+            subjects = webClient.findAll_XML(new GenericType<Set<Subject>>() {});
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Exception all subjects" + e.getMessage());
@@ -93,7 +93,7 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     @Override
-    public Collection<Subject> findSubjectByEndDate(Date endDate) throws FindErrorException {
+    public Collection<Subject> findSubjectByEndDate(String endDate) throws FindErrorException {
         Set<Subject> subjects = null;
         
          try {
@@ -108,7 +108,7 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     @Override
-    public Collection<Subject> findSubjectByInitDate(Date initDate) throws FindErrorException {
+    public Collection<Subject> findSubjectByInitDate(String initDate) throws FindErrorException {
         Set<Subject> subjects = null;
         
          try {
@@ -123,7 +123,7 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     @Override
-    public Collection<Subject> findSubjectsWithXUnits(Long number) throws FindErrorException {
+    public Collection<Subject> findSubjectsWithXUnits(String number) throws FindErrorException {
         Set<Subject> subjects = null;
         
          try {
@@ -138,7 +138,7 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     @Override
-    public Collection<Subject> findSubjectsWithEnrolledStudentsCount(Long number) throws FindErrorException {
+    public Collection<Subject> findSubjectsWithEnrolledStudentsCount(String number) throws FindErrorException {
         Set<Subject> subjects = null;
         
          try {
@@ -153,7 +153,7 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     @Override
-    public Collection<Subject> findByEnrollments(Integer studentId) throws FindErrorException {
+    public Collection<Subject> findByEnrollments(String studentId) throws FindErrorException {
         Set<Subject> subjects = null;
         
          try {
@@ -168,7 +168,7 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     @Override
-    public Collection<Subject> findSubjectsByTeacherId(Integer teacherId) throws FindErrorException {
+    public Collection<Subject> findSubjectsByTeacherId(String teacherId) throws FindErrorException {
         Set<Subject> subjects = null;
         
          try {
@@ -195,10 +195,10 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     @Override
-    public void deleteSubject(Subject subject) throws DeleteErrorException {
+    public void deleteSubject(String id) throws DeleteErrorException {
        try {
             LOGGER.info("Delete a subject");
-            webClient.deleteSubject_XML(subject.getId());
+            webClient.removeSubject(id);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Error deleting a subject" + e.getMessage());

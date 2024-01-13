@@ -10,11 +10,13 @@ import java.util.Date;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author irati
  */
+@XmlRootElement
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -90,6 +92,11 @@ public class User implements Serializable {
 
     public void setDateInit(Date dateInit) {
         this.dateInit.set(dateInit);
+    }
+
+    @Override
+    public String toString() {
+        return name + " " + surname;
     }
 
 }
