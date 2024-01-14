@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
+import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
@@ -37,9 +38,7 @@ public class Subject implements Serializable {
     private final SimpleObjectProperty<Date> dateInit;
     private final SimpleObjectProperty<Date> dateEnd;
 
-    @XmlElementWrapper(name = "teachers")
-    @XmlElement(name = "teacher")
-    private final SimpleSetProperty<Teacher> teachersSet;
+    private final SetProperty<Teacher> teachersSet;
 
     public Subject() {
         this.id = new SimpleIntegerProperty();
@@ -204,13 +203,13 @@ public class Subject implements Serializable {
         this.dateEnd.set(dateEnd);
     }
 
-    @XmlElement(name = "teachers")
+    @XmlElementWrapper(name = "teachers")
+    @XmlElement(name = "teacher")
     public ObservableSet<Teacher> getTeachers() {
         return FXCollections.observableSet(teachersSet);
     }
 
     public void setTeachers(ObservableSet<Teacher> teachers) {
-        this.teachersSet.clear();
         this.teachersSet.addAll(teachers);
     }
 
