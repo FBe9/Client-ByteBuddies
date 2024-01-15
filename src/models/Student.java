@@ -16,21 +16,18 @@ import javafx.collections.ObservableSet;
  */
 public class Student extends User {
     private final SimpleObjectProperty<LevelType> levelType;
-    private final SimpleSetProperty<Mark> marks;
     private final SimpleSetProperty<Enrolled> enrollments;
     
     public Student() {
         super();
         this.levelType = new SimpleObjectProperty();
-        this.marks = new SimpleSetProperty();
         this.enrollments = new SimpleSetProperty();
         
     }
 
-    public Student(LevelType levelType, ObservableSet<Mark> marks, ObservableSet<Subject> enrollments) {
+    public Student(LevelType levelType, ObservableSet<Subject> enrollments) {
         super();
         this.levelType = new SimpleObjectProperty(levelType);
-        this.marks = new SimpleSetProperty(marks);
         this.enrollments = new SimpleSetProperty(enrollments);
     }
 
@@ -52,23 +49,6 @@ public class Student extends User {
         this.levelType.set(levelType);
     }
 
-    /**
-     * Gets the set of marks associated with the student.
-     *
-     * @return The set of marks associated with the student.
-     */
-    public ObservableSet<Mark> getMarks() {
-        return this.marks.get();
-    }
-
-    /**
-     * Sets the set of marks associated with the student.
-     *
-     * @param marks The set of marks to be associated with the student.
-     */
-    public void setMarks(Set<Mark> marks) {
-        this.marks.set(marks);
-    }
 
     /**
      * Gets the set of enrollments associated with the student.

@@ -6,7 +6,6 @@
 package interfaces;
 
 import exceptions.CreateErrorException;
-import exceptions.DeleteErrorException;
 import exceptions.FindErrorException;
 import exceptions.UpdateErrorException;
 import java.util.Collection;

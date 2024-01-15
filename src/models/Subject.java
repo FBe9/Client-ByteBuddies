@@ -39,6 +39,7 @@ public class Subject implements Serializable {
     private final SimpleObjectProperty<Date> dateEnd;
 
     private final SetProperty<Teacher> teachersSet;
+    private final SetProperty<Enrolled> enrollments;
 
     public Subject() {
         this.id = new SimpleIntegerProperty();
@@ -49,6 +50,7 @@ public class Subject implements Serializable {
         this.dateInit = new SimpleObjectProperty<>();
         this.dateEnd = new SimpleObjectProperty<>();
         this.teachersSet = new SimpleSetProperty<>(FXCollections.observableSet());
+        this.enrollments = new SimpleSetProperty<>(FXCollections.observableSet());
     }
 
     /**
@@ -62,8 +64,9 @@ public class Subject implements Serializable {
      * @param languageType The language type of the subject.
      * @param dateInit The start date of the subject.
      * @param dateEnd The end date of the subject.
+     * @param teachers
      */
-    public Subject(Integer id, String name, String hours, LevelType levelType, LanguageType languageType, Date dateInit, Date dateEnd, ObservableSet<Teacher> teachers) {
+    public Subject(Integer id, String name, String hours, LevelType levelType, LanguageType languageType, Date dateInit, Date dateEnd, ObservableSet<Teacher> teachers, ObservableSet<Enrolled> enrollments) {
         this.id = new SimpleIntegerProperty(id);
         this.name = new SimpleStringProperty(name);
         this.hours = new SimpleStringProperty(hours);
@@ -72,6 +75,7 @@ public class Subject implements Serializable {
         this.dateInit = new SimpleObjectProperty(dateInit);
         this.dateEnd = new SimpleObjectProperty(dateEnd);
         this.teachersSet = new SimpleSetProperty(teachers);
+        this.enrollments = new SimpleSetProperty(enrollments);
 
     }
 
