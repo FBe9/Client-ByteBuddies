@@ -4,9 +4,7 @@ import exceptions.CreateErrorException;
 import exceptions.DeleteErrorException;
 import exceptions.ExerciseErrorException;
 import exceptions.UpdateErrorException;
-import java.util.Date;
-import models.LevelType;
-import models.Exercise;
+import javax.ws.rs.core.GenericType;
 
 /**
  *
@@ -22,7 +20,7 @@ public interface ExerciseInterface {
 
     public <T> T getExerciseByID_XML(Class<T> responseType, String id) throws ExerciseErrorException;
 
-    public <T> T getAllExercises_XML(Class<T> responseType) throws ExerciseErrorException;
+    public <T> T getAllExercises_XML(GenericType<T> responseType) throws ExerciseErrorException;
 
     public <T> T getExercisesByNumber_XML(Class<T> responseType, String number) throws ExerciseErrorException;
 

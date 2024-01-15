@@ -29,7 +29,7 @@ public class Exercise implements Serializable {
     /**
      * Exercise number
      */
-    private Integer number;
+    private String number;
 
     /**
      * Exercise description
@@ -59,7 +59,7 @@ public class Exercise implements Serializable {
     /**
      * The hours that the exercise takes
      */
-    private Integer hours;
+    private String hours;
 
     //Costructors
     /**
@@ -81,7 +81,7 @@ public class Exercise implements Serializable {
      * @param deadline
      * @param hours
      */
-    public Exercise(Integer id, Unit unit, Integer number, String description, LevelType levelType, String file, String fileSolution, Date deadline, Integer hours) {
+    public Exercise(Integer id, Unit unit, String number, String description, LevelType levelType, String file, String fileSolution, Date deadline, String hours) {
         this.id = id;
         this.unit = unit;
         this.number = number;
@@ -135,7 +135,7 @@ public class Exercise implements Serializable {
      *
      * @return
      */
-    public Integer getNumber() {
+    public String getNumber() {
         return number;
     }
 
@@ -144,7 +144,7 @@ public class Exercise implements Serializable {
      *
      * @param number
      */
-    public void setNumber(Integer number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
@@ -243,7 +243,7 @@ public class Exercise implements Serializable {
      *
      * @return
      */
-    public Integer getHours() {
+    public String getHours() {
         return hours;
     }
 
@@ -252,7 +252,7 @@ public class Exercise implements Serializable {
      *
      * @param hours
      */
-    public void setHours(Integer hours) {
+    public void setHours(String hours) {
         this.hours = hours;
     }
 

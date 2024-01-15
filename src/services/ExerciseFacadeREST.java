@@ -8,6 +8,7 @@ import interfaces.ExerciseInterface;
 import java.util.ResourceBundle;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 
 /**
  * Jersey REST client generated for REST resource:ExerciseFacadeREST
@@ -52,7 +53,7 @@ public class ExerciseFacadeREST implements ExerciseInterface {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T getAllExercises_XML(Class<T> responseType) throws ExerciseErrorException {
+    public <T> T getAllExercises_XML(GenericType<T> responseType) throws ExerciseErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
