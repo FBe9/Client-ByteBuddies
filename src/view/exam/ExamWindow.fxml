@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #ECF4FF;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.exam.ExamWindowController">
+   <children>
+      <ImageView fitHeight="746.0" fitWidth="170.0" layoutY="25.0" pickOnBounds="true">
+         <image>
+            <Image url="@../../resources/BlueWallpaper.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="165.0" fitWidth="139.0" layoutX="1175.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../resources/BlueStar.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="107.0" fitWidth="95.0" layoutX="1198.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../resources/AllBlueStar.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="70.0" fitWidth="70.0" layoutX="1211.0" layoutY="93.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../resources/AllWhiteStar.png" />
+         </image>
+      </ImageView>
+      <MenuBar layoutY="-1.0" prefHeight="26.0" prefWidth="1366.0" style="-fx-background-color: #74B0E7;">
+         <menus>
+            <Menu mnemonicParsing="false" text="Subject" />
+            <Menu mnemonicParsing="false" text="Exam" />
+            <Menu mnemonicParsing="false" text="Unit" />
+            <Menu mnemonicParsing="false" text="Exercise" />
+            <Menu mnemonicParsing="false" text="Help" />
+            <Menu mnemonicParsing="false" text="Log Out" />
+         </menus>
+      </MenuBar>
+      <TableView fx:id="tvExam" layoutX="192.0" layoutY="209.0" prefHeight="472.0" prefWidth="980.0" style="-fx-border-color: #74B0E7;">
+         <columns>
+            <TableColumn fx:id="tcDescription" minWidth="150.0" prefWidth="234.0" text="Description" />
+            <TableColumn fx:id="tcSubject" maxWidth="200.0" minWidth="125.0" prefWidth="100.0" text="Subject" />
+            <TableColumn fx:id="tcDuration" maxWidth="220.0" minWidth="70.0" prefWidth="83.0" text="Duration" />
+            <TableColumn fx:id="tcDate" maxWidth="200.0" minWidth="125.0" prefWidth="150.0" text="Date" />
+            <TableColumn fx:id="tcFile" maxWidth="200.0" minWidth="125.0" prefWidth="173.0" text="File" />
+         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <TextField fx:id="tfSearchExam" layoutX="618.0" layoutY="150.0" prefHeight="28.0" prefWidth="426.0" promptText="Enter the description of the exam...">
+         <font>
+            <Font name="Goudy Old Style" size="14.0" />
+         </font>
+      </TextField>
+      <ComboBox fx:id="cbBySubject" layoutX="384.0" layoutY="150.0" prefHeight="28.0" prefWidth="180.0" />
+      <ComboBox fx:id="cbSearchCriteria" layoutX="195.0" layoutY="150.0" prefHeight="28.0" prefWidth="135.0" />
+      <Button fx:id="btnSearchExam" layoutX="1100.0" layoutY="152.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;">
+         <graphic>
+            <ImageView fitHeight="16.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../resources/searchIcon.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
+      <Button fx:id="btnDeleteExam" layoutX="275.0" layoutY="694.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Delete">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font>
+      </Button>
+      <Button fx:id="btnCreateExam" layoutX="192.0" layoutY="694.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Create">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font>
+      </Button>
+      <!--<Button fx:id="btmView" layoutX="275.0" layoutY="694.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="View">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font>
+      </Button>-->
+      <Button fx:id="btnPrintExam" layoutX="648.0" layoutY="694.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Print">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font>
+      </Button>
+      <Button fx:id="btnSaveExam" layoutX="1104.0" layoutY="694.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Save">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font>
+      </Button>
+      <Button fx:id="btnCancelExam" layoutX="1021.0" layoutY="694.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Cancel">
+         <font>
+            <Font name="Calibri Italic" size="12.0" />
+         </font>
+      </Button>
+      <Label fx:id="lblSelectCriteria" layoutX="195.0" layoutY="125.0" prefHeight="18.0" prefWidth="135.0" text="Select criteria:">
+         <font>
+            <Font name="Calibri Bold Italic" size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblBySubject" layoutX="384.0" layoutY="125.0" prefHeight="18.0" prefWidth="135.0" text="Exams by subject:">
+         <font>
+            <Font name="Calibri Bold Italic" size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblSearchExam" layoutX="619.0" layoutY="125.0" prefHeight="18.0" prefWidth="426.0" text="Search an exam:">
+         <font>
+            <Font name="Calibri Bold Italic" size="15.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>

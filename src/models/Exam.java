@@ -6,13 +6,16 @@ import java.util.Objects;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Entity representing the exams. It has the following fields: exam id,
- * description, date, duration, file path, subject, marks.
+ * description, date, duration, file path, subject.
  *
  * @author Alex
  */
+@XmlRootElement
 public class Exam implements Serializable {
 
     /**
@@ -38,7 +41,7 @@ public class Exam implements Serializable {
     /**
      * The duration value of the exam, in minutes.
      */
-    private final SimpleIntegerProperty duration;
+    private final SimpleStringProperty duration;
 
     /**
      * The path to store the exam heading.
@@ -49,11 +52,52 @@ public class Exam implements Serializable {
      * The subject which the exam belongs to.
      */
     private final SimpleObjectProperty<Subject> subject;
-
+    
     /**
-     * Relational field for the grades or marks assigned to an exam.
+     * Default empty constructor for the entity Exam.
      */
-    private final SimpleSetProperty<Mark> marks;
+    public Exam() {
+        this.id = new SimpleIntegerProperty();
+        this.description = new SimpleStringProperty();
+        this.callType = new SimpleObjectProperty<>();
+        this.dateInit = new SimpleObjectProperty<>();
+        this.duration = new SimpleStringProperty();
+        this.filePath = new SimpleStringProperty();
+        this.subject = new SimpleObjectProperty<>();
+    }
+    
+    /**
+     * Constructor with parameters for the Exam entity.
+     *
+     * @param id
+     * @param description
+     * @param callType
+     * @param dateInit
+     * @param duration
+     * @param filePath
+     * @param subject
+     */
+    public Exam(Integer id, String description, CallType callType, Date dateInit, String duration, String filePath, Subject subject) {
+        this.id = new SimpleIntegerProperty(id);
+        this.description = new SimpleStringProperty(description);
+        this.callType = new SimpleObjectProperty(callType);
+        this.dateInit = new SimpleObjectProperty(dateInit);
+        this.duration = new SimpleStringProperty(duration);
+        this.filePath = new SimpleStringProperty(filePath);
+        this.subject = new SimpleObjectProperty(subject);
+    }
+
+    public Exam(String description, Date dateInit, String duration, String filePath, Subject subject) {
+        this.id = null;
+        this.callType = null;
+        this.description = new SimpleStringProperty(description);
+        this.dateInit = new SimpleObjectProperty(dateInit);
+        this.duration = new SimpleStringProperty(duration);
+        this.filePath = new SimpleStringProperty(filePath);
+        this.subject = new SimpleObjectProperty(subject);
+    }
+    
+    
 
     /**
      * Gets the exam id.
@@ -114,7 +158,7 @@ public class Exam implements Serializable {
      *
      * @return Integer value (in minutes) of the duration field.
      */
-    public Integer getDuration() {
+    public String getDuration() {
         return this.duration.get();
     }
 
@@ -123,7 +167,7 @@ public class Exam implements Serializable {
      *
      * @param duration
      */
-    public void setDuration(Integer duration) {
+    public void setDuration(String duration) {
         this.duration.set(duration);
     }
 
@@ -150,6 +194,7 @@ public class Exam implements Serializable {
      *
      * @return Subject object of the subject field.
      */
+    @XmlElement(name = "subject")
     public Subject getSubject() {
         return this.subject.get();
     }
@@ -182,54 +227,14 @@ public class Exam implements Serializable {
     }
 
     /**
-     * Gets the marks related to the exam.
-     *
-     * @return Set list of the type Mark.
-     */
-    public Set<Mark> getMarks() {
-        return this.marks.get();
-    }
-
-    /**
-     * Sets the marks collection with the marks related to the exam.
-     *
-     * @param marks
-     */
-    public void setMarks(Set<Mark> marks) {
-        this.marks.set(marks);
-    }
-
-    /**
-     * Constructor with parameters for the Exam entity.
-     *
-     * @param id
-     * @param description
-     * @param dateInit
-     * @param duration
-     * @param filePath
-     * @param subject
-     * @param marks
-     */
-    public Exam(SimpleIntegerProperty id, SimpleStringProperty description, SimpleObjectProperty<CallType> callType, SimpleObjectProperty<Date> dateInit, SimpleIntegerProperty duration, SimpleStringProperty filePath, SimpleObjectProperty<Subject> subject, <any> marks) {
-        this.id = id;
-        this.description = description;
-        this.callType = callType;
-        this.dateInit = dateInit;
-        this.duration = duration;
-        this.filePath = filePath;
-        this.subject = subject;
-        this.marks = marks;
-    }
-
-    /**
      * Computes the hash code for the exam.
      *
      * @return int value of the hash code.
      */
-    @Override
+    @Override    
     public int hashCode() {
-        int hash = 7;
-        hash = 83 * hash + Objects.hashCode(this.id);
+        int hash = 5;
+        hash = 19 * hash + Objects.hashCode(this.id);
         return hash;
     }
 
@@ -240,7 +245,7 @@ public class Exam implements Serializable {
      * @return boolean value, true if it's equal to any other exam, false if
      * opposite.
      */
-    @Override
+    @Override    
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -255,17 +260,24 @@ public class Exam implements Serializable {
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
+        if (!Objects.equals(this.description, other.description)) {
+            return false;
+        }
+        if (!Objects.equals(this.callType, other.callType)) {
+            return false;
+        }
+        if (!Objects.equals(this.dateInit, other.dateInit)) {
+            return false;
+        }
+        if (!Objects.equals(this.duration, other.duration)) {
+            return false;
+        }
+        if (!Objects.equals(this.filePath, other.filePath)) {
+            return false;
+        }
+        if (!Objects.equals(this.subject, other.subject)) {
+            return false;
+        }
         return true;
     }
-
-    /**
-     * String representation of the exam entity.
-     *
-     * @return the string value of the representation of the entity.
-     */
-    @Override
-    public String toString() {
-        return "Exam{" + "id=" + id + ", description=" + description + ", dateInit=" + dateInit + ", duration=" + duration + ", filePath=" + filePath + ", subject=" + subject + ", marks=" + marks + '}';
-    }
-
 }
