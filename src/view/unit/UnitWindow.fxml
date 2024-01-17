@@ -53,7 +53,7 @@
          <font>
             <Font name="Goudy Old Style" size="14.0" />
          </font></TextField>
-      <DatePicker layoutX="623.0" layoutY="214.0" prefHeight="28.0" prefWidth="395.0" visible="false" />
+      <DatePicker fx:id="dpSearch" layoutX="623.0" layoutY="214.0" prefHeight="28.0" prefWidth="395.0" visible="false" />
       <ComboBox fx:id="cbSubjects" layoutX="228.0" layoutY="199.0" prefHeight="28.0" prefWidth="178.0" />
       <ComboBox fx:id="cbSearchType" layoutX="423.0" layoutY="198.0" prefHeight="28.0" prefWidth="178.0" />
       <Button fx:id="btnSearch" layoutX="1045.0" layoutY="198.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;">

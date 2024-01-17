@@ -99,7 +99,7 @@ public interface SubjectManager {
      * enrolled.
      * @throws FindErrorException If an error occurs while finding subjects.
      */
-    public Collection<Subject> findByEnrollments(String studentId) throws FindErrorException;
+    public Collection<Subject> findByEnrollments(Integer studentId) throws FindErrorException;
 
     /**
      * Finds subjects by teacher ID.
@@ -108,7 +108,7 @@ public interface SubjectManager {
      * @return A collection of subjects taught by the specified teacher.
      * @throws FindErrorException If an error occurs while finding subjects.
      */
-    public Collection<Subject> findSubjectsByTeacherId(String teacherId) throws FindErrorException;
+    public Collection<Subject> findSubjectsByTeacherId(Integer teacherId) throws FindErrorException;
 
     /**
      * Creates a new subject.
