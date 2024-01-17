@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author irati
  */
-@XmlRootElement(name = "teacher")
+@XmlRootElement(name = "Teacher")
 public class Teacher extends User {
     private final SimpleObjectProperty<StudiesType> studiesType;
     private final SimpleStringProperty qualifications;

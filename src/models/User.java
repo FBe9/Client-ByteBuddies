@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private SimpleStringProperty user_type;
     private final SimpleIntegerProperty id;
     private final SimpleStringProperty email;
     private final SimpleStringProperty name;
@@ -28,6 +29,7 @@ public class User implements Serializable {
     private final SimpleObjectProperty<Date> dateInit;
 
     public User() {
+        this.user_type = new SimpleStringProperty();         
         this.id = new SimpleIntegerProperty();
         this.email = new SimpleStringProperty();
         this.name = new SimpleStringProperty();
@@ -37,7 +39,8 @@ public class User implements Serializable {
 
     }
 
-    public User(Integer id, String email, String name, String surname, String password, Date dateInit) {
+    public User(String user_type, Integer id, String email, String name, String surname, String password, Date dateInit) {
+        this.user_type = new SimpleStringProperty(user_type);
         this.id = new SimpleIntegerProperty(id);
         this.email = new SimpleStringProperty(email);
         this.name = new SimpleStringProperty(name);
@@ -92,6 +95,13 @@ public class User implements Serializable {
 
     public void setDateInit(Date dateInit) {
         this.dateInit.set(dateInit);
+    }
+     public String getUser_type() {
+        return this.user_type.get();
+    }
+
+    public void setUser_type(String user_type) {
+        this.user_type.set(user_type);
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
+import models.Student;
 import models.User;
 import services.UserRESTClient;
 

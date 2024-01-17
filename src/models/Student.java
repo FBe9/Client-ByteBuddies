@@ -10,13 +10,17 @@ import java.util.Set;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.ObservableSet;
+import javax.xml.bind.annotation.XmlRootElement;
 /**
  *
  * @author irati
  */
+
+@XmlRootElement
 public class Student extends User {
     private final SimpleObjectProperty<LevelType> levelType;
     private final SimpleSetProperty<Enrolled> enrollments;
+    
     
     public Student() {
         super();
