@@ -79,13 +79,13 @@ public class UnitRESTClient{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findUnitByID_XML(Class<T> responseType, Integer id) throws ClientErrorException {
+    public <T> T findUnitByID_XML(Class<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findUnitByID_JSON(Class<T> responseType, Integer id) throws ClientErrorException {
+    public <T> T findUnitByID_JSON(Class<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
@@ -119,13 +119,13 @@ public class UnitRESTClient{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findUnitsFromStudentSubjects_XML(GenericType<T> responseType, Integer userID) throws ClientErrorException {
+    public <T> T findUnitsFromStudentSubjects_XML(GenericType<T> responseType, String userID) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromStudentSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findUnitsFromStudentSubjects_JSON(GenericType<T> responseType, Integer userID) throws ClientErrorException {
+    public <T> T findUnitsFromStudentSubjects_JSON(GenericType<T> responseType, String userID) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromStudentSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
@@ -151,19 +151,19 @@ public class UnitRESTClient{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findUnitsFromTeacherSubjects_XML(GenericType<T> responseType, Integer userID) throws ClientErrorException {
+    public <T> T findUnitsFromTeacherSubjects_XML(GenericType<T> responseType, String userID) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromTeacherSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findUnitsFromTeacherSubjects_JSON(GenericType<T> responseType, Integer userID) throws ClientErrorException {
+    public <T> T findUnitsFromTeacherSubjects_JSON(GenericType<T> responseType, String userID) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromTeacherSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findSubjectUnitsByHours_XML(GenericType<T> responseType, Integer hours, String subjectName) throws ClientErrorException {
+    public <T> T findSubjectUnitsByHours_XML(GenericType<T> responseType, String hours, String subjectName) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findSubjectUnitsByHours/{0}/{1}", new Object[]{hours, subjectName}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);

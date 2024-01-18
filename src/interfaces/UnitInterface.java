@@ -41,12 +41,12 @@ public interface UnitInterface {
     /**
      * The method finds a unit which id is equals the id the User introduced.
      *
-     * @param id An Integer that contains the id the user introduce.
+     * @param id A String that contains the id the user introduce.
      * @return The Unit entity object to be found.
      * @throws FindErrorException Thrown when any error or exception occurs
      * during reading.
      */
-    public Unit findUnitByID(Integer id) throws FindErrorException;
+    public Unit findUnitByID(String id) throws FindErrorException;
 
     /**
      * The method finds all the units.
@@ -123,36 +123,36 @@ public interface UnitInterface {
      * the hours the user introduced and the subject name is the one the user
      * introduce.
      *
-     * @param hours An Integer with the number the user introduce.
+     * @param hours A String with the number the user introduce.
      * @param subject A String with the name of the subject
      * @return An List of Units that contains the units that the method found.
      * @throws FindErrorException Thrown when any error or exception occurs
      * during reading.
      */
-    public List<Unit> findSubjectUnitsByHours(Integer hours, String subject) throws FindErrorException;
+    public List<Unit> findSubjectUnitsByHours(String hours, String subject) throws FindErrorException;
     
     /**
      * This method finds all the units from the subjects where the Teacher
      * teachs.
      *
-     * @param userId A Integre with the id of the user that is logged to the
+     * @param userId A String with the id of the user that is logged to the
      * application.
      * @return An List of Units that contains the units that the method found.
      * @throws FindErrorException Thrown when any error or exception occurs
      * during reading.
      */
-    public List<Unit> findUnitsFromTeacherSubjects(Integer userId) throws FindErrorException;
+    public List<Unit> findUnitsFromTeacherSubjects(String userId) throws FindErrorException;
 
     /**
      * This method finds all the units from the subjects where the Student is
      * matriculated.
      *
-     * @param userId A Integre with the id of the user that is logged to the
+     * @param userId A String with the id of the user that is logged to the
      * application.
      * @return An List of Units that contains the units that the method found.
      * @throws FindErrorException Thrown when any error or exception occurs
      * during reading.
      */
-    public List<Unit> findUnitsFromStudentSubjects(Integer userId) throws FindErrorException;
+    public List<Unit> findUnitsFromStudentSubjects(String userId) throws FindErrorException;
 
 }
