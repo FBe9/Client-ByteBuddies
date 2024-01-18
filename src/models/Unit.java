@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableSet;
 
 /**
  * Entity representing Unit. It has the following
@@ -20,35 +21,35 @@ public class Unit implements Serializable {
     /**
      * Identification field for the unit.
      */
-    private SimpleIntegerProperty id;
+    private final SimpleIntegerProperty id;
     /**
      * Name of the Unit.
      */
-    private SimpleStringProperty name;
+    private final SimpleStringProperty name;
     /**
      * The description 
      */
-    private SimpleStringProperty description;
+    private final SimpleStringProperty description;
     /**
      * The Date of the first lesson of the Unit.
      */
-    private SimpleObjectProperty<Date> dateInit;
+    private final SimpleObjectProperty<Date> dateInit;
     /**
      * The Date of the last lesson of the Unit.
      */
-    private SimpleObjectProperty<Date> dateEnd;
+    private final SimpleObjectProperty<Date> dateEnd;
     /**
      * Hours that the Unit lasts.
      */
-    private SimpleIntegerProperty hours;
+    private final SimpleIntegerProperty hours;
     /**
      * Relational field containing exercises of the unit.
      */
-    private SimpleSetProperty<Exercise> exercises;
+    private final SimpleSetProperty<Exercise> exercises;
     /**
      * Relational field containing subject of a unit.
      */
-    private SimpleObjectProperty<Subject> subject;
+    private final SimpleObjectProperty<Subject> subject;
 
     //Setters and Getters
     /**
@@ -56,8 +57,8 @@ public class Unit implements Serializable {
      *
      * @return An Integer with the unit ID.
      */
-    public SimpleIntegerProperty getId() {
-        return id;
+    public Integer getId() {
+        return this.id.get();
     }
     
     /**
@@ -65,8 +66,8 @@ public class Unit implements Serializable {
      *
      * @param id the unit ID to be set.
      */
-    public void setId(SimpleIntegerProperty id) {
-        this.id = id;
+    public void setId(Integer id) {
+        this.id.set(id);
     }
     
     /**
@@ -74,8 +75,8 @@ public class Unit implements Serializable {
      * 
      * @return A String with the unit name.
      */
-    public SimpleStringProperty getName() {
-        return name;
+    public String getName() {
+        return this.name.get();
     }
     
     /**
@@ -83,8 +84,8 @@ public class Unit implements Serializable {
      * 
      * @param name the unit name to be set
      */
-    public void setName(SimpleStringProperty name) {
-        this.name = name;
+    public void setName(String name) {
+        this.name.set(name);
     }
     
     /**
@@ -92,8 +93,8 @@ public class Unit implements Serializable {
      * 
      * @return A String with the unit description.
      */
-    public SimpleStringProperty getDescription() {
-        return description;
+    public String getDescription() {
+        return this.description.get();
     }
     
     /**
@@ -101,8 +102,8 @@ public class Unit implements Serializable {
      * 
      * @param description the unit description to be set.
      */
-    public void setDescription(SimpleStringProperty description) {
-        this.description = description;
+    public void setDescription(String description) {
+        this.description.set(description);
     }
     
     /**
@@ -110,8 +111,8 @@ public class Unit implements Serializable {
      * 
      * @return A Date with the unit dateInit.
      */
-    public SimpleObjectProperty<Date> getDateInit() {
-        return dateInit;
+    public Date getDateInit() {
+        return this.dateInit.get();
     }
     
     /**
@@ -119,8 +120,8 @@ public class Unit implements Serializable {
      * 
      * @param dateInit the unit dateInit to be set.
      */
-    public void setDateInit(SimpleObjectProperty<Date> dateInit) {
-        this.dateInit = dateInit;
+    public void setDateInit(Date dateInit) {
+        this.dateInit.set(dateInit);
     }
     
     /**
@@ -128,8 +129,8 @@ public class Unit implements Serializable {
      * 
      * @return A Date with the unit dateEnd.
      */
-    public SimpleObjectProperty<Date> getDateEnd() {
-        return dateEnd;
+    public Date getDateEnd() {
+        return this.dateEnd.get();
     }
     
     /**
@@ -137,17 +138,17 @@ public class Unit implements Serializable {
      * 
      * @param dateEnd the unit dateEnd to be set.
      */
-    public void setDateEnd(SimpleObjectProperty<Date> dateEnd) {
-        this.dateEnd = dateEnd;
+    public void setDateEnd(Date dateEnd) {
+        this.dateEnd.set(dateEnd);
     }
-    
+   
     /**
      * Gets the unit Hours.  
      * 
      * @return An Integer with the unit hours.
      */
-    public SimpleIntegerProperty getHours() {
-        return hours;
+    public Integer getHours() {
+        return this.hours.get();
     }
     
     /**
@@ -155,8 +156,8 @@ public class Unit implements Serializable {
      * 
      * @param hours the unit hours to be set.
      */
-    public void setHours(SimpleIntegerProperty hours) {
-        this.hours = hours;
+    public void setHours(Integer hours) {
+        this.hours.set(hours);
     }
     
     /**
@@ -164,8 +165,8 @@ public class Unit implements Serializable {
      * 
      * @return A Set with the unit exercises.
      */
-    public SimpleSetProperty<Exercise> getExercises() {
-        return exercises;
+    public ObservableSet<Exercise> getExercises() {
+        return this.exercises.get();
     }
     
     /**
@@ -173,8 +174,8 @@ public class Unit implements Serializable {
      * 
      * @param exercises the unit exercises to be set.
      */
-    public void setExercises(SimpleSetProperty<Exercise> exercises) {
-        this.exercises = exercises;
+    public void setExercises(ObservableSet<Exercise> exercises) {
+        this.exercises.set(exercises);
     }
 
     /**
@@ -182,8 +183,8 @@ public class Unit implements Serializable {
      * 
      * @return A Subject object with the unit Subject.
      */
-    public SimpleObjectProperty<Subject> getSubject() {
-        return subject;
+    public Subject getSubject() {
+        return this.subject.get();
     }
     
     /**
@@ -191,8 +192,8 @@ public class Unit implements Serializable {
      * 
      * @param subject the unit subject to be set.
      */
-    public void setSubject(SimpleObjectProperty<Subject> subject) {
-        this.subject = subject;
+    public void setSubject(Subject subject) {
+        this.subject.set(subject);
     }
 
     //Constructors
@@ -208,21 +209,29 @@ public class Unit implements Serializable {
      * @param exercises the exercises of the unit.
      * @param subject the subject of the unit.
      */
-    public Unit(SimpleIntegerProperty id, SimpleStringProperty name, SimpleStringProperty description, SimpleObjectProperty<Date> dateInit, SimpleObjectProperty<Date> dateEnd, SimpleIntegerProperty hours, SimpleSetProperty<Exercise> exercises, SimpleObjectProperty<Subject> subject) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.dateInit = dateInit;
-        this.dateEnd = dateEnd;
-        this.hours = hours;
-        this.exercises = exercises;
-        this.subject = subject;
+    public Unit(Integer id, String name, String description, Date dateInit, Date dateEnd, Integer hours, ObservableSet exercises, Subject subject) {
+        this.id = new SimpleIntegerProperty(id); 
+        this.name = new SimpleStringProperty(name);
+        this.description = new SimpleStringProperty(description);
+        this.dateInit = new SimpleObjectProperty<>(dateInit);
+        this.dateEnd = new SimpleObjectProperty<>(dateEnd);
+        this.hours = new SimpleIntegerProperty(hours);
+        this.exercises = new SimpleSetProperty(exercises);
+        this.subject = new SimpleObjectProperty<>(subject);
     }
 
     /**
      * Creates a new instance of the Unit class with default constructor.
      */
     public Unit() {
+        this.id = new SimpleIntegerProperty();
+        this.name = new SimpleStringProperty();
+        this.description = new SimpleStringProperty();
+        this.dateInit = new SimpleObjectProperty<>();
+        this.dateEnd = new SimpleObjectProperty<>();
+        this.hours = new SimpleIntegerProperty();
+        this.exercises = new SimpleSetProperty<>();
+        this.subject = new SimpleObjectProperty<>();
     }
 
     //HasCode
