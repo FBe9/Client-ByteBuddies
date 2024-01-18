@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.core.GenericType;
 import models.Exam;
-import models.Subject;
 import services.ExamRESTClient;
 
 /**
@@ -39,7 +38,7 @@ public class ExamInterfaceImplementation implements ExamInterface {
         try{
             LOGGER.info("Creating an exam");
             webClient.createExam_XML(exam);
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "ExamInterface: Error creating an exam: {0}", e.getMessage());
             throw new CreateErrorException("Error creating an exam: " + e.getMessage());
         }
@@ -50,7 +49,7 @@ public class ExamInterfaceImplementation implements ExamInterface {
         try{
             LOGGER.log(Level.INFO, "Updating exam with id {0}", exam.getId());
             webClient.updateExam_XML(exam);
-        }catch(Exception e){
+        }catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "ExamInterface: Error updating exam " + exam.getId() + ": {0}", e.getMessage());
             throw new UpdateErrorException("Error updating exam " + exam.getId() + ": " + e.getMessage());
         }
@@ -58,7 +57,13 @@ public class ExamInterfaceImplementation implements ExamInterface {
 
     @Override
     public void deleteExam(Exam exam) throws DeleteErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try{
+            LOGGER.log(Level.INFO, "Deleteing exam {0}", exam.getId());
+            webClient.deleteExam(exam.getId());
+        } catch(ClientErrorException ex){
+            LOGGER.log(Level.SEVERE, "Error deleting exam {0}", exam.getId());
+            throw new DeleteErrorException("Error deleting exam " + exam.getId());
+        }
     }
 
     @Override
@@ -76,24 +81,35 @@ public class ExamInterfaceImplementation implements ExamInterface {
 
     @Override
     public Exam findExamById(Integer id) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Exam exam = null;
+        try{
+            LOGGER.log(Level.INFO, "Searching for exam with id: {0}", id);
+            exam = webClient.find_XML(Exam.class, id);
+        }catch(ClientErrorException ex){
+            LOGGER.log(Level.SEVERE, "Error finding exam with id: {0}", id);
+            throw new FindErrorException("Error finding exam with id: " + id);
+        }
+        return exam;
     }
 
     @Override
     public Collection<Exam> findByDescription(String description) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Collection<Exam> findBySolution(String solutionFilePath) throws FindErrorException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Set<Exam> exams = null;
+        try{
+            LOGGER.log(Level.INFO, "Searching for exam like '{0}'", description);
+            exams = webClient.findByDescription_XML(new GenericType<Set<Exam>>() {}, description);
+        } catch(ClientErrorException ex){
+            LOGGER.log(Level.SEVERE, "Error finding exam like ''{0}''", description);
+            throw new FindErrorException("Error finding exam like '" + description + "'");
+        }
+        return exams;
     }
 
     @Override
     public Collection<Exam> findBySubject(String subjectId) throws FindErrorException {
         Set<Exam> exams = null;
         try{
-            LOGGER.info("Searching exams for subject with id " + subjectId);
+            LOGGER.log(Level.INFO, "Searching exams for subject with id {0}", subjectId);
             exams = webClient.findBySubject_XML(new GenericType<Set<Exam>>() {}, subjectId);
         } catch(ClientErrorException e){
             LOGGER.log(Level.SEVERE, "Error finding exams for subject {0}", subjectId);

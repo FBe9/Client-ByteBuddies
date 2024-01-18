@@ -60,7 +60,7 @@ public class ExamRESTClient {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findByDescription_XML(Class<T> responseType, String description) throws ClientErrorException {
+    public <T> T findByDescription_XML(GenericType<T> responseType, String description) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findByDescription/{0}", new Object[]{description}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);

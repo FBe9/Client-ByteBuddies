@@ -36,25 +36,25 @@ public class Application extends javafx.application.Application {
     @Override
     public void start(Stage stage) {
         Student student = new Student();
-        student.setId("4");
-        student.setName("Alex");
-        student.setSurname("Salinero");
-        student.setEmail("alexsalineronegro@gmail.com");
-        student.setLevelType(LevelType.BEGGINER);
+        student.setId("2");
+        student.setName("Su2");
+        student.setSurname("Caceres");
+        student.setEmail("su1@gmail.com");
+        student.setLevelType(LevelType.MEDIUM);
         
         Teacher teacher = new Teacher();
-        teacher.setId("5");
-        teacher.setName("Javi");
-        teacher.setSurname("Teacher");
-        teacher.setEmail("javiteacher@gmail.com");
-        teacher.setQualifications("Certainly qualified");
+        teacher.setId("1");
+        teacher.setName("Tu1");
+        teacher.setSurname("Lopez");
+        teacher.setEmail("tu1@gmail.com");
+        teacher.setQualifications("Si");
         teacher.setStudiesType(StudiesType.MASTER);
         
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exam/ExamWindow.fxml"));
             Parent root = (Parent) loader.load();
             ExamWindowController controller = (ExamWindowController) loader.getController();
-            controller.setUser(student);
+            controller.setUser(teacher);
             controller.setStage(stage);
             controller.initStage(root);
         } catch (IOException ex) {

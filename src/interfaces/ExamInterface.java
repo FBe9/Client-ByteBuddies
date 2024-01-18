@@ -31,8 +31,6 @@ public interface ExamInterface {
     
     public Collection<Exam> findByDescription(String description) throws FindErrorException;
     
-    public Collection<Exam> findBySolution(String solutionFilePath) throws FindErrorException;
-    
     public Collection<Exam> findBySubject(String subject) throws FindErrorException;
     
 }
