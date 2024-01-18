@@ -5,15 +5,22 @@ import factories.ExamFactory;
 import factories.SubjectFactory;
 import interfaces.ExamInterface;
 import interfaces.SubjectManager;
+import java.util.Date;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -21,10 +28,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -79,19 +88,27 @@ public class ExamWindowController {
 
     // TableViews
     @FXML
-    private TableView tvExam;
+    private TableView<Exam> tvExam;
 
     // Table Columns
     @FXML
-    private TableColumn tcDescription;
+    private TableColumn<Exam, String> tcDescription;
     @FXML
-    private TableColumn tcSubject;
+    private TableColumn<Exam, String> tcSubject; //<Exam, ObservableList<Subject>> 
     @FXML
-    private TableColumn tcDuration;
+    private TableColumn<Exam, String> tcDuration;
     @FXML
-    private TableColumn tcDate;
+    private TableColumn<Exam, Date> tcDate;
+    /*@FXML
+    private TableColumn tcDescriptionEx;
     @FXML
-    private TableColumn tcFile;
+    private TableColumn tcSubjectEx;
+    @FXML
+    private TableColumn tcDurationEx;
+    @FXML
+    private TableColumn tcDateEX;
+    @FXML
+    private TableColumn tcFileEX;*/
 
     // Stage
     private Stage stage;
@@ -112,6 +129,7 @@ public class ExamWindowController {
     private String searchExam = "Search an exam";
     private String noSubjects = "No subjects";
     private ObservableList<Subject> userSubjects = FXCollections.observableArrayList();
+    private ObservableList<String> subjectNames = FXCollections.observableArrayList();
     private ObservableList<Exam> exams = FXCollections.observableArrayList();
 
     public void initStage(Parent root) {
@@ -143,7 +161,7 @@ public class ExamWindowController {
         btnPrintExam.setOnAction(this::handlerButton);
         btnCancelExam.setOnAction(this::handlerButton);
         stage.setOnCloseRequest(this::handleOnActionExit);
-        tcDescription.setOnEditCommit(this::handlerOnEditCommit);
+        /*tcDescription.setOnEditCommit(this::handlerOnEditCommit);
         tcSubject.setOnEditCommit(this::handlerOnEditCommit);
         tcDuration.setOnEditCommit(this::handlerOnEditCommit);
         tcDate.setOnEditCommit(this::handlerOnEditCommit);
@@ -177,7 +195,7 @@ public class ExamWindowController {
         // Por defecto se mostrará la opción “All exams”
         ObservableList<String> searchCriteria = FXCollections.observableArrayList(allExams, bySubject, searchExam);
         cbSearchCriteria.setItems(searchCriteria);
-        cbSearchCriteria.setValue("All exams");
+        cbSearchCriteria.getSelectionModel().select(allExams);
 
         // Se rellena la ComboBox “cbBySubject” con todas las asignaturas a las que pertenezca el usuario
         try {
@@ -191,9 +209,9 @@ public class ExamWindowController {
             if (currentUser instanceof Student) {
                 userSubjects = FXCollections.observableArrayList(subjectInterface.findByEnrollments(currentUser.getId()));
             }
-            ObservableList<String> subjectNames = null;
+
             for (Subject s : userSubjects) {
-                subjectNames = FXCollections.observableArrayList(s.getName());
+                subjectNames.add(s.getName());
             }
             cbBySubject.setItems(subjectNames);
         } catch (FindErrorException ex) {
@@ -224,13 +242,22 @@ public class ExamWindowController {
 
         // La tabla “tvExam” será editable.
         tvExam.setEditable(true);
-        if (currentUser instanceof Teacher) {
-            tcDescription.setCellFactory(TextFieldTableCell.forTableColumn());
-            tcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(userSubjects));
-            tcDuration.setCellFactory(TextFieldTableCell.forTableColumn());
-            // tcDate.setCellFactory(); /*DATE PICKER*/
-            // tcFile.setCellFactory(); /*FILE CHOOSER BUTTON*/
+        if (currentUser instanceof Student) {
+            tcDescription.setEditable(false);
+            tcSubject.setEditable(false);
+            tcDuration.setEditable(false);
+            tcDate.setEditable(false);
         }
+
+        tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        tcSubject.setCellValueFactory(new PropertyValueFactory<>("subjects"));
+        tcDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        tcDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+
+        tcDescription.setCellFactory(TextFieldTableCell.forTableColumn());
+
+        //tcSubject.setCellValueFactory((cellData -> ce;
+        tcDuration.setCellFactory(TextFieldTableCell.forTableColumn());
 
         // El botón “btnPrintExam” [...] solo estará habilitado cuando la tabla “tvExam” tenga valores.
         if (tvExam.getItems().size() != 0) {
@@ -256,7 +283,7 @@ public class ExamWindowController {
             try {
                 for (Subject sub : userSubjects) {
                     String subjectId = sub.getId().toString();
-                    thisExams = FXCollections.observableArrayList(examInterface.findBySubject(sub.getId().toString()));
+                    thisExams.addAll(examInterface.findBySubject(sub.getId().toString()));
                     //thisExams = FXCollections.observableArrayList(sub.getExams());
                     //thisExams = FXCollections.observableArrayList(examInterface.findAllExams());
                 }
@@ -271,14 +298,60 @@ public class ExamWindowController {
 
     private ObservableList setExamsSubject(Subject subjectToSet) {
         ObservableList<Exam> exams = FXCollections.observableArrayList();
-        exams.addAll(subjectToSet.getExams());
+        try {
+            for (Subject s : userSubjects) {
+                if (s.getName().equals(subjectToSet.getName())) {
+                    exams = FXCollections.observableArrayList(examInterface.findBySubject(s.getId().toString()));
+                }
+            }
+        } catch (FindErrorException ex) {
+            LOGGER.log(Level.SEVERE, "Error finding the exams for single subject {0}: {1}", new Object[]{subjectToSet.getName(), ex.getMessage()});
+            new Alert(Alert.AlertType.ERROR, "Error finding the exams for " + subjectToSet.getName(), ButtonType.OK).showAndWait();
+
+        }
+
         return exams;
     }
 
     private void setTable(ObservableList<Exam> exams) {
         LOGGER.info("Setting table...");
         tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        tcSubject.setCellValueFactory(new PropertyValueFactory<>("subject"));
+        tcSubject.setCellFactory(col -> {
+            // NECESITO ACABAR DEVOLVIENDO UN CALLBACK
+        });
+        // tcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(subjectNames));
+        tcSubject.setCellValueFactory(i -> {
+            String s = i.getValue().getSubject().getName();
+            return Bindings.createObjectBinding(() -> s);
+        });
+        
+             /*   
+                
+                
+                col -> {
+            final TableCell<Exam, SimpleObjectProperty> c = new TableCell<>();
+            final ComboBox<Subject> comboSubjectTable = new ComboBox<>(userSubjects);
+            //if()
+            //comboSubjectTable.getSelectionModel().select();
+            
+            return c;
+        });*/
+        
+        
+        
+        
+        /*col -> {
+            TableCell<Exam, SimpleObjectProperty> c = new TableCell<>();
+            final ComboBox<Subject> comboSubjectTable = new ComboBox<>(userSubjects);
+            //if()
+            //comboSubjectTable.getSelectionModel().select();
+            c.graphicProperty().bind(comboSubjectTable);
+            return c;
+        });*/
+        
+        
+        
+
         tcDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
         // La columna “Date” de la tabla “tvExam” se mostrará con un patrón formateado de acuerdo a la configuración del sistema
         // FORMATEAR
@@ -318,6 +391,7 @@ public class ExamWindowController {
                 tfSearchExam.setText("");
                 // Se deshabilitan la ComboBox “cbBySubject”, el campo “tfSearchExam” y el botón “btnSearchExam”
                 cbBySubject.setDisable(true);
+                cbBySubject.setValue("");
                 tfSearchExam.setDisable(true);
                 btnSearchExam.setDisable(true);
             } else if (cbSearchCriteria.getValue() == bySubject) {
@@ -338,6 +412,7 @@ public class ExamWindowController {
                 // Si el valor seleccionado es “Search an exam” se deshabilita la ComboBox “cbBySubject” y se habilitan el campo “tfSearchExam”
                 // y el botón “btnSearchExam”
                 cbBySubject.setDisable(true);
+                cbBySubject.setValue("");
                 tfSearchExam.setDisable(false);
             }
         }
@@ -395,7 +470,7 @@ public class ExamWindowController {
             } else {
                 // Una vez valide correctamente, se realiza la búsqueda usando la colección de asignaturas recopilada anteriormente
                 ObservableList<Exam> searchedExams = FXCollections.observableArrayList();
-                ObservableList<Exam> currentExams = setExams(userSubjects);
+                ObservableList<Exam> currentExams = FXCollections.observableArrayList(setExams(userSubjects));
                 if (currentExams.size() > 0) {
                     // Si la búsqueda arroja resultados se actualizará la tabla
                     for (Exam e : currentExams) {
