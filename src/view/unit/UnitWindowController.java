@@ -205,9 +205,13 @@ public class UnitWindowController {
             //CellFactory Hyperlink
 
             //Charge tables data
+            if(loggedUser.getUser_type().equalsIgnoreCase("Teacher")){
             clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
             tbvUnit.setItems((ObservableList) clientsDataU);
-            tbvUnit.refresh();
+            }else{
+            clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromStudentSubjects(loggedUser.getId().toString()));
+            tbvUnit.setItems((ObservableList) clientsDataU);
+            }
 
             cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSearchType);
             stage.setOnCloseRequest(this::handleOnActionExit);
