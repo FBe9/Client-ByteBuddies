@@ -2,6 +2,7 @@ package models;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Entity representing exercise. It contains the following
@@ -12,6 +13,7 @@ import java.util.Date;
  * @author Leire
  */
 
+@XmlRootElement
 public class Exercise implements Serializable {
 
     private static final long serialVersionUID = 1L;

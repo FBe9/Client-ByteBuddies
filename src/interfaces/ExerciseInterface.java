@@ -28,7 +28,7 @@ public interface ExerciseInterface {
 
     public <T> T getExercisesByLevel_XML(Class<T> responseType, String levelType) throws ExerciseErrorException;
 
-    public <T> T getExercisesByUnitName_XML(Class<T> responseType, String name) throws ExerciseErrorException;
+    public <T> T getExercisesByUnitName_XML(GenericType<T> responseType, String name) throws ExerciseErrorException;
 
     public <T> T getExercisesByNumberAndUnitName_XML(Class<T> responseType, String number, String name) throws ExerciseErrorException;
 
