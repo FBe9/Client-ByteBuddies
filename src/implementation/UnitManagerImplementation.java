@@ -287,11 +287,11 @@ public class UnitManagerImplementation implements UnitInterface {
         List<Unit> units = null;
         try {
             LOGGER.info("Find all subjects units that a student has");
-            units = webClient.findUnitsFromTeacherSubjects_XML(new GenericType<List<Unit>>() {
-            }, userId);
+            units = webClient.findUnitsFromTeacherSubjects_XML(new GenericType<List<Unit>>() {},
+                    userId);
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitsFromTeacherSubjects(Integer userId) {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitsFromTeacherSubjects(String userId) {0}", e.getMessage());
             throw new FindErrorException("Error finding Unit" + e.getMessage());
         }
         return units;
@@ -316,7 +316,7 @@ public class UnitManagerImplementation implements UnitInterface {
             }, userId);
 
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitsFromStudentSubjects(Integer userId) {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitsFromStudentSubjects(String userId) {0}", e.getMessage());
             throw new FindErrorException("Error finding unit" + e.getMessage());
         }
         return units;

@@ -3,9 +3,8 @@ package models;
 import java.io.Serializable;
 import java.util.Date;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableSet;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Entity representing Unit. It has the following
@@ -13,7 +12,7 @@ import javafx.collections.ObservableSet;
  *
  * @author Nerea
  */
-
+@XmlRootElement
 public class Unit implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,10 +40,6 @@ public class Unit implements Serializable {
      * Hours that the Unit lasts.
      */
     private final SimpleStringProperty hours;
-    /**
-     * Relational field containing exercises of the unit.
-     */
-    private final SimpleSetProperty<Exercise> exercises;
     /**
      * Relational field containing subject of a unit.
      */
@@ -160,24 +155,6 @@ public class Unit implements Serializable {
     }
     
     /**
-     * Gets the unit Exercises.  
-     * 
-     * @return A Set with the unit exercises.
-     */
-    public ObservableSet<Exercise> getExercises() {
-        return this.exercises.get();
-    }
-    
-    /**
-     * Sets the unit Exercises.
-     * 
-     * @param exercises the unit exercises to be set.
-     */
-    public void setExercises(ObservableSet<Exercise> exercises) {
-        this.exercises.set(exercises);
-    }
-
-    /**
      * Gets the unit Subject. 
      * 
      * @return A Subject object with the unit Subject.
@@ -208,14 +185,13 @@ public class Unit implements Serializable {
      * @param exercises the exercises of the unit.
      * @param subject the subject of the unit.
      */
-    public Unit(String id, String name, String description, Date dateInit, Date dateEnd, String hours, ObservableSet exercises, Subject subject) {
+    public Unit(String id, String name, String description, Date dateInit, Date dateEnd, String hours, Subject subject) {
         this.id = new SimpleStringProperty(id); 
         this.name = new SimpleStringProperty(name);
         this.description = new SimpleStringProperty(description);
         this.dateInit = new SimpleObjectProperty(dateInit);
         this.dateEnd = new SimpleObjectProperty(dateEnd);
         this.hours = new SimpleStringProperty(hours);
-        this.exercises = new SimpleSetProperty(exercises);
         this.subject = new SimpleObjectProperty(subject);
     }
 
@@ -229,7 +205,6 @@ public class Unit implements Serializable {
         this.dateInit = new SimpleObjectProperty<>();
         this.dateEnd = new SimpleObjectProperty<>();
         this.hours = new SimpleStringProperty();
-        this.exercises = new SimpleSetProperty<>();
         this.subject = new SimpleObjectProperty<>();
     }
 

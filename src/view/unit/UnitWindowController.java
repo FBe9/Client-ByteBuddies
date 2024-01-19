@@ -33,6 +33,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import jxl.Hyperlink;
 import models.Subject;
 import models.Teacher;
 import models.Unit;
@@ -50,7 +51,7 @@ public class UnitWindowController {
     @FXML
     private TableColumn<Unit, String> tbcName;
     @FXML
-    private TableColumn<Unit, String> tbcSubject;
+    private TableColumn<Unit, Subject> tbcSubject;
     @FXML
     private TableColumn<Unit, String> tbcDescription;
     @FXML
@@ -60,7 +61,7 @@ public class UnitWindowController {
     @FXML
     private TableColumn<Unit, String> tbcHours;
     @FXML
-    private TableColumn<Unit, String> tbcExercises;
+    private TableColumn<Unit, Hyperlink> tbcExercises;
     @FXML
     private TextField tfSearch;
     @FXML
@@ -185,7 +186,7 @@ public class UnitWindowController {
                     new PropertyValueFactory<>("name"));
             tbcName.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
             tbcSubject.setCellValueFactory(
-                    new PropertyValueFactory<>("subjet"));
+                    new PropertyValueFactory<>("subject"));
             tbcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(cbSubjects.getItems()));
             tbcDescription.setCellValueFactory(
                     new PropertyValueFactory<>("description"));
@@ -193,7 +194,7 @@ public class UnitWindowController {
             tbcDateInit.setCellValueFactory(
                     new PropertyValueFactory<>("dateInit"));
             //tbcDateInit.setCellFactory(DateUnitEditingCell);
-            tbcDateInit.setCellValueFactory(
+            tbcDateEnd.setCellValueFactory(
                     new PropertyValueFactory<>("dateEnd"));
             //CellFacttoy Date
             tbcHours.setCellValueFactory(
@@ -204,9 +205,9 @@ public class UnitWindowController {
             //CellFactory Hyperlink
 
             //Charge tables data
-            /*clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
-            tbvUnit.setItems(clientsDataU);
-            tbvUnit.refresh();*/
+            clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
+            tbvUnit.setItems((ObservableList) clientsDataU);
+            tbvUnit.refresh();
 
             cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSearchType);
             stage.setOnCloseRequest(this::handleOnActionExit);
