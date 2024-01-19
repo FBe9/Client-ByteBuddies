@@ -49,14 +49,14 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <TextField fx:id="tfSearch" layoutX="623.0" layoutY="198.0" prefHeight="28.0" prefWidth="395.0" promptText="Search...">
+      <TextField fx:id="tfSearch" layoutX="623.0" layoutY="186.0" prefHeight="28.0" prefWidth="395.0" promptText="Search...">
          <font>
             <Font name="Goudy Old Style" size="14.0" />
          </font></TextField>
-      <DatePicker fx:id="dpSearch" layoutX="623.0" layoutY="214.0" prefHeight="28.0" prefWidth="395.0" visible="false" />
-      <ComboBox fx:id="cbSubjects" layoutX="228.0" layoutY="199.0" prefHeight="28.0" prefWidth="178.0" />
-      <ComboBox fx:id="cbSearchType" layoutX="423.0" layoutY="198.0" prefHeight="28.0" prefWidth="178.0" />
-      <Button fx:id="btnSearch" layoutX="1045.0" layoutY="198.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;">
+      <DatePicker fx:id="dpSearch" layoutX="623.0" layoutY="185.0" prefHeight="28.0" prefWidth="395.0" visible="false" />
+      <ComboBox fx:id="cbSubjects" layoutX="228.0" layoutY="187.0" prefHeight="28.0" prefWidth="178.0" />
+      <ComboBox fx:id="cbSearchType" layoutX="423.0" layoutY="186.0" prefHeight="28.0" prefWidth="178.0" />
+      <Button fx:id="btnSearch" layoutX="1045.0" layoutY="186.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;">
          <graphic>
             <ImageView fitHeight="16.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -77,11 +77,11 @@
             <Font name="Calibri Italic" size="12.0" />
          </font>
       </Button>
-      <Label layoutX="425.0" layoutY="173.0" text="Search type:">
+      <Label layoutX="425.0" layoutY="161.0" text="Search type:">
          <font>
             <Font name="Calibri Italic" size="15.0" />
          </font></Label>
-      <Label layoutX="228.0" layoutY="173.0" text="My Subjects:">
+      <Label layoutX="228.0" layoutY="161.0" text="My Subjects:">
          <font>
             <Font name="Calibri Italic" size="15.0" />
          </font></Label>

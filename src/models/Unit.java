@@ -2,7 +2,6 @@ package models;
 
 import java.io.Serializable;
 import java.util.Date;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,7 +20,7 @@ public class Unit implements Serializable {
     /**
      * Identification field for the unit.
      */
-    private final SimpleIntegerProperty id;
+    private final SimpleStringProperty id;
     /**
      * Name of the Unit.
      */
@@ -41,7 +40,7 @@ public class Unit implements Serializable {
     /**
      * Hours that the Unit lasts.
      */
-    private final SimpleIntegerProperty hours;
+    private final SimpleStringProperty hours;
     /**
      * Relational field containing exercises of the unit.
      */
@@ -57,7 +56,7 @@ public class Unit implements Serializable {
      *
      * @return An Integer with the unit ID.
      */
-    public Integer getId() {
+    public String getId() {
         return this.id.get();
     }
     
@@ -66,7 +65,7 @@ public class Unit implements Serializable {
      *
      * @param id the unit ID to be set.
      */
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id.set(id);
     }
     
@@ -147,7 +146,7 @@ public class Unit implements Serializable {
      * 
      * @return An Integer with the unit hours.
      */
-    public Integer getHours() {
+    public String getHours() {
         return this.hours.get();
     }
     
@@ -156,7 +155,7 @@ public class Unit implements Serializable {
      * 
      * @param hours the unit hours to be set.
      */
-    public void setHours(Integer hours) {
+    public void setHours(String hours) {
         this.hours.set(hours);
     }
     
@@ -209,27 +208,27 @@ public class Unit implements Serializable {
      * @param exercises the exercises of the unit.
      * @param subject the subject of the unit.
      */
-    public Unit(Integer id, String name, String description, Date dateInit, Date dateEnd, Integer hours, ObservableSet exercises, Subject subject) {
-        this.id = new SimpleIntegerProperty(id); 
+    public Unit(String id, String name, String description, Date dateInit, Date dateEnd, String hours, ObservableSet exercises, Subject subject) {
+        this.id = new SimpleStringProperty(id); 
         this.name = new SimpleStringProperty(name);
         this.description = new SimpleStringProperty(description);
-        this.dateInit = new SimpleObjectProperty<>(dateInit);
-        this.dateEnd = new SimpleObjectProperty<>(dateEnd);
-        this.hours = new SimpleIntegerProperty(hours);
+        this.dateInit = new SimpleObjectProperty(dateInit);
+        this.dateEnd = new SimpleObjectProperty(dateEnd);
+        this.hours = new SimpleStringProperty(hours);
         this.exercises = new SimpleSetProperty(exercises);
-        this.subject = new SimpleObjectProperty<>(subject);
+        this.subject = new SimpleObjectProperty(subject);
     }
 
     /**
      * Creates a new instance of the Unit class with default constructor.
      */
     public Unit() {
-        this.id = new SimpleIntegerProperty();
+        this.id = new SimpleStringProperty();
         this.name = new SimpleStringProperty();
         this.description = new SimpleStringProperty();
         this.dateInit = new SimpleObjectProperty<>();
         this.dateEnd = new SimpleObjectProperty<>();
-        this.hours = new SimpleIntegerProperty();
+        this.hours = new SimpleStringProperty();
         this.exercises = new SimpleSetProperty<>();
         this.subject = new SimpleObjectProperty<>();
     }

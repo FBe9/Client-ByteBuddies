@@ -28,7 +28,7 @@ public class UnitRESTClient{
 
     private final WebTarget webTarget;
     private final Client client;
-    private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("URL");
+    private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
 
     public UnitRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();

@@ -7,12 +7,14 @@ import interfaces.UnitInterface;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Observable;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -46,19 +48,19 @@ public class UnitWindowController {
     @FXML
     private TableView tbvUnit;
     @FXML
-    private TableColumn<Unit,String> tbcName;
+    private TableColumn<Unit, String> tbcName;
     @FXML
-    private TableColumn tbcSubject;
+    private TableColumn<Unit, String> tbcSubject;
     @FXML
-    private TableColumn<Unit,String> tbcDescription;
+    private TableColumn<Unit, String> tbcDescription;
     @FXML
-    private TableColumn<Unit,Date> tbcDateInit;
+    private TableColumn<Unit, Date> tbcDateInit;
     @FXML
-    private TableColumn<Unit,Date> tbcDateEnd;
+    private TableColumn<Unit, Date> tbcDateEnd;
     @FXML
-    private TableColumn<Unit,String> tbcHours;
+    private TableColumn<Unit, String> tbcHours;
     @FXML
-    private TableColumn tbcExercises;
+    private TableColumn<Unit, String> tbcExercises;
     @FXML
     private TextField tfSearch;
     @FXML
@@ -81,11 +83,11 @@ public class UnitWindowController {
     //Logger for the aplication. 
     private static final Logger LOGGER = Logger.getLogger("package view.Unit");
     private ObservableList<Unit> clientsDataU;
-    private List<Subject> clientsDataS;
+    private ObservableList<Subject> clientsDataS;
     private List<String> Subjects;
-    private User loggedUser = new User();
-    private final UnitInterface clientU = UnitFactory.getModel();
-    private final SubjectManager clientS = SubjectFactory.getModel();
+    private User loggedUser;
+    private UnitInterface clientU;
+    private SubjectManager clientS;
 
     /**
      * Initializes the controller class.
@@ -96,9 +98,12 @@ public class UnitWindowController {
     public void initStage(Parent root, User loggedUser) {
         try {
             LOGGER.info("Initializing Unit window");
-            //Creates an scene
+            //Conseguir el modelo de la interfaz mediante la factoria.
+            clientU = UnitFactory.getModel();
+            clientS = SubjectFactory.getModel();
+            //Crear la escena.
             Scene scene = new Scene(root);
-            //Establishes an scene
+            //Establecer la escena.
             stage.setScene(scene);
             //El nombre de la ventana es “Units”.
             stage.setTitle("Units");
@@ -131,8 +136,8 @@ public class UnitWindowController {
             //Se rellena el combobox “cbSubjects” con una lista de asignaturas en las que esté registrado el usuario conectado a la aplicación. El usuario puede ser de dos tipos:
             if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
                 try {
-                    //Si el usuario es de tipo “Teacher” se llamará a la factoría “SubjectFactory” para llamar a la implementación de la interfaz “SubjectManager” y se usará el método “findSubjectsByTeacherId” para rellenar el combobox pasandole el id del usuario conectado a la aplicación. 
-                    clientsDataS = FXCollections.observableList((List<Subject>) clientS.findSubjectsByTeacherId(loggedUser.getId().toString()));
+                    //Si el usuario es de tipo “Teacher”: Usar el método “findSubjectsByTeacherId” para rellenar el combobox pasandole el id del usuario conectado a la aplicación. 
+                    clientsDataS = FXCollections.observableArrayList(clientS.findSubjectsByTeacherId(loggedUser.getId().toString()));
                     if (clientsDataS.isEmpty()) {
                         //Si el método no devuelve nada se rellena con el texto ”No Subjects found” y lo selecciona.
                         cbSubjects.getItems().add("No Subjects found");
@@ -143,16 +148,15 @@ public class UnitWindowController {
                             String subjectName = clientsDataS.get(i).getName();
                             subjectsNames.add(subjectName);
                         }
-                        cbSubjects.setItems((ObservableList<String>) subjectsNames);
+                        cbSubjects.getItems().addAll(subjectsNames);
                     }
                 } catch (FindErrorException e) {
-
+                    LOGGER.log(Level.SEVERE, "Error searching for teacher subjects");
                 }
             } else {
                 try {
-
-                    //Si el usuario es de tipo “Student” se llamará a la factoría “SubjectFactory” para llamar a la implementación de la interfaz “SubjectManager” y usará el método “findByEnrollments” para rellenar el combobox pasandole el id del usuario conectado a la aplicación. 
-                    clientsDataS = FXCollections.observableList((List<Subject>) clientS.findByEnrollments(loggedUser.toString()));
+                    //Si el usuario es de tipo “Student”: Usar el método “findByEnrollments” para rellenar el combobox pasandole el id del usuario conectado a la aplicación. 
+                    clientsDataS = FXCollections.observableArrayList(clientS.findByEnrollments(loggedUser.toString()));
                     if (clientsDataS.isEmpty()) {
                         //Si el método no devuelve nada se rellena con el texto ”No Subjects found” y lo selecciona.
                         cbSubjects.getItems().add("No Subjects found");
@@ -163,10 +167,10 @@ public class UnitWindowController {
                             String subjectName = clientsDataS.get(i).getName();
                             subjectsNames.add(subjectName);
                         }
-                        cbSubjects.setItems((ObservableList<String>) subjectsNames);
+                        cbSubjects.getItems().addAll(subjectsNames);
                     }
                 } catch (Exception e) {
-
+                    LOGGER.log(Level.SEVERE, "Error searching for student subjects");
                 }
             }
             //Se rellena el combobox “cbSearchType” con los tipos de búsqueda: Name, Date Init, Date End and Hours.
@@ -180,7 +184,6 @@ public class UnitWindowController {
             tbcName.setCellValueFactory(
                     new PropertyValueFactory<>("name"));
             tbcName.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
-            
             tbcSubject.setCellValueFactory(
                     new PropertyValueFactory<>("subjet"));
             tbcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(cbSubjects.getItems()));
@@ -196,14 +199,14 @@ public class UnitWindowController {
             tbcHours.setCellValueFactory(
                     new PropertyValueFactory<>("hours"));
             tbcHours.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
-            tbcHours.setCellValueFactory(
+            tbcExercises.setCellValueFactory(
                     new PropertyValueFactory<>("exercises"));
             //CellFactory Hyperlink
 
             //Charge tables data
-            clientsDataU = FXCollections.observableList(clientU.findAllUnits());
-            tbvUnit.setItems((ObservableList) clientsDataU);
-            tbvUnit.refresh();
+            /*clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
+            tbvUnit.setItems(clientsDataU);
+            tbvUnit.refresh();*/
 
             cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSearchType);
             stage.setOnCloseRequest(this::handleOnActionExit);
@@ -217,15 +220,15 @@ public class UnitWindowController {
     }
 
     /**
-     * 
+     *
      * @param observable
      * @param oldValue
-     * @param newValue 
+     * @param newValue
      */
     public void handleOnSelectSearchType(ObservableValue<Object> observable,
             Object oldValue, Object newValue) {
         //Comprobar el valor seleccionado en el combobox: 
-        if (cbSearchType.getSelectionModel().isSelected(1) || cbSearchType.getSelectionModel().isSelected(4)) {
+        if (cbSearchType.getSelectionModel().isSelected(0) || cbSearchType.getSelectionModel().isSelected(3)) {
             //Si el valor es Name o Hours: El campo textfield se volverá visible y el datepicker se volverá invisible.
             tfSearch.setVisible(true);
             dpSearch.setVisible(false);
@@ -235,12 +238,12 @@ public class UnitWindowController {
             dpSearch.setVisible(true);
         }
     }
-    
+
     /**
-     * 
+     *
      * @param observable
      * @param oldValue
-     * @param newValue 
+     * @param newValue
      */
     public void textPropertyChange(ObservableValue observable, String oldValue, String newValue) {
         //Validar cuál de los campos es visible, si el text field “tfSearch” o el datepicker “dpSearch”.
