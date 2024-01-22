@@ -188,7 +188,7 @@ public class ExamWindowController {
             // Si el usuario es de tipo “Student” se usará el método “findByEnrollments” de la Interfaz “SubjectManager”
             // Del listado que devuelve se usará el nombre de la asignatura (objecto “Subject”) para rellenar la ComboBox
             if (currentUser instanceof Student) {
-                userSubjects = FXCollections.observableArrayList(subjectInterface.findByEnrollments(currentUser.getId()));
+                userSubjects = FXCollections.observableArrayList(subjectInterface.findByEnrollments(currentUser.getId().toString()));
             }
             for (Subject s : userSubjects) {
                 subjectNames.add(s.getName());
