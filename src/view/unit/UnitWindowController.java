@@ -4,6 +4,8 @@ import exceptions.FindErrorException;
 import factories.*;
 import interfaces.SubjectManager;
 import interfaces.UnitInterface;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +27,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -32,7 +35,9 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javax.ws.rs.core.GenericType;
 import jxl.Hyperlink;
 import models.Subject;
 import models.Teacher;
@@ -114,6 +119,9 @@ public class UnitWindowController {
             stage.setResizable(false);
             //Ventana no modal.
             //Se añade el MenuBar.fxml a nuestra ventana.
+            HBox hBoxMenu = (HBox) root.getChildrenUnmodifiable().get(0);
+            //Get the menu bar from the children of the layout got before
+            MenuBar menuBar = (MenuBar) hBoxMenu.getChildren().get(0);
             //La ventana de Sign In nos pasará un Objeto User con los datos del usuario registrado en la aplicación.
             this.loggedUser = loggedUser;
             //Comprobar que tipo de usuario está conectado a la aplicación:
@@ -122,6 +130,7 @@ public class UnitWindowController {
                 btnCreateUnit.setVisible(true);
                 btnDeleteUnit.setVisible(true);
                 tbvUnit.setEditable(true);
+                tbcExercises.setEditable(false);
             } else {
                 //En el caso del “Student”: Tendrá solo las consultas disponibles y el botón de create y delete se ocultaran y no le permitirá desplegar ni usar el menú de contexto.
                 btnCreateUnit.setVisible(false);
@@ -170,7 +179,7 @@ public class UnitWindowController {
                         }
                         cbSubjects.getItems().addAll(subjectsNames);
                     }
-                } catch (Exception e) {
+                } catch (FindErrorException e) {
                     LOGGER.log(Level.SEVERE, "Error searching for student subjects");
                 }
             }
@@ -205,12 +214,12 @@ public class UnitWindowController {
             //CellFactory Hyperlink
 
             //Charge tables data
-            if(loggedUser.getUser_type().equalsIgnoreCase("Teacher")){
-            clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
-            tbvUnit.setItems((ObservableList) clientsDataU);
-            }else{
-            clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromStudentSubjects(loggedUser.getId().toString()));
-            tbvUnit.setItems((ObservableList) clientsDataU);
+            if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
+                clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
+                tbvUnit.setItems((ObservableList) clientsDataU);
+            } else {
+                clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromStudentSubjects(loggedUser.getId().toString()));
+                tbvUnit.setItems((ObservableList) clientsDataU);
             }
 
             cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSearchType);
@@ -218,7 +227,7 @@ public class UnitWindowController {
             tfSearch.textProperty().addListener(this::textPropertyChange);
             //dpSearch.ValueProperty().addListener(this::textPropertyChange);
             stage.show();
-        } catch (Exception e) {
+        } catch (FindErrorException e) {
             LOGGER.info(e.getMessage());
         }
 
@@ -283,13 +292,46 @@ public class UnitWindowController {
      * @param event
      */
     public void handelSearchButtonAction(Event event) {
-        //Comprobar el valor del combobox “cbSubjects”:
-        //Ningún valor seleccionado: Avisar al usuario mediante una alerta de que seleccione una asignatura para hacer las búsquedas.
-        //Si el valor es cualquier otro: Comprobar el valor del combobox “cbSearchType”:
-        //Si el valor es Name: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “findSubjectUnitsByName” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox y el nombre de la unidad escrita en el textfield. 
-        //Si el valor es Date Init: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “findSubjectUnitsByDateInit” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox y la fecha de la unidad escrita en el datePicker. 
-        //Si el valor es Date End: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “findSubjectUnitsByDateEnd” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox y la fecha de la unidad escrita en el datePicker. 
-        //Si el valor es Hours: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “findSubjectUnitsByHours” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox y el numero de horas escrita en el textfield. 
+        LOGGER.info("Starting Search button action method");
+        String subjectValue;
+        String searchValue = null;
+        try {
+            //Comprobar el valor del combobox “cbSubjects”:
+            subjectValue = cbSubjects.getSelectionModel().getSelectedItem().toString();
+            if (subjectValue.isEmpty()) {
+                //Ningún valor seleccionado: Avisar al usuario mediante una alerta de que seleccione una asignatura para hacer las búsquedas.
+                new Alert(Alert.AlertType.ERROR, "Please select a subject in the combobox to continue searching", ButtonType.OK).showAndWait();
+            } else {
+                //Si el valor es cualquier otro: Comprobar el valor del combobox “cbSearchType”:
+                searchValue = cbSearchType.getSelectionModel().getSelectedItem().toString();
+                if (searchValue.equalsIgnoreCase("Name")) {
+                    //Si el valor es Name: Se rellena la tabla con el método “findSubjectUnitsByName” pasandole el nombre de la subject seleccionada en la combobox y el nombre de la unidad escrita en el textfield. 
+                    clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnitsByName(tfSearch.getText(), subjectValue));
+                    tbvUnit.setItems((ObservableList) clientsDataU);
+                } else if (searchValue.equalsIgnoreCase("Date Init")) {
+                    //Si el valor es Date Init: Se rellena la tabla con el método “findSubjectUnitsByDateInit” pasandole el nombre de la subject seleccionada en la combobox y la fecha de la unidad escrita en el datePicker. 
+                    LocalDate datePicker = dpSearch.getValue();
+                    Date date = Date.from(datePicker.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnitsByDateInit(date, subjectValue));
+                    tbvUnit.setItems((ObservableList) clientsDataU);
+                } else if (searchValue.equalsIgnoreCase("Date End")) {
+                    //Si el valor es Date End: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “findSubjectUnitsByDateEnd” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox y la fecha de la unidad escrita en el datePicker. 
+                    LocalDate datePicker = dpSearch.getValue();
+                    Date date = Date.from(datePicker.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnitsByDateEnd(date, subjectValue));
+                    tbvUnit.setItems((ObservableList) clientsDataU);
+                } else if (searchValue.equalsIgnoreCase("Hours")) {
+                    //Si el valor es Hours: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “findSubjectUnitsByHours” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox y el numero de horas escrita en el textfield. 
+                    clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnitsByHours(tfSearch.getText(), subjectValue));
+                    tbvUnit.setItems((ObservableList) clientsDataU);
+                }
+            }
+            if (clientsDataU.isEmpty()) {
+                new Alert(Alert.AlertType.INFORMATION, "There is no Unit with that " + searchValue, ButtonType.OK).showAndWait();
+            }
+        } catch (FindErrorException e) {
+            new Alert(Alert.AlertType.INFORMATION, "There is no Unit with that " + searchValue, ButtonType.OK).showAndWait();
+        }
     }
 
     /**
@@ -328,6 +370,7 @@ public class UnitWindowController {
     public void handelPrinteButtonAction(Event event) {
         /*Se inicia la acción de impresión de los datos que tenga la tabla de Units en ese momento con todas las columnas de la misma.
          */
+        //Compilar el informe, (crear una clase llamada compilador y que compile el informe)compilador recoje un .jrexml y devuelve un .jasper
     }
 
     /**
