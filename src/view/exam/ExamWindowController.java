@@ -9,18 +9,12 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -30,15 +24,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import models.Exam;
 import models.Student;
 import models.Subject;
@@ -53,25 +46,14 @@ public class ExamWindowController {
 
     public ExamWindowController() {
     }
-
-    // Labels
-    @FXML
-    private Label lblSelectCriteria;
-    @FXML
-    private Label lblBySubject;
-    @FXML
-    private Label lblSearchExam;
-
     // ComboBoxes
     @FXML
     private ComboBox cbSearchCriteria;
     @FXML
     private ComboBox cbBySubject;
-
     // TextFields
     @FXML
     private TextField tfSearchExam;
-
     // Buttons
     @FXML
     private Button btnSearchExam;
@@ -85,20 +67,20 @@ public class ExamWindowController {
     private Button btnCancelExam;
     @FXML
     private Button btnSaveExam;
-
     // TableViews
     @FXML
     private TableView<Exam> tvExam;
-
     // Table Columns
     @FXML
     private TableColumn<Exam, String> tcDescription;
     @FXML
-    private TableColumn<Exam, String> tcSubject; //<Exam, ObservableList<Subject>> 
+    private TableColumn<Exam, Subject> tcSubject;
     @FXML
     private TableColumn<Exam, String> tcDuration;
     @FXML
     private TableColumn<Exam, Date> tcDate;
+    @FXML
+    private TableColumn<Exam, String> tcFile;
     /*@FXML
     private TableColumn tcDescriptionEx;
     @FXML
@@ -109,20 +91,15 @@ public class ExamWindowController {
     private TableColumn tcDateEX;
     @FXML
     private TableColumn tcFileEX;*/
-
     // Stage
     private Stage stage;
-
     // Application user
     private User currentUser;
-
     // Interfaces
     private ExamInterface examInterface;
     private SubjectManager subjectInterface;
-
     // Loggers
     private static final Logger LOGGER = Logger.getLogger("ExamWindowController");
-
     // Others
     private String allExams = "All exams";
     private String bySubject = "Exams by subject";
@@ -164,8 +141,7 @@ public class ExamWindowController {
         /*tcDescription.setOnEditCommit(this::handlerOnEditCommit);
         tcSubject.setOnEditCommit(this::handlerOnEditCommit);
         tcDuration.setOnEditCommit(this::handlerOnEditCommit);
-        tcDate.setOnEditCommit(this::handlerOnEditCommit);
-        // tcFile.setOnAction(this::handlerButton); /*BUTTON LISTENER ??*/
+        tcDate.setOnEditCommit(this::handlerOnEditCommit);*/
 
         // Ventana no modal        
         // Incluir el Menubar FXML
@@ -174,11 +150,16 @@ public class ExamWindowController {
         tfSearchExam.setDisable(true);
         btnSearchExam.setDisable(true);
 
-        // Los botones “btnDeleteExam”, “btnCancelExam” y “btnSaveExam” serán invisibles
-        btnDeleteExam.setVisible(false);
-        btnCancelExam.setVisible(false);
-        btnSaveExam.setVisible(false);
-
+        // Los botones btnDeleteExam, btnCancelExam y btnSaveExam estarán deshabilitados para el usuario Teacher
+        btnDeleteExam.setDisable(true);
+        btnCancelExam.setDisable(true);
+        btnSaveExam.setDisable(true);
+        // Para Student estarán escondidos.
+        if (currentUser instanceof Student) {
+            btnDeleteExam.setVisible(false);
+            btnCancelExam.setVisible(false);
+            btnSaveExam.setVisible(false);
+        }
         // Si el usuario es de tipo Student, también se esconderá el botón “btnCreateExam”. Si es Teacher será visible y estará habilitado
         if (currentUser instanceof Student) {
             btnCreateExam.setVisible(false);
@@ -192,9 +173,9 @@ public class ExamWindowController {
         tfSearchExam.setText("");
 
         // Se rellena la ComboBox “cbSearchCriteria” con tres valores: “All exams”, “Exams by subject” y “Search an exam”
-        // Por defecto se mostrará la opción “All exams”
         ObservableList<String> searchCriteria = FXCollections.observableArrayList(allExams, bySubject, searchExam);
         cbSearchCriteria.setItems(searchCriteria);
+        // Por defecto se mostrará la opción “All exams”
         cbSearchCriteria.getSelectionModel().select(allExams);
 
         // Se rellena la ComboBox “cbBySubject” con todas las asignaturas a las que pertenezca el usuario
@@ -209,19 +190,15 @@ public class ExamWindowController {
             if (currentUser instanceof Student) {
                 userSubjects = FXCollections.observableArrayList(subjectInterface.findByEnrollments(currentUser.getId()));
             }
-
             for (Subject s : userSubjects) {
                 subjectNames.add(s.getName());
             }
             cbBySubject.setItems(subjectNames);
         } catch (FindErrorException ex) {
-            LOGGER.info("No subjects found for user " + currentUser.getId());
-
-        }
-
-        // Si el listado de asignaturas de cualquiera de los puntos anteriores está vacío, la ComboBox mostrará un texto indicando que el usuario
-        // no tiene asignaturas
-        if (userSubjects.size() == 0) {
+            LOGGER.log(Level.INFO, "No subjects found for user {0}", currentUser.getId());
+            // Si el listado de asignaturas de cualquiera de los puntos anteriores está vacío, la ComboBox mostrará un texto indicando que el usuario
+            // no tiene asignaturas
+            //if (userSubjects.size() == 0) {
             cbBySubject.setItems(FXCollections.observableArrayList(noSubjects));
             cbBySubject.setValue(noSubjects);
             // También se deshabilitará el botón de crear exámenes.
@@ -238,7 +215,23 @@ public class ExamWindowController {
 
         // La tabla “tvExam” tendrá las siguientes columnas: “Number”, “Description”, “Subject”, “Duration”, “Date” y “File"
         // Se carga la tabla “tvExam” con los valores de todos los exámenes que pertenezcan a todas las asignaturas del usuario
-        setTable(setExams(userSubjects));
+        if (userSubjects.size() > 0) {
+            try {
+                for (Subject sub : userSubjects) {
+                    exams.addAll(examInterface.findBySubject(sub.getId().toString()));
+                }
+            } catch (FindErrorException ex) {
+                new Alert(Alert.AlertType.ERROR, "Couldn't find exams!", ButtonType.OK).showAndWait();
+                LOGGER.log(Level.SEVERE, ex.getMessage());
+            }
+        }
+        tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        tcSubject.setCellValueFactory(new PropertyValueFactory<>("subject"));
+        tcDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        tcDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        tcFile.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
+
+        tvExam.setItems(exams);
 
         // La tabla “tvExam” será editable.
         tvExam.setEditable(true);
@@ -249,21 +242,25 @@ public class ExamWindowController {
             tcDate.setEditable(false);
         }
 
-        tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        tcSubject.setCellValueFactory(new PropertyValueFactory<>("subjects"));
-        tcDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
-        tcDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        Callback<TableColumn<Exam, Date>, TableCell<Exam, Date>> dateCell
+                = (TableColumn<Exam, Date> param) -> new DateExamEditingCell();
+
+        Callback<TableColumn<Exam, String>, TableCell<Exam, String>> cellFactory
+                = (TableColumn<Exam, String> param) -> new ButtonEditingCell(currentUser);
 
         tcDescription.setCellFactory(TextFieldTableCell.forTableColumn());
-
-        //tcSubject.setCellValueFactory((cellData -> ce;
+        tcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(userSubjects));
         tcDuration.setCellFactory(TextFieldTableCell.forTableColumn());
+        // La columna “Date” de la tabla “tvExam” se mostrará con un patrón formateado de acuerdo a la configuración del sistema
+        tcDate.setCellFactory(dateCell);
+        tcFile.setCellFactory(cellFactory);
 
         // El botón “btnPrintExam” [...] solo estará habilitado cuando la tabla “tvExam” tenga valores.
-        if (tvExam.getItems().size() != 0) {
-            btnPrintExam.setDisable(true);
+        if (tvExam.getItems().size() > 0) {
+            btnPrintExam.setDisable(false);
         }
 
+        // Mostrar la ventana.
         stage.show();
         // stage.showAndWait();
     }
@@ -276,102 +273,6 @@ public class ExamWindowController {
         this.currentUser = user;
     }
 
-    private ObservableList setExams(ObservableList<Subject> userSubjects) {
-        ObservableList<Exam> thisExams = FXCollections.observableArrayList();
-        //System.out.println(userSubjects.size());
-        if (userSubjects.size() > 0) {
-            try {
-                for (Subject sub : userSubjects) {
-                    String subjectId = sub.getId().toString();
-                    thisExams.addAll(examInterface.findBySubject(sub.getId().toString()));
-                    //thisExams = FXCollections.observableArrayList(sub.getExams());
-                    //thisExams = FXCollections.observableArrayList(examInterface.findAllExams());
-                }
-                //System.out.println("Exams: " + exams.size());
-            } catch (FindErrorException ex) {
-                new Alert(Alert.AlertType.ERROR, "Couldn't find exams!", ButtonType.OK).showAndWait();
-                LOGGER.log(Level.SEVERE, ex.getMessage());
-            }
-        }
-        return thisExams;
-    }
-
-    private ObservableList setExamsSubject(Subject subjectToSet) {
-        ObservableList<Exam> exams = FXCollections.observableArrayList();
-        try {
-            for (Subject s : userSubjects) {
-                if (s.getName().equals(subjectToSet.getName())) {
-                    exams = FXCollections.observableArrayList(examInterface.findBySubject(s.getId().toString()));
-                }
-            }
-        } catch (FindErrorException ex) {
-            LOGGER.log(Level.SEVERE, "Error finding the exams for single subject {0}: {1}", new Object[]{subjectToSet.getName(), ex.getMessage()});
-            new Alert(Alert.AlertType.ERROR, "Error finding the exams for " + subjectToSet.getName(), ButtonType.OK).showAndWait();
-
-        }
-
-        return exams;
-    }
-
-    private void setTable(ObservableList<Exam> exams) {
-        LOGGER.info("Setting table...");
-        tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        tcSubject.setCellFactory(col -> {
-            // NECESITO ACABAR DEVOLVIENDO UN CALLBACK
-        });
-        // tcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(subjectNames));
-        tcSubject.setCellValueFactory(i -> {
-            String s = i.getValue().getSubject().getName();
-            return Bindings.createObjectBinding(() -> s);
-        });
-        
-             /*   
-                
-                
-                col -> {
-            final TableCell<Exam, SimpleObjectProperty> c = new TableCell<>();
-            final ComboBox<Subject> comboSubjectTable = new ComboBox<>(userSubjects);
-            //if()
-            //comboSubjectTable.getSelectionModel().select();
-            
-            return c;
-        });*/
-        
-        
-        
-        
-        /*col -> {
-            TableCell<Exam, SimpleObjectProperty> c = new TableCell<>();
-            final ComboBox<Subject> comboSubjectTable = new ComboBox<>(userSubjects);
-            //if()
-            //comboSubjectTable.getSelectionModel().select();
-            c.graphicProperty().bind(comboSubjectTable);
-            return c;
-        });*/
-        
-        
-        
-
-        tcDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
-        // La columna “Date” de la tabla “tvExam” se mostrará con un patrón formateado de acuerdo a la configuración del sistema
-        // FORMATEAR
-        tcDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-
-        tvExam.setItems(exams);
-    }
-
-    private ObservableList<Exam> getTableRows() {
-        return tvExam.getItems();
-    }
-
-    private int setEmptyRowTable() {
-        LOGGER.info("Setting new row...");
-        ObservableList<Exam> thisExams = getTableRows();
-        thisExams.add(new Exam("", null, "", "", null));
-        setTable(thisExams);
-        return tvExam.getItems().size() - 1;
-    }
-
     @FXML
     private void handlerComboBox(ObservableValue observable, Object oldValue, Object newValue) {
         if (observable == cbSearchCriteria.valueProperty()) {
@@ -379,13 +280,12 @@ public class ExamWindowController {
             if (cbSearchCriteria.getValue() == allExams) {
                 // Si el valor seleccionado es “All exams” se carga la tabla “tvExam” con los valores de todos los exámenes que pertenezcan
                 // a las asignaturas del usuario
-                ObservableList<Exam> thisExams = setExams(userSubjects);
 
                 // Si no hay exámenes disponibles, se muestra en la tabla un mensaje indicando que el usuario no tiene exámenes
-                if (thisExams.isEmpty()) {
+                if (exams.isEmpty()) {
                     tvExam.setPlaceholder(new Label("No exams here."));
                 } else {
-                    setTable(thisExams);
+                    tvExam.setItems(exams);
                 }
                 // Se vacía el campo “tfSearchExam”
                 tfSearchExam.setText("");
@@ -429,11 +329,16 @@ public class ExamWindowController {
                     }
                 }
                 if (subjectToSet != null) {
-                    ObservableList<Exam> thisExams = setExamsSubject(subjectToSet);
 
                     // Si la tabla no tiene exámenes, la tabla mostrará un mensaje (Placeholder) indicando que la asignatura seleccionada no tiene exámenes.
-                    if (!thisExams.isEmpty()) {
-                        setTable(thisExams);
+                    if (!exams.isEmpty()) {
+                        ObservableList<Exam> currentExams = FXCollections.observableArrayList();
+                        for (Exam e : exams) {
+                            if (e.getSubject().getName().equals(subjectToSet.getName())) {
+                                currentExams.add(e);
+                            }
+                        }
+                        tvExam.setItems(currentExams);
                     } else {
                         tvExam.setPlaceholder(new Label("No exams here."));
                     }
@@ -470,20 +375,19 @@ public class ExamWindowController {
             } else {
                 // Una vez valide correctamente, se realiza la búsqueda usando la colección de asignaturas recopilada anteriormente
                 ObservableList<Exam> searchedExams = FXCollections.observableArrayList();
-                ObservableList<Exam> currentExams = FXCollections.observableArrayList(setExams(userSubjects));
-                if (currentExams.size() > 0) {
+                //ObservableList<Exam> currentExams = FXCollections.observableArrayList(setExams(userSubjects));
+                if (exams.size() > 0) {
                     // Si la búsqueda arroja resultados se actualizará la tabla
-                    for (Exam e : currentExams) {
+                    for (Exam e : exams) {
                         if (e.getDescription().contains(tfSearchExam.getText())) {
                             searchedExams.add(e);
                         }
                     }
-                    setTable(searchedExams);
+                    tvExam.setItems(searchedExams);
                 } else {
                     // En caso contrario la tabla mostrará un mensaje (Placeholder) indicando que no ha habido resultados
                     tvExam.setPlaceholder(new Label("No exams found."));
                 }
-
             }
         }
         if (event.getSource() == btnCreateExam) {
@@ -502,7 +406,10 @@ public class ExamWindowController {
             btnDeleteExam.setDisable(true);
             btnPrintExam.setDisable(true);
             // Se crea una nueva fila con valores por defecto, donde todos los campos están vacíos
-            int newIndex = setEmptyRowTable();
+            //ObservableList<Exam> thisExams = tvExam.getItems();
+            exams.add(new Exam("", null, "", "", null));
+            tvExam.setItems(exams);
+            int newIndex = tvExam.getItems().size() - 1;
             // Se asigna el foco a la columna “Description” de la nueva fila.
             tvExam.requestFocus();
             tvExam.getSelectionModel().select(newIndex);
@@ -524,7 +431,6 @@ public class ExamWindowController {
                 // Si elige “No”, la acción se cancelará
 
             }
-
             // En cualquiera de todos los casos, el botón “btnDeleteExam” se deshabilitará
             btnDeleteExam.setDisable(true);
         }
@@ -561,7 +467,6 @@ public class ExamWindowController {
         // Se observará que no se esté editando la tabla o que no haya datos sin guardar.
 
     }
-
 }
 
 

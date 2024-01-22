@@ -225,6 +225,13 @@ public class Subject implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return name.getValue();
+    }
+    
+    
+
+    @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
