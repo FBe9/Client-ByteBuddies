@@ -16,8 +16,8 @@ public class ApplicationByteBuddies extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         User user = new User();
-        user.setId(2);
-        user.setUser_type("Student");
+        user.setId(1);
+        user.setUser_type("Teacher");
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exercise/exercise.fxml"));
         Parent root = (Parent) loader.load();
         ExerciseController controller = (ExerciseController) loader.getController();

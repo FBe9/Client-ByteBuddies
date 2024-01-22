@@ -27,7 +27,9 @@ import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -59,6 +61,7 @@ public class ExerciseController {
     private static final Logger LOGGER = Logger.getLogger("Exercise view.");
     private Stage stage;
     private User user;
+    private Exercise exercise;
     private ObservableList<Exercise> exerciseData;
     private ObservableList<Unit> unitData;
     private ExerciseInterface exerciseInterface;
@@ -162,7 +165,7 @@ public class ExerciseController {
         //tres tipos de nivel.
         this.cbLevelTypeCreate.getItems().addAll(LevelType.values());
         //this.cbLevelTypeCreate.setValue(LevelType.BEGGINER);
-        
+
         //Se rellenará el combobox “cbUnitSearch” con una lista de unidades de 
         //las asignaturas en las cuales esté matriculado el usuario. 
         //El usuario puede ser de dos tipos:
@@ -300,37 +303,89 @@ public class ExerciseController {
         this.tfDescription.textProperty().addListener(this::handleFieldsTextChange);
 
         //
-        this.tfNumber.textProperty().addListener((event) -> this.textOnlyNumbers(KeyEvent.KEY_TYPED));
-        this.tfHours.textProperty().addListener((event) -> this.textOnlyNumbers(KeyEvent.KEY_TYPED));
+        //this.tfNumber.textProperty().addListener((event) -> this.textOnlyNumbers(KeyEvent.KEY_TYPED));
+        //this.tfHours.textProperty().addListener((event) -> this.textOnlyNumbers(KeyEvent.KEY_TYPED));
+        this.tfNumber.textProperty().addListener((event) -> this.textChangeCreate(KeyEvent.KEY_TYPED));
+        this.tfHours.textProperty().addListener((event) -> this.textChangeCreate(KeyEvent.KEY_TYPED));
+        this.tfDescription.textProperty().addListener((event) -> this.textChangeCreate(KeyEvent.KEY_TYPED));
+        //
+        //this.tfNumber.textProperty().addListener((event) -> this.textChangeModify(KeyEvent.KEY_TYPED));
+        //this.tfHours.textProperty().addListener((event) -> this.textChangeModify(KeyEvent.KEY_TYPED));
+        //this.tfDescription.textProperty().addListener((event) -> this.textChangeModify(KeyEvent.KEY_TYPED));
 
         stage.setScene(scene);
         //Mostrar la ventana. 
         stage.show();
     }
 
-    /**
-     * Exercise table selection changed event handler. It enables or disables
-     * buttons depending on selection state of the table.
-     *
-     * @param observable the property being observed: SelectedItem Property
-     * @param oldValue old UserBean value for the property.
-     * @param newValue new UserBean value for the property.
-     */
     private void handleExerciseTableSelectionChanged(ObservableValue observable,
             Object oldValue,
             Object newValue) {
-        //If there is a row selected enable modify and delete buttons
-        Exercise selectedExercise = ((Exercise) this.tvExercise.getSelectionModel().getSelectedItem());
-        if (selectedExercise != null) {
-            this.btmModify.setDisable(false);
-            this.btmDelete.setDisable(false);
-        } else {
-            //If there is not a row selected disable modify and delete buttons
-            this.btmModify.setDisable(true);
-            this.btmDelete.setDisable(true);
+        try {
+            //If there is a row selected, move row data to corresponding fields in the
+            //window and enable create, modify and delete buttons
+            Exercise exercise = (Exercise) newValue;
+            if (newValue != null) {
+
+                /**
+                 * If the table of Album is selected the fields are introduced
+                 * in the designated textfields and enable create, modify and
+                 * delete buttons
+                 */
+                int selectedRow = tvExercise.getSelectionModel().getSelectedIndex();
+
+                String unitName = exercise.getUnit().toString();
+                
+                cbUnitCreate.getSelectionModel().select(unitName);
+                tfNumber.setText(exercise.getNumber());
+                //file
+                //filesolution
+                tfHours.setText(exercise.getHours());
+                cbLevelTypeCreate.getSelectionModel().select(exercise.getLevelType());
+                dpDeadline.setValue(exercise.getDeadline().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                tfDescription.setText(exercise.getDescription());
+                this.btmModify.setDisable(false);
+                this.btmDelete.setDisable(false);
+
+            } else {
+                //If there is not a row selected, clean window fields 
+                //and disable create, modify and delete buttons
+                tfNumber.setText("");
+                //file
+                //filesolution
+                tfHours.setText("");
+                dpDeadline.setValue(null);
+                tfDescription.setText("");
+                this.btmModify.setDisable(true);
+                this.btmDelete.setDisable(true);
+            }
+        } catch (Exception e) {
+            
         }
     }
 
+    /**
+     *
+     * @param KEY_TYPED
+     */
+    private void textChangeCreate(int KEY_TYPED) {
+        if (!this.cbUnitCreate.getSelectionModel().isEmpty() && !this.tfNumber.getText().trim().isEmpty() && !this.tfHours.getText().trim().isEmpty() && !this.cbLevelTypeCreate.getSelectionModel().isEmpty() && !this.tfDescription.getText().trim().isEmpty()) {
+            this.btmCreate.setDisable(false);
+        }
+        if (this.cbUnitCreate.getSelectionModel().isEmpty() || this.tfNumber.getText().trim().isEmpty() || this.tfHours.getText().trim().isEmpty() || this.cbLevelTypeCreate.getSelectionModel().isEmpty() || this.tfDescription.getText().trim().isEmpty()) {
+            this.btmCreate.setDisable(true);
+        }
+    }
+
+    /**
+     *
+     * @param KEY_TYPED
+     */
+    /*private void textChangeModify(int KEY_TYPED) {
+        if (!exercise.getNumber().equals(this.tfNumber.toString()) || !exercise.getHours().equals(this.tfHours.toString()) || !exercise.getDescription().equals(this.tfDescription.toString())) {
+            this.btmModify.setDisable(false);
+        }
+    }*/
     /**
      * Text change event handler for search, number, hours and description
      * fields.
@@ -369,50 +424,120 @@ public class ExerciseController {
      *
      * @param event The action event object
      */
-    private void textOnlyNumbers(int KEY_TYPED) {
+    /*private void textOnlyNumbers(int KEY_TYPED) {
         /**
          * En el campo Number y Hours solo se permitirán caracteres numéricos.
          * Si en el campo hay caracteres no númericos se le comunicará en una
          * label un mensaje de color rojo: “Only numbers are allowed.”.
-         */
-        if (!this.tfNumber.getText().matches(NUMBERS_REGEX)) {
+     */
+ /* if (!this.tfNumber.getText().matches(NUMBERS_REGEX)) {
             this.lblErrorCreateModify.setText("🛈 Only numbers are allowed on the number field.");
         }
         if (!this.tfHours.getText().matches(NUMBERS_REGEX)) {
             this.lblErrorCreateModify.setText("🛈 Only numbers are allowed on the hours field.");
         }
-    }
-
+    }*/
+    /**
+     *
+     * @param event
+     * @throws CreateErrorException
+     */
+    @FXML
     private void handleCreateButtonAction(javafx.event.ActionEvent event) throws CreateErrorException {
-        //try {
-        LOGGER.info("Creating user...");
-
-        Exercise newExercise = new Exercise();
-
-        newExercise.setUnit((Unit) this.cbUnitCreate.getSelectionModel().getSelectedItem());
-        newExercise.setNumber(this.tfNumber.getText().trim());
-        //file
-        //filesolution
-        newExercise.setHours(this.tfHours.getText().trim());
-        newExercise.setDeadline(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        newExercise.setLevelType((LevelType) this.cbLevelTypeCreate.getSelectionModel().getSelectedItem());
-        newExercise.setDescription(this.tfDescription.getText().trim());
         try {
-            exerciseInterface.create_XML(newExercise);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Created successfully", ButtonType.OK);
-            alert.showAndWait();
+            LOGGER.info("Creating user...");
 
-            //Clean fields
-            this.tfNumber.setText("");
-            this.tfHours.setText("");
-            this.tfDescription.setText("");
-        } catch (CreateErrorException e) {
-            new Alert(Alert.AlertType.ERROR, "Failed to create", ButtonType.OK).showAndWait();
-        }
-        /* } catch (CreateErrorException ex) {
+            Exercise newExercise = new Exercise();
+
+            String unitName = this.cbUnitCreate.getSelectionModel().getSelectedItem().toString();
+            List<Unit> units = unitInterface.findAllUnits();
+            Unit unit = new Unit();
+            for (int i = 0; i < units.size(); i++) {
+                if (units.get(i).getName().equalsIgnoreCase(unitName)) {
+                    unit = units.get(i);
+                }
+            }
+            newExercise.setUnit(unit);
+            newExercise.setNumber(this.tfNumber.getText().trim());
+            //file
+            //filesolution
+            newExercise.setHours(this.tfHours.getText().trim());
+            LocalDate datePicker = dpDeadline.getValue();
+            Date date = Date.from(datePicker.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            newExercise.setDeadline(date);
+            newExercise.setLevelType((LevelType) this.cbLevelTypeCreate.getSelectionModel().getSelectedItem());
+            newExercise.setDescription(this.tfDescription.getText().trim());
+            try {
+                exerciseInterface.create_XML(newExercise);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Created successfully", ButtonType.OK);
+                alert.showAndWait();
+                tvExercise.refresh();
+
+                //Clean fields
+                this.tfNumber.setText("");
+                this.tfHours.setText("");
+                this.tfDescription.setText("");
+                dpDeadline.setValue(null);
+                
+            } catch (CreateErrorException e) {
+                new Alert(Alert.AlertType.ERROR, "Failed to create", ButtonType.OK).showAndWait();
+            }
+        } catch (Exception ex) {
             showErrorAlert("Error create");
             LOGGER.log(Level.SEVERE, ex.getMessage());
-        }*/
+        }
+    }
+
+    @FXML
+    private void handleModifyButtonAction(ActionEvent event) {
+        try {
+            String unitName = this.cbUnitCreate.getSelectionModel().getSelectedItem().toString();
+            List<Unit> units = unitInterface.findAllUnits();
+            Unit unit = new Unit();
+            for (int i = 0; i < units.size(); i++) {
+                if (units.get(i).getName().equalsIgnoreCase(unitName)) {
+                    unit = units.get(i);
+                }
+            }
+            exercise.setUnit(unit);
+            exercise.setNumber(this.tfNumber.getText().trim());
+            //file
+            //filesolution
+            exercise.setHours(this.tfHours.getText().trim());
+            LocalDate datePicker = dpDeadline.getValue();
+            Date date = Date.from(datePicker.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            exercise.setDeadline(date);
+            exercise.setLevelType((LevelType) this.cbLevelTypeCreate.getSelectionModel().getSelectedItem());
+            exercise.setDescription(this.tfDescription.getText().trim());
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to modify this exercise?", ButtonType.OK, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+            //If OK to modify
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                //modify mental disease from server side
+                Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "Successfully modified", ButtonType.OK);
+                alert2.showAndWait();
+
+                //Clean fields
+                this.tfNumber.setText("");
+                this.tfHours.setText("");
+                this.tfDescription.setText("");
+                dpDeadline.setValue(null);
+            }
+
+        } catch (FindErrorException ex) {
+            showErrorAlert("Error modify");
+            LOGGER.log(Level.SEVERE,
+                    ex.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleSearchButtonAction(ActionEvent event) {
+    }
+
+    @FXML
+    private void handlePrintButtonAction(ActionEvent event) {
     }
 
     /**
@@ -420,6 +545,7 @@ public class ExerciseController {
      * @param event
      * @throws DeleteErrorException
      */
+    @FXML
     private void handleDeleteButtonAction(javafx.event.ActionEvent event) throws DeleteErrorException {
         LOGGER.info("Deleting user...");
         try {
