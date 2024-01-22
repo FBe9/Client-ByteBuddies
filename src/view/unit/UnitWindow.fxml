@@ -13,77 +13,83 @@
 <?import javafx.scene.text.Font?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #ECF4FF;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.unit.UnitWindowController">
-   <children>
-      <ImageView fitHeight="744.0" fitWidth="170.0" layoutY="24.0" pickOnBounds="true">
-         <image>
-            <Image url="@../../resources/BlueWallpaper.jpg" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="165.0" fitWidth="139.0" layoutX="1175.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../resources/BlueStar.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="107.0" fitWidth="95.0" layoutX="1198.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../resources/AllBlueStar.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="70.0" fitWidth="70.0" layoutX="1211.0" layoutY="93.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../resources/AllWhiteStar.png" />
-         </image>
-      </ImageView>
-      <fx:include source="../MenuBar.fxml" />
-      <TableView fx:id="tbvUnit" layoutX="228.0" layoutY="233.0" prefHeight="416.0" prefWidth="1076.0" style="-fx-border-color: #74B0E7;">
-        <columns>
-          <TableColumn fx:id="tbcName" prefWidth="238.0" text="Name" />
-          <TableColumn fx:id="tbcSubject" prefWidth="211.0" text="Subject" />
-            <TableColumn fx:id="tbcDescription" prefWidth="214.0" text="Description" />
-            <TableColumn fx:id="tbcDateInit" prefWidth="122.0" text="Date Init" />
-            <TableColumn fx:id="tbcDateEnd" prefWidth="120.0" text="Date End" />
-            <TableColumn fx:id="tbcHours" prefWidth="85.0" text="Hours" />
-            <TableColumn fx:id="tbcExercises" prefWidth="82.0" text="Exercises" />
-        </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
-      <TextField fx:id="tfSearch" layoutX="623.0" layoutY="198.0" prefHeight="28.0" prefWidth="395.0" promptText="Search...">
-         <font>
-            <Font name="Goudy Old Style" size="14.0" />
-         </font></TextField>
-      <DatePicker layoutX="623.0" layoutY="214.0" prefHeight="28.0" prefWidth="395.0" visible="false" />
-      <ComboBox fx:id="cbSubjects" layoutX="228.0" layoutY="199.0" prefHeight="28.0" prefWidth="178.0" />
-      <ComboBox fx:id="cbSearchType" layoutX="423.0" layoutY="198.0" prefHeight="28.0" prefWidth="178.0" />
-      <Button fx:id="btnSearch" layoutX="1045.0" layoutY="198.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;">
-         <graphic>
-            <ImageView fitHeight="16.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../resources/searchIcon.png" />
-               </image>
-            </ImageView>
-         </graphic></Button>
-      <Button fx:id="btnDeleteUnit" layoutX="305.0" layoutY="664.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Delete">
-         <font>
-            <Font name="Calibri Italic" size="12.0" />
-         </font></Button>
-      <Button fx:id="btnCreateUnit" layoutX="228.0" layoutY="664.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Create">
-         <font>
-            <Font name="Calibri Italic" size="12.0" />
-         </font></Button>
-      <Button fx:id="btnPrint" layoutX="1234.0" layoutY="664.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Print">
-         <font>
-            <Font name="Calibri Italic" size="12.0" />
-         </font>
-      </Button>
-      <Label layoutX="425.0" layoutY="173.0" text="Search type:">
-         <font>
-            <Font name="Calibri Italic" size="15.0" />
-         </font></Label>
-      <Label layoutX="228.0" layoutY="173.0" text="My Subjects:">
-         <font>
-            <Font name="Calibri Italic" size="15.0" />
-         </font></Label>
-   </children>
+    <children>
+        <fx:include fx:id="hBoxMenu" source="../MenuBar.fxml" />
+        <ImageView fitHeight="744.0" fitWidth="170.0" layoutY="24.0" pickOnBounds="true">
+            <image>
+                <Image url="@../../resources/BlueWallpaper.jpg" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="165.0" fitWidth="139.0" layoutX="1175.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../resources/BlueStar.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="107.0" fitWidth="95.0" layoutX="1198.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../resources/AllBlueStar.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="70.0" fitWidth="70.0" layoutX="1211.0" layoutY="93.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../../resources/AllWhiteStar.png" />
+            </image>
+        </ImageView>
+        <TableView fx:id="tbvUnit" layoutX="228.0" layoutY="233.0" prefHeight="416.0" prefWidth="1076.0" style="-fx-border-color: #74B0E7;">
+            <columns>
+                <TableColumn fx:id="tbcName" prefWidth="238.0" text="Name" />
+                <TableColumn fx:id="tbcSubject" prefWidth="211.0" text="Subject" />
+                <TableColumn fx:id="tbcDescription" prefWidth="214.0" text="Description" />
+                <TableColumn fx:id="tbcDateInit" prefWidth="122.0" text="Date Init" />
+                <TableColumn fx:id="tbcDateEnd" prefWidth="120.0" text="Date End" />
+                <TableColumn fx:id="tbcHours" prefWidth="85.0" text="Hours" />
+                <TableColumn fx:id="tbcExercises" prefWidth="82.0" text="Exercises" />
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+        </TableView>
+        <TextField fx:id="tfSearch" layoutX="623.0" layoutY="186.0" prefHeight="28.0" prefWidth="395.0" promptText="Search...">
+            <font>
+                <Font name="Goudy Old Style" size="14.0" />
+            </font>
+        </TextField>
+        <DatePicker fx:id="dpSearch" layoutX="623.0" layoutY="185.0" prefHeight="28.0" prefWidth="395.0" visible="false" />
+        <ComboBox fx:id="cbSubjects" layoutX="228.0" layoutY="187.0" prefHeight="28.0" prefWidth="178.0" />
+        <ComboBox fx:id="cbSearchType" layoutX="423.0" layoutY="186.0" prefHeight="28.0" prefWidth="178.0" />
+        <Button fx:id="btnSearch" layoutX="1045.0" layoutY="186.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;">
+            <graphic>
+                <ImageView fitHeight="16.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../resources/searchIcon.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button fx:id="btnDeleteUnit" layoutX="305.0" layoutY="664.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Delete">
+            <font>
+                <Font name="Calibri Italic" size="12.0" />
+            </font>
+        </Button>
+        <Button fx:id="btnCreateUnit" layoutX="228.0" layoutY="664.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Create">
+            <font>
+                <Font name="Calibri Italic" size="12.0" />
+            </font>
+        </Button>
+        <Button fx:id="btnPrint" layoutX="1234.0" layoutY="664.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Print">
+            <font>
+                <Font name="Calibri Italic" size="12.0" />
+            </font>
+        </Button>
+        <Label layoutX="425.0" layoutY="161.0" text="Search type:">
+            <font>
+                <Font name="Calibri Italic" size="15.0" />
+            </font>
+        </Label>
+        <Label layoutX="228.0" layoutY="161.0" text="My Subjects:">
+            <font>
+                <Font name="Calibri Italic" size="15.0" />
+            </font>
+        </Label>
+    </children>
 </Pane>

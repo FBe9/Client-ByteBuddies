@@ -3,16 +3,15 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.HBox?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:id="hBoxMenu" fx:controller="view.MenuBarController">
    <children>
-      <MenuBar prefHeight="26.0" prefWidth="1366.0" style="-fx-background-color: #74B0E7;">
+      <MenuBar style="-fx-background-color: #74B0E7;" HBox.hgrow="ALWAYS">
          <menus>
             <Menu mnemonicParsing="false" text="Subject">
                <items>
-                  <MenuItem fx:id="miSubjects" mnemonicParsing="false" text="Show Subjects" />
+                  <MenuItem fx:id="miSubjects" mnemonicParsing="false" text="Show Subjects"/>
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Exam">
@@ -47,4 +46,4 @@
          </menus>
       </MenuBar>
    </children>
-</Pane>
+</HBox>

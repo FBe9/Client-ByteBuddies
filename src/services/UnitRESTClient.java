@@ -28,7 +28,7 @@ public class UnitRESTClient{
 
     private final WebTarget webTarget;
     private final Client client;
-     private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
+    private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
 
     public UnitRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -79,13 +79,15 @@ public class UnitRESTClient{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findUnitByID_XML(Class<T> responseType, Integer id) throws WebApplicationException {
+
+    public <T> T findUnitByID_XML(Class<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findUnitByID_JSON(Class<T> responseType, Integer id) throws WebApplicationException {
+    public <T> T findUnitByID_JSON(Class<T> responseType, String id) throws WebApplicationException {
+
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
@@ -119,13 +121,15 @@ public class UnitRESTClient{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findUnitsFromStudentSubjects_XML(GenericType<T> responseType, Integer userID) throws WebApplicationException {
+
+   
+    public <T> T findUnitsFromStudentSubjects_XML(GenericType<T> responseType, String userID) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromStudentSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findUnitsFromStudentSubjects_JSON(GenericType<T> responseType, Integer userID) throws WebApplicationException {
+    public <T> T findUnitsFromStudentSubjects_JSON(GenericType<T> responseType, String userID) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromStudentSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
@@ -151,19 +155,21 @@ public class UnitRESTClient{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findUnitsFromTeacherSubjects_XML(GenericType<T> responseType, Integer userID) throws WebApplicationException {
+
+    public <T> T findUnitsFromTeacherSubjects_XML(GenericType<T> responseType, String userID) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromTeacherSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findUnitsFromTeacherSubjects_JSON(GenericType<T> responseType, Integer userID) throws WebApplicationException {
+
+    public <T> T findUnitsFromTeacherSubjects_JSON(GenericType<T> responseType, String userID) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromTeacherSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findSubjectUnitsByHours_XML(GenericType<T> responseType, Integer hours, String subjectName) throws WebApplicationException {
+    public <T> T findSubjectUnitsByHours_XML(GenericType<T> responseType, String hours, String subjectName) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findSubjectUnitsByHours/{0}/{1}", new Object[]{hours, subjectName}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
