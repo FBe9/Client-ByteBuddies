@@ -24,7 +24,7 @@ import services.SubjectRESTClient;
  */
 public class SubjectManagerImplementation implements SubjectManager {
 
-    private SubjectRESTClient webClient;
+    private final SubjectRESTClient webClient;
     private static final Logger LOGGER = Logger.getLogger("SubjectManagerImplementation ");
 
     /**
