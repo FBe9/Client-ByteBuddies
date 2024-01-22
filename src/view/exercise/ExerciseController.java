@@ -137,7 +137,7 @@ public class ExerciseController {
         //método findUnitsFromTeacherSubjects de la interfaz UnitInterface.
         if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
             try {
-                unitData = FXCollections.observableArrayList(unitInterface.findUnitsFromTeacherSubjects(loggedUser.getId()));
+                unitData = FXCollections.observableArrayList(unitInterface.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
                 if (unitData.isEmpty()) {
                     //Si el método no devuelve nada se rellena con el texto ”No Subjects found” y lo selecciona.
                     this.cbUnitCreate.getItems().add("No unit found");
@@ -174,7 +174,7 @@ public class ExerciseController {
                 //Si el usuario es de tipo Teacher se obtendrá la información de las 
                 //unidades llamando al método findUnitsFromTeacherSubjects de la 
                 //interfaz UnitInterface para rellenar el combobox.
-                unitData = FXCollections.observableArrayList(unitInterface.findUnitsFromTeacherSubjects(loggedUser.getId()));
+                unitData = FXCollections.observableArrayList(unitInterface.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
                 if (unitData.isEmpty()) {
                     //Si el método no devuelve nada se rellena con el texto ”No Subjects found” y lo selecciona.
                     this.cbUnitSearch.getItems().add("No unit found");
@@ -195,7 +195,7 @@ public class ExerciseController {
                 //Si el usuario es de tipo Student se obtendrá la información de las 
                 //unidades llamando al método findUnitsFromStudentSubjects de la interfaz 
                 //UnitInterface para rellenar el combobox.
-                unitData = FXCollections.observableArrayList(unitInterface.findUnitsFromStudentSubjects(loggedUser.getId()));
+                unitData = FXCollections.observableArrayList(unitInterface.findUnitsFromStudentSubjects(loggedUser.getId().toString()));
                 if (unitData.isEmpty()) {
                     //Si el método no devuelve nada se rellena con el texto ”No Subjects found” y lo selecciona.
                     this.cbUnitSearch.getItems().add("No unit found");
@@ -335,7 +335,7 @@ public class ExerciseController {
                 int selectedRow = tvExercise.getSelectionModel().getSelectedIndex();
 
                 String unitName = exercise.getUnit().toString();
-                
+
                 cbUnitCreate.getSelectionModel().select(unitName);
                 tfNumber.setText(exercise.getNumber());
                 //file
@@ -360,7 +360,7 @@ public class ExerciseController {
                 this.btmDelete.setDisable(true);
             }
         } catch (Exception e) {
-            
+
         }
     }
 
@@ -478,7 +478,7 @@ public class ExerciseController {
                 this.tfHours.setText("");
                 this.tfDescription.setText("");
                 dpDeadline.setValue(null);
-                
+
             } catch (CreateErrorException e) {
                 new Alert(Alert.AlertType.ERROR, "Failed to create", ButtonType.OK).showAndWait();
             }
