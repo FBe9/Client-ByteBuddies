@@ -1,72 +1,35 @@
 package view.unit;
 
-import java.text.DateFormat;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
-import javafx.util.StringConverter;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.Locale;
+import javafx.scene.control.Hyperlink;
+
 import models.Unit;
 
 /**
  * TableCell implementation for editing a Date with a DatePicker. Displays the
  * date in text form when not in editing mode.
  */
-public class DateUnitEditingCell extends TableCell<Unit, Date> {
+public class HyperlinkUnitEditingCell extends TableCell<Unit, Hyperlink> {
 
-    private DatePicker dpUnitCell;
-    private Locale locale;
-    private DateFormat dateFormatter;
+    private Hyperlink httpUnitCell;
 
-    public DateUnitEditingCell() {
-        this.dpUnitCell = new DatePicker();
-
-        // Configurar un StringConverter para convertir entre Date y String
-        dpUnitCell.setConverter(new StringConverter<LocalDate>() {
-
-            @Override
-            public String toString(LocalDate object) {
-                if (object != null) {
-                    return dateFormatter.format(Date.from(object.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                } else {
-                    return "";
-                }
-            }
-
-            @Override
-            public LocalDate fromString(String string) {
-                if (string != null && !string.isEmpty()) {
-                    return LocalDate.parse(string);
-                } else {
-                    return null;
-                }
-            }
-        });
-
+    public HyperlinkUnitEditingCell() {
+        // Configurar el Hyperlink
+        httpUnitCell = new Hyperlink();
     }
 
     @Override
-    protected void updateItem(Date date, boolean empty) {
-        super.updateItem(date, empty);
-        Locale locale = Locale.getDefault();
-        dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM
-                
-                , locale);
-
+    protected void updateItem(Hyperlink http, boolean empty) {
+        super.updateItem(http, empty);
+       
         if (empty) {
             setText(null);
-            setGraphic(null);
         } else {
 
             if (isEditing()) {
-                setText(null);
-                setGraphic(dpUnitCell);
-            } else if (date != null) {
-                String dateText = dateFormatter.format(date);
-                setText(dateText);
-                setGraphic(null);
+                
+            } else if (http != null) {
+                
             }
         }
     }
@@ -75,12 +38,11 @@ public class DateUnitEditingCell extends TableCell<Unit, Date> {
     public void startEdit() {
         if (!isEmpty()) {
             super.startEdit();
-            dpUnitCell = new DatePicker();
-            dpUnitCell.setOnAction((e) -> {
-                commitEdit(Date.from(dpUnitCell.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            httpUnitCell = new Hyperlink();
+            httpUnitCell.setOnAction((e) -> {
+                //commitEdit(Hyperlink.);
             });
             setText(null);
-            setGraphic(dpUnitCell);
         }
     }
 
