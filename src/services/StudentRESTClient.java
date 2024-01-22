@@ -6,7 +6,8 @@
 package services;
 
 import interfaces.StudentInterface;
-import javax.ws.rs.ClientErrorException;
+import java.util.ResourceBundle;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
@@ -24,40 +25,37 @@ import javax.ws.rs.core.GenericType;
  *
  * @author irati
  */
-public class StudentRESTClient implements StudentInterface {
+public class StudentRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/Server-ByteBuddies/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
 
     public StudentRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.student");
     }
 
-
-    @Override
-    public <T> T find_XML(Class<T> responseType, String id) throws ClientErrorException {
+   
+    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    @Override
-    public void createStudent_XML(Object requestEntity) throws ClientErrorException {
+    
+    public void createStudent_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
 
-    @Override
-    public <T> T findAll_XML(GenericType<T> responseType) throws ClientErrorException {
+    public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-
     public void close() {
         client.close();
     }
-    
+
 }

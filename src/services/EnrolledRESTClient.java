@@ -5,9 +5,10 @@
  */
 package services;
 
-import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 
 /**
  * Jersey REST client generated for REST resource:EnrolledFacadeREST
@@ -33,44 +34,44 @@ public class EnrolledRESTClient {
         webTarget = client.target(BASE_URI).path("entities.enrolled");
     }
 
-    public <T> T find_XML(Class<T> responseType, String studentId, String subjectId) throws ClientErrorException {
+    public <T> T find_XML(Class<T> responseType, String studentId, String subjectId) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{studentId, subjectId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T find_JSON(Class<T> responseType, String studentId, String subjectId) throws ClientErrorException {
+    public <T> T find_JSON(Class<T> responseType, String studentId, String subjectId) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{studentId, subjectId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public void updateEnrolled_XML(Object requestEntity) throws ClientErrorException {
+    public void updateEnrolled_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public void updateEnrolled_JSON(Object requestEntity) throws ClientErrorException {
+    public void updateEnrolled_JSON(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
 
-    public void createEnrolled_XML(Object requestEntity) throws ClientErrorException {
+    public void createEnrolled_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public void createEnrolled_JSON(Object requestEntity) throws ClientErrorException {
+    public void createEnrolled_JSON(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
 
-    public void removeEnrolled(String studentId, String subjectId) throws ClientErrorException {
+    public void removeEnrolled(String studentId, String subjectId) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{studentId, subjectId})).request().delete();
     }
 
-    public <T> T findAll_XML(Class<T> responseType) throws ClientErrorException {
+    public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findAll_JSON(Class<T> responseType) throws ClientErrorException {
+    public <T> T findAll_JSON(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }

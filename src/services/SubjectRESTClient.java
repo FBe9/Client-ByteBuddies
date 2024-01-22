@@ -73,6 +73,10 @@ public class SubjectRESTClient {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
+    public <T> T findAll_JSON(GenericType<T> responseType) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
 
     public <T> T findSubjectsByTeacherId_XML(GenericType<T> responseType, String teacherId) throws ClientErrorException {
         WebTarget resource = webTarget;

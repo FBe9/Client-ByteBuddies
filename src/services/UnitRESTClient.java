@@ -7,7 +7,6 @@ package services;
 
 import java.util.ResourceBundle;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
@@ -80,6 +79,7 @@ public class UnitRESTClient{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
+
     public <T> T findUnitByID_XML(Class<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
@@ -87,6 +87,7 @@ public class UnitRESTClient{
     }
 
     public <T> T findUnitByID_JSON(Class<T> responseType, String id) throws WebApplicationException {
+
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
@@ -120,6 +121,8 @@ public class UnitRESTClient{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
+
+   
     public <T> T findUnitsFromStudentSubjects_XML(GenericType<T> responseType, String userID) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromStudentSubjects/{0}", new Object[]{userID}));
@@ -152,11 +155,13 @@ public class UnitRESTClient{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
+
     public <T> T findUnitsFromTeacherSubjects_XML(GenericType<T> responseType, String userID) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findUnitsFromTeacherSubjects/{0}", new Object[]{userID}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
+
 
     public <T> T findUnitsFromTeacherSubjects_JSON(GenericType<T> responseType, String userID) throws WebApplicationException {
         WebTarget resource = webTarget;

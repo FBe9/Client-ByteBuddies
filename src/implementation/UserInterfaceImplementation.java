@@ -5,6 +5,7 @@ import exceptions.FindErrorException;
 import exceptions.UpdateErrorException;
 import interfaces.UserInterface;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -152,13 +153,13 @@ public class UserInterfaceImplementation implements UserInterface {
      */
     @Override
     public User login(User user) throws FindErrorException {
-        User userSearch;
+       User userSearch;
         try {
             LOGGER.info("Logging in user with ID " + user.getId());
-            userSearch = webClient.login_XML(user, User.class);
+            userSearch = webClient.login(user, User.class);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "UserInterface: Error logging in - " + e.getMessage());
-            throw new FindErrorException("Error logging in");
+            throw new FindErrorException("User not found");
         }
         return userSearch;
     }
