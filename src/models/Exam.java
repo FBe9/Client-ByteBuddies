@@ -29,11 +29,6 @@ public class Exam implements Serializable {
     private final SimpleStringProperty description;
 
     /**
-     * The enum that marks the call of the exam, First, Second, Third...
-     */
-    private final SimpleObjectProperty<CallType> callType;
-
-    /**
      * The date when the exam is programmed.
      */
     private final SimpleObjectProperty<Date> dateInit;
@@ -59,7 +54,6 @@ public class Exam implements Serializable {
     public Exam() {
         this.id = new SimpleIntegerProperty();
         this.description = new SimpleStringProperty();
-        this.callType = new SimpleObjectProperty<>();
         this.dateInit = new SimpleObjectProperty<>();
         this.duration = new SimpleStringProperty();
         this.filePath = new SimpleStringProperty();
@@ -71,16 +65,14 @@ public class Exam implements Serializable {
      *
      * @param id
      * @param description
-     * @param callType
      * @param dateInit
      * @param duration
      * @param filePath
      * @param subject
      */
-    public Exam(Integer id, String description, CallType callType, Date dateInit, String duration, String filePath, Subject subject) {
+    public Exam(Integer id, String description, Date dateInit, String duration, String filePath, Subject subject) {
         this.id = new SimpleIntegerProperty(id);
         this.description = new SimpleStringProperty(description);
-        this.callType = new SimpleObjectProperty(callType);
         this.dateInit = new SimpleObjectProperty(dateInit);
         this.duration = new SimpleStringProperty(duration);
         this.filePath = new SimpleStringProperty(filePath);
@@ -89,7 +81,6 @@ public class Exam implements Serializable {
 
     public Exam(String description, Date dateInit, String duration, String filePath, Subject subject) {
         this.id = null;
-        this.callType = null;
         this.description = new SimpleStringProperty(description);
         this.dateInit = new SimpleObjectProperty(dateInit);
         this.duration = new SimpleStringProperty(duration);
@@ -207,24 +198,6 @@ public class Exam implements Serializable {
     public void setSubject(Subject subject) {
         this.subject.set(subject);
     }
-    
-    /**
-     * Gets the call type of the exam.
-     *
-     * @return The string value of the call type.
-     */
-    public CallType getCallType() {
-        return this.callType.get();
-    }
-
-    /**
-     * Sets the call type.
-     *
-     * @param callType
-     */
-    public void setCallType(CallType callType) {
-        this.callType.set(callType);
-    }
 
     /**
      * Computes the hash code for the exam.
@@ -261,9 +234,6 @@ public class Exam implements Serializable {
             return false;
         }
         if (!Objects.equals(this.description, other.description)) {
-            return false;
-        }
-        if (!Objects.equals(this.callType, other.callType)) {
             return false;
         }
         if (!Objects.equals(this.dateInit, other.dateInit)) {
