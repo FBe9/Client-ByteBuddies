@@ -301,4 +301,9 @@ public class Subject implements Serializable {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return name.getValue();
+    }
+
 }
