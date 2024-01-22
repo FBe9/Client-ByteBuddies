@@ -1,15 +1,19 @@
 package view.subject;
 
 import exceptions.FindErrorException;
+import factories.TeacherFactory;
 import factories.UserFactory;
+import interfaces.TeacherInterface;
 import interfaces.UserInterface;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
+import javafx.event.EventHandler;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.util.Callback;
@@ -26,46 +30,27 @@ public class ListViewEditingCell extends TableCell<Subject, ObservableSet<Teache
     private final ListView<Teacher> listViewTeacher;
     private ObservableList<User> users;
     private ObservableList<Teacher> teachers;
-    private UserInterface userInterface;
+    private TeacherInterface teacherInterface;
 
     public ListViewEditingCell() {
         this.listViewTeacher = new ListView<>();
-        userInterface = UserFactory.getModel();
-        User userTeacher = new Teacher();
-        try {
+        teacherInterface = TeacherFactory.getModel();
+       // User userTeacher = new Teacher();
+       
             
-            users = FXCollections.observableArrayList(userInterface.findAll());
-            for (User user : users) {
-                if (user instanceof Teacher) {
-                    // Casting de User a Teacher
-                    Teacher teacher = (Teacher) user;
-                    teachers.add(teacher);
-                }
-            }
-            }catch (FindErrorException ex) {
+        try {
+            teachers = FXCollections.observableArrayList(teacherInterface.findAll());
+        } catch (FindErrorException ex) {
             Logger.getLogger(ListViewEditingCell.class.getName()).log(Level.SEVERE, null, ex);
         }
+           
+       
             listViewTeacher.setItems(teachers);
             setGraphic(listViewTeacher);
 
             listViewTeacher.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-            listViewTeacher.setCellFactory(new Callback<ListView<Teacher>, ListCell<Teacher>>() {
-                @Override
-                public ListCell<Teacher> call(ListView<Teacher> param) {
-                    return new ListCell<Teacher>() {
-                        @Override
-                        protected void updateItem(Teacher item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty || item == null) {
-                                setText(null);
-                            } else {
-                                setText(item.getName() + " " + item.getSurname());
-                            }
-                        }
-                    };
-                }
-            });
+           MultipleSelectionModel<Teacher> teachersModel = listViewTeacher.getSelectionModel();
 
         }
 
@@ -83,13 +68,16 @@ public class ListViewEditingCell extends TableCell<Subject, ObservableSet<Teache
 
                 if (isEditing()) {
                     setGraphic(listViewTeacher);
+               /*   listViewTeacher.setOnEditCommit((e) -> {
+                
+            }); */
                 } else {
                     StringBuilder teachersNames = new StringBuilder();
                     teachers.forEach(teacher -> {
                         if (teachersNames.length() > 0) {
                             teachersNames.append("\n");
                         }
-                        teachersNames.append(teacher.getName() + " " + teacher.getSurname());
+                        teachersNames.append(teacher.toString());
                     });
                     setText(teachersNames.toString());
                     setGraphic(null);

@@ -106,7 +106,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return name + " " + surname;
+        return name.getValue() + " " +  surname.getValue();
     }
 
 }

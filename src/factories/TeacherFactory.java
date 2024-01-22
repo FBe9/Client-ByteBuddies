@@ -5,16 +5,16 @@
  */
 package factories;
 
-import implementation.StudentInterfaceImplementation;
-import interfaces.StudentInterface;
+import implementation.TeacherInterfaceImplementation;
+import interfaces.TeacherInterface;
 
 /**
  *
  * @author irati
  */
-public class StudentFactory {
+public class TeacherFactory {
 
-    public static StudentInterface model;
+    public static TeacherInterface model;
 
     /**
      * Retrieves an instance of UserInterface. If the instance doesn't exist, it
@@ -22,9 +22,9 @@ public class StudentFactory {
      *
      * @return An instance of UserInterface.
      */
-    public static StudentInterface getModel() {
+    public static TeacherInterface getModel() {
         if (model == null) {
-            model = new StudentInterfaceImplementation();
+            model = new TeacherInterfaceImplementation();
         }
         return model;
     }

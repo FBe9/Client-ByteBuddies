@@ -19,7 +19,6 @@ import java.util.Locale;
 public class DateSubjectEditingCell extends TableCell<Subject, Date> {
 
     private DatePicker dpSubjectCell;
-    private Locale locale;
     private DateFormat dateFormatter;
 
     public DateSubjectEditingCell() {
@@ -53,9 +52,7 @@ public class DateSubjectEditingCell extends TableCell<Subject, Date> {
     protected void updateItem(Date date, boolean empty) {
         super.updateItem(date, empty);
         Locale locale = Locale.getDefault();
-        dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM
-                
-                , locale);
+        dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 
         if (empty) {
             setText(null);

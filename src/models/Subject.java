@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
@@ -37,9 +38,10 @@ public class Subject implements Serializable {
     private final SimpleObjectProperty<LanguageType> languageType;
     private final SimpleObjectProperty<Date> dateInit;
     private final SimpleObjectProperty<Date> dateEnd;
-
+    private final SimpleIntegerProperty studentsCount;
     private final SetProperty<Teacher> teachersSet;
     private final SetProperty<Enrolled> enrollments;
+    private final SimpleBooleanProperty status;
 
     public Subject() {
         this.id = new SimpleIntegerProperty();
@@ -51,6 +53,8 @@ public class Subject implements Serializable {
         this.dateEnd = new SimpleObjectProperty<>();
         this.teachersSet = new SimpleSetProperty<>(FXCollections.observableSet());
         this.enrollments = new SimpleSetProperty<>(FXCollections.observableSet());
+        this.status = new SimpleBooleanProperty();
+        this.studentsCount = new SimpleIntegerProperty();
     }
 
     /**
@@ -66,7 +70,7 @@ public class Subject implements Serializable {
      * @param dateEnd The end date of the subject.
      * @param teachers
      */
-    public Subject(Integer id, String name, String hours, LevelType levelType, LanguageType languageType, Date dateInit, Date dateEnd, ObservableSet<Teacher> teachers, ObservableSet<Enrolled> enrollments) {
+    public Subject(Integer id, String name, String hours, LevelType levelType, LanguageType languageType, Date dateInit, Date dateEnd, ObservableSet<Teacher> teachers, ObservableSet<Enrolled> enrollments, Boolean status, Integer studentsCount) {
         this.id = new SimpleIntegerProperty(id);
         this.name = new SimpleStringProperty(name);
         this.hours = new SimpleStringProperty(hours);
@@ -76,7 +80,8 @@ public class Subject implements Serializable {
         this.dateEnd = new SimpleObjectProperty(dateEnd);
         this.teachersSet = new SimpleSetProperty(teachers);
         this.enrollments = new SimpleSetProperty(enrollments);
-
+        this.status = new SimpleBooleanProperty(status);
+        this.studentsCount = new SimpleIntegerProperty(studentsCount);
     }
 
     /**
@@ -120,7 +125,6 @@ public class Subject implements Serializable {
      *
      * @return The duration of the subject in hours.
      */
-    @XmlElement(name = "hours")
     public String getHours() {
         return this.hours.get();
     }
@@ -215,6 +219,39 @@ public class Subject implements Serializable {
 
     public void setTeachers(ObservableSet<Teacher> teachers) {
         this.teachersSet.addAll(teachers);
+    }
+
+    public ObservableSet<Enrolled> getEnrollments() {
+        return FXCollections.observableSet(enrollments);
+    }
+
+    public void setEnrollments(ObservableSet<Enrolled> enrollments) {
+        this.enrollments.addAll(enrollments);
+    }
+
+    public Boolean getStatus() {
+        return this.status.get();
+    }
+
+    public void setStatus(Boolean status) {
+        this.status.set(status);
+    }
+
+    public SimpleBooleanProperty statusProperty() {
+        return this.status;
+    }
+
+    public Integer getStudentsCount() {
+        return this.studentsCount.get();
+    }
+
+    /**
+     * Sets the name of the subject.
+     *
+     * @param name The name to be set.
+     */
+    public void setStudentsCount(Integer studentsCount) {
+        this.studentsCount.set(studentsCount);
     }
 
     @Override

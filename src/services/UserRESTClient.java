@@ -5,8 +5,7 @@
  */
 package services;
 
-import java.util.ResourceBundle;
-import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
@@ -28,54 +27,85 @@ public class UserRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
+    private static final String BASE_URI = "http://localhost:8080/Server-ByteBuddies/webresources";
 
     public UserRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.user");
     }
 
-    public void removeUser(String id) throws ClientErrorException {
+    public void removeUser(String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 
-    public <T> T find_XML(Class<T> responseType, String id) throws ClientErrorException {
+    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public void updateUser_XML(Object requestEntity) throws ClientErrorException {
+    public <T> T find_JSON(Class<T> responseType, String id) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
+
+    public void updateUser_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public void createUser_XML(Object requestEntity) throws ClientErrorException {
+    public void updateUser_JSON(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
+    }
+
+    public void createUser_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public <T> T findAllTeachers_XML(GenericType<T> responseType) throws ClientErrorException {
+    public void createUser_JSON(Object requestEntity) throws WebApplicationException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
+    }
+
+    public <T> T findAllTeachers_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path("findAllTeachers");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T login_XML(Object requestEntity, Class<T> responseType) throws ClientErrorException {
-        return webTarget.path("login").request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
+    public <T> T findAllTeachers_JSON(GenericType<T> responseType) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path("findAllTeachers");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findAll_XML(GenericType<T>  responseType) throws ClientErrorException {
+    public <T> T login(Object requestEntity, Class<T> responseType) throws WebApplicationException {
+        return webTarget.path("login").request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), responseType);
+    }
+
+    public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findAllStudents_XML(GenericType<T>  responseType) throws ClientErrorException {
+    public <T> T findAll_JSON(Class<T> responseType) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
+
+    public <T> T findAllStudents_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path("findAllStudents");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    public <T> T findAllStudents_JSON(Class<T> responseType) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path("findAllStudents");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+    }
+
     public void close() {
         client.close();
     }
-
+    
 }

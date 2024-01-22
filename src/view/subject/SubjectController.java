@@ -9,13 +9,18 @@ import exceptions.CreateErrorException;
 import exceptions.DeleteErrorException;
 import exceptions.FindErrorException;
 import exceptions.MaxLengthException;
+import exceptions.SubjectNameAlreadyExistsException;
 import exceptions.UpdateErrorException;
 import exceptions.WrongDateFormatException;
 import exceptions.WrongNameFormatException;
 import exceptions.WrongNumberFormatException;
+import factories.EnrolledFactory;
 import factories.SubjectFactory;
+import factories.UnitFactory;
+import interfaces.EnrolledInterface;
 
 import interfaces.SubjectManager;
+import interfaces.UnitInterface;
 
 import javafx.event.ActionEvent;
 import java.text.SimpleDateFormat;
@@ -40,8 +45,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -50,9 +60,12 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javax.ws.rs.core.GenericType;
+import models.Enrolled;
+import models.EnrolledId;
 import models.LanguageType;
 import models.LevelType;
 import models.Student;
@@ -84,13 +97,9 @@ public class SubjectController {
     @FXML
     private TableColumn<Subject, String> tbColHoursSub;
     @FXML
-    private TableColumn tbColUnits;
-    @FXML
-    private TableColumn tbColExams;
-    @FXML
-    private TableColumn tbColStudents;
-    @FXML
     private TableColumn tbColMatriculated;
+    @FXML
+    private TableColumn<Subject, String> tbColStudents;
     @FXML
     private TextField tfSearchSubject;
     @FXML
@@ -102,14 +111,17 @@ public class SubjectController {
     @FXML
     private Button btnDeleteSubject;
     @FXML
-    private Button btnPrintSubject;
-    @FXML
     private DatePicker dpDateSearchSubject;
+    @FXML
+    private TableColumn<Subject, String> tbColUnits;
+
+    private static final Logger LOGGER = Logger.getLogger("package view.subject");
 
     private Stage stage;
     private User user;
 
     private SubjectManager subjectManager;
+    private EnrolledInterface enrolledInterface;
 
     private ObservableList<Subject> subjects;
     private ObservableList<Teacher> teachers;
@@ -128,9 +140,7 @@ public class SubjectController {
      */
     public void initStage(Parent root, User user) {
         this.user = user;
-        Teacher teacher = new Teacher();
-        teacher.setId(4);
-
+        enrolledInterface = EnrolledFactory.getModel();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         //El nombre de la ventana es “Subjects”.
@@ -140,11 +150,13 @@ public class SubjectController {
         //Poner el campo “dpDateSearchSubject” como no visible y el campo “tfSearchSubject” como visible. 
         dpDateSearchSubject.setVisible(false);
         tfSearchSubject.setVisible(true);
-
+        HBox hBoxMenu = (HBox) root.getChildrenUnmodifiable().get(0);
+        //Get the menu bar from the children of the layout got before
+        MenuBar menuBar = (MenuBar) hBoxMenu.getChildren().get(0);
         //Cargar la comboBox “cbSearchSubject” con los siguientes  valores posibles: "Find Subjects by Name", "Find Subjects by Date Init", "Find Subjects by Date End",  "Find Subjects by Teacher Name",   "Find Subjects with at Least X number of units", “Find your subjects”. 
         ObservableList<String> cbItems = FXCollections.observableArrayList("name", "all subjects", "start date", "end date", "teacher name", "with at leats _ number of units", "your subjects");
         //Si el usuario es un profesor añadir también a la combobox el siguiente valor:" with at least _ number of enrolled students"
-        if (user instanceof Teacher) {
+        if (user.getUser_type().equals("Teacher")) {
             cbItems.add("with at least _ number of students");
             tbColMatriculated.setVisible(false);
 
@@ -157,20 +169,6 @@ public class SubjectController {
         // El combobox “cbSearchSubject” tendrá por defecto la opción “name”.
         cbSearchSubject.getSelectionModel().select("name");
 
-        tbColTeachersSub.setOnEditCommit((TableColumn.CellEditEvent<Subject, ObservableSet<Teacher>> t) -> {
-            Subject subject = t.getTableView().getItems().get(t.getTablePosition().getRow());
-
-            // Assuming you want to update the teachers property of the subject
-            subject.setTeachers(t.getNewValue());
-
-            try {
-                // Assuming subjectManager.updateSubject expects a Subject parameter
-                subjectManager.updateSubject(subject);
-            } catch (UpdateErrorException ex) {
-                showErrorAlert(ex.getMessage());
-            }
-        });
-
         //La columna de la fecha de inicio (tbColStartDate) y fecha de finalización ((tbColEndDate) de la tabla de subject se mostrará en un formato que se ajuste a la configuración local del ordenador del usuario.
         //Establecer el botón ‘btnSearchSubject’ como deshabilitado.
         btnSearchSubject.setDisable(true);
@@ -178,13 +176,14 @@ public class SubjectController {
         //Si el usuario es un alumno ocultar los botones ‘btnNewSubject’ y ‘btnDeleteSubject’.
         // Si el usuario es un profesor, se designará la tabla 'subjects' como editable.
         tbSubjects.setEditable(true);
-        if (user instanceof Student ) {
+        if (user.getUser_type().equals("Student")) {
             tbColNameSub.setEditable(false);
             tbColHoursSub.setEditable(false);
             tbColInitDateSub.setEditable(false);
             tbColEndDateSub.setEditable(false);
             tbColLevelSub.setEditable(false);
             tbColLanguageSub.setEditable(false);
+            tbColTeachersSub.setEditable(false);
         }
 
         //Establecer como botón por defecto
@@ -199,6 +198,8 @@ public class SubjectController {
         tbColInitDateSub.setCellValueFactory(new PropertyValueFactory<>("dateInit"));
         tbColEndDateSub.setCellValueFactory(new PropertyValueFactory<>("dateEnd"));
         tbColTeachersSub.setCellValueFactory(new PropertyValueFactory<>("teachers"));
+        tbColStudents.setCellValueFactory(new PropertyValueFactory<>("studentsCount"));
+
         try {
             //Obtener toda la información de las asignaturas llamando al método findAllSubject de la interfaz SubjectManager.
             subjects = FXCollections.observableArrayList(
@@ -207,16 +208,34 @@ public class SubjectController {
         } catch (FindErrorException ex) {
             showErrorAlert(ex.getMessage());
         }
+        //
+        for (Subject subject : subjects) {
+            int matriculatedCount = 0;
+            for (Enrolled enrollment : subject.getEnrollments()) {
+                if (user.getId() == enrollment.getId().getStudentId() && enrollment.getIsMatriculate()) {
+                    subject.setStatus(true);
+                }
+                if (enrollment.getIsMatriculate()) {
+                    matriculatedCount++;
+                }
+            }
+            subject.setStudentsCount(matriculatedCount);
+        }
+
         tbSubjects.setItems((ObservableList) subjects);
         //Callback para generar las factorias de celda
         final Callback<TableColumn<Subject, ObservableSet<Teacher>>, TableCell<Subject, ObservableSet<Teacher>>> listviewCell
                 = (TableColumn<Subject, ObservableSet<Teacher>> param) -> new ListViewEditingCell();
         final Callback<TableColumn<Subject, Date>, TableCell<Subject, Date>> dateCell
                 = (TableColumn<Subject, Date> param) -> new DateSubjectEditingCell();
+       /* final Callback<TableColumn<Subject, String>, TableCell<Subject, String>> hyperlinkCell
+                = (TableColumn<Subject, String> param) -> new HyperLinkEditingCell(); */
+
         //Asignar las factorias de celda
         tbColTeachersSub.setCellFactory(listviewCell);
         tbColInitDateSub.setCellFactory(dateCell);
         tbColEndDateSub.setCellFactory(dateCell);
+       // tbColUnits.setCellFactory(hyperlinkCell);
 
         // 1. Columna Name
         //Regex para las comprobaciones
@@ -226,55 +245,50 @@ public class SubjectController {
         //Implementación on edit commit
         tbColNameSub.setOnEditCommit(
                 (TableColumn.CellEditEvent<Subject, String> t) -> {
-                    Subject subject = tbSubjects.getSelectionModel().getSelectedItem();
-                    String name = subject.getName();
-                    //Si se presiona la tecla ENTER, se verificará que la información ingresada en la celda consista únicamente en letras. 
-                    if (t.getNewValue().matches(regexLetters)) {
-                        ((Subject) t.getTableView().getItems()
-                                .get(t.getTablePosition().getRow()))
-                                .setName(t.getNewValue());
+                    try {
+                        Subject subject = tbSubjects.getSelectionModel().getSelectedItem();
+                        String name = subject.getName();
 
-                        try {
-                            //Tras la validación y confirmación de que la información es correcta, se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager y llamar al método updateSubject
-                            //pasando como parámetro un objeto Subject con la información actualizada del nombre de la asignatura. 
+                        if (t.getNewValue().matches(regexLetters)) {
+                            ((Subject) t.getTableView().getItems()
+                                    .get(t.getTablePosition().getRow()))
+                                    .setName(t.getNewValue());
+
+                            // Obtener toda la información de las asignaturas llamando al método findAllSubject de la interfaz SubjectManager.
+                            subjects = FXCollections.observableArrayList(subjectManager.findAllSubjects());
+
+                            // Verificar si el nuevo nombre ya existe
+                            for (Subject subjectCheck : subjects) {
+                                if (subjectCheck.getName().equalsIgnoreCase(t.getNewValue())) {
+                                    throw new SubjectNameAlreadyExistsException();
+                                }
+                            }
+
+                            // Tras la validación, llamar a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager y llamar al método updateSubject
                             subjectManager.updateSubject(tbSubjects.getSelectionModel().getSelectedItem());
-                        } catch (UpdateErrorException ex) {
-                            //Si se produce algún error, se le mostrará al usuario una alerta con el error y se cancelará la edición.  
-                            showErrorAlert(ex.getMessage());
-                            ((Subject) t.getTableView().getItems()
-                                    .get(t.getTablePosition().getRow()))
-                                    .setName(t.getOldValue());
-
-                        }
-                    } else {
-                        //En caso contrario, se lanzará la excepción WrongNameFormatException y
-                        //se notificará al usuario a través de una alerta con el siguiente mensaje de error: "Invalid input {tbColNameSub}.  Please, enter only letters.
-                        try {
+                        } else {
+                            // En caso contrario, lanzar la excepción WrongNameFormatException
                             throw new WrongNameFormatException();
-                        } catch (WrongNameFormatException ex) {
-                            showErrorAlert("Invalid input " + t.getNewValue() + ". Please enter only letters.");
-                            ((Subject) t.getTableView().getItems()
-                                    .get(t.getTablePosition().getRow()))
-                                    .setName(t.getOldValue());
-
                         }
-                    }
-                    //También se verificará que el campo no contenga más de 100 caracteres. 
-                    if (t.getNewValue().length() > 100) {
-                        try {
-                            //En caso contrario, lanzar la excepción MaxlengthException y se notificará al usuario a través de una alerta con el 
-                            //siguiente mensaje de error: 'You've exceeded the maximum character limit for the field name.'
+
+                        // Verificar la longitud del campo
+                        if (t.getNewValue().length() > 100) {
                             throw new MaxLengthException();
-                        } catch (MaxLengthException ex) {
-                            new Alert(Alert.AlertType.ERROR, "You've exceeded the maximum character limit for the field name.", ButtonType.OK).showAndWait();
-                            ((Subject) t.getTableView().getItems()
-                                    .get(t.getTablePosition().getRow()))
-                                    .setName(t.getOldValue());
                         }
+                    } catch (SubjectNameAlreadyExistsException ex) {
+                        
+                        showErrorAlert("Subject name already exists.");
+                    } catch (WrongNameFormatException ex) {
+                        tbSubjects.refresh();
+                        showErrorAlert("Invalid input " + t.getNewValue() + ". Please enter only letters.");
+                    } catch (MaxLengthException ex) {
+                        new Alert(Alert.AlertType.ERROR, "You've exceeded the maximum character limit for the field name.", ButtonType.OK).showAndWait();
+                    } catch (FindErrorException | UpdateErrorException ex) {
+                        showErrorAlert(ex.getMessage());
                     }
-
                 });
-        //2. Columna LevelType
+
+        //3. Columna LevelType
         //Establecer los valores para poder visualizarlos en la combobox
         ObservableList<LevelType> levelTypes = FXCollections.observableArrayList(LevelType.BEGGINER, LevelType.MEDIUM, LevelType.EXPERIENCED);
         //Añadir la factoría de celdas para el combobox
@@ -299,7 +313,7 @@ public class SubjectController {
                         t.consume();
                     }
                 });
-        //3. Columna LanguageType
+        //4. Columna LanguageType
         //Establecer los valores para poder visualizarlos en el combobox
         ObservableList<LanguageType> languagesTypes = FXCollections.observableArrayList(LanguageType.SPANISH, LanguageType.BASQUE, LanguageType.ENGLISH);
         //Añadir la factoría de celdas para el combobox
@@ -327,7 +341,7 @@ public class SubjectController {
                     }
 
                 });
-        //4. Columna start date
+        //5. Columna start date
 
         //Comprobar en el archivo de configuración cual es el periodo en el que se pueden añadir nuevas asignaturas
         String startDateConfig = ResourceBundle.getBundle("config.config").getString("STARTDATE");
@@ -354,7 +368,8 @@ public class SubjectController {
                         } catch (UpdateErrorException ex) {
                             //Si se produce algún error, se le mostrará al usuario una alerta con el error.  
                             showErrorAlert(ex.getMessage());
-                            refresh();
+
+                            tbSubjects.refresh();
                             //Se cancelará la edición.
                             t.consume();
                         }
@@ -365,13 +380,13 @@ public class SubjectController {
                             throw new WrongDateFormatException();
                         } catch (WrongDateFormatException ex) {
                             showErrorAlert("Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear());
-                            refresh();
+                            tbSubjects.refresh();
                         }
                     }
 
                 }
         );
-        //5. Columna end date 
+        //6. Columna end date 
         tbColEndDateSub.setOnEditCommit(
                 (TableColumn.CellEditEvent<Subject, Date> t) -> {
                     Boolean checkDate = true;
@@ -433,13 +448,12 @@ public class SubjectController {
 
                 }
         );
-        //6. Columna hours
+        //7. Columna hours
         //Regex para comprobar que solo introduce números
         String regexNumbers = "^[0-9]+$";
 
         //Establecer la factoría de celdas
         tbColHoursSub.setCellFactory(TextFieldTableCell.<Subject>forTableColumn());
-        tbColMatriculated.setEditable(true);
         tbColHoursSub.setOnEditCommit(
                 (TableColumn.CellEditEvent<Subject, String> t) -> {
                     Boolean checkHours = true;
@@ -452,7 +466,7 @@ public class SubjectController {
                             throw new WrongNumberFormatException();
                         } catch (WrongNumberFormatException ex) {
                             new Alert(Alert.AlertType.ERROR, "Invalid input " + t.getNewValue() + ". Please enter only numbers.", ButtonType.OK).showAndWait();
-                            refresh();
+                            tbSubjects.refresh();
                         }
                     }
                     //Se verificará que el campo no contenga más de 4 caracteres. 
@@ -464,7 +478,7 @@ public class SubjectController {
                             throw new MaxLengthException();
                         } catch (MaxLengthException ex) {
                             new Alert(Alert.AlertType.ERROR, "You've exceeded the maximum character limit for the field hours.", ButtonType.OK).showAndWait();
-                            refresh();
+                            tbSubjects.refresh();
                         }
                     }
 
@@ -481,7 +495,7 @@ public class SubjectController {
                         } catch (UpdateErrorException ex) {
                             //Si se produce algún error, se le mostrará al usuario una alerta con el error.  
                             showErrorAlert(ex.getMessage());
-                            refresh();
+                            tbSubjects.refresh();
                             //Se cancelará la edición.
                             t.consume();
 
@@ -491,24 +505,102 @@ public class SubjectController {
                 }
         );
         // 11. Columna Enrolled
+        tbColMatriculated.setCellFactory(
+                CheckBoxTableCell.<Subject>forTableColumn(tbColMatriculated));
+        //then, set the value cell factory:
+        tbColMatriculated.setCellValueFactory(
+                new PropertyValueFactory<>("status"));
 
-        tbColMatriculated.setCellFactory(CheckBoxTableCell.<Subject>forTableColumn(tbColMatriculated));
-        /*
-         subjects.forEach(
-                    subject -> subject.s
-                                .addListener((observable, oldValue, newValue) -> {
-                        LOGGER.log(Level.INFO,
-                                     "Status property changed.newvalue {0}",
-                                      newValue.toString());
-                        LOGGER.log(Level.INFO,             
-                                     "User modified: {0}",
-                                      user.getNombre());
-                    })
-            );
-        /// */
+        subjects.forEach(
+                subject -> subject.statusProperty()
+                        .addListener((observable, oldValue, newValue) -> {
+
+                            if (oldValue == false) {
+
+                                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                                        "Do you want to enroll in the subject " + subject.getName() + " ?",
+                                        ButtonType.YES, ButtonType.NO);
+                                Optional<ButtonType> result = alert.showAndWait();
+
+                                if (result.isPresent() && result.get() == ButtonType.YES) {
+                                    if (subject.getEnrollments().isEmpty()) {
+                                        Enrolled enrollmentNew = new Enrolled();
+                                        EnrolledId enrolledId = new EnrolledId();
+                                        enrolledId.setStudentId(user.getId());
+                                        enrolledId.setSubjectId(subject.getId());
+                                        enrollmentNew.setId(enrolledId);
+                                        enrollmentNew.setIsMatriculate(newValue);
+                                        subject.setStatus(newValue);
+                                        try {
+                                            enrolledInterface.createEnrolled(enrollmentNew);
+                                        } catch (CreateErrorException ex) {
+                                            Logger.getLogger(SubjectController.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                        subject.setStudentsCount(subject.getStudentsCount() + 1);
+                                        tbSubjects.refresh();
+                                        //   tbSubjects.refresh();
+                                    } else {
+                                        subject.getEnrollments().forEach(enrollment -> {
+                                            if (user.getId() == enrollment.getId().getStudentId()) {
+                                                try {
+                                                    enrollment.setIsMatriculate(newValue);
+                                                    subject.setStatus(newValue);
+                                                    enrolledInterface.updateEnrolled(enrollment);
+                                                } catch (UpdateErrorException ex) {
+                                                    Logger.getLogger(SubjectController.class.getName()).log(Level.SEVERE, null, ex);
+                                                }
+                                            } else {
+                                                Enrolled enrollmentNew = new Enrolled();
+                                                EnrolledId enrolledId = new EnrolledId();
+                                                enrolledId.setStudentId(user.getId());
+                                                enrolledId.setSubjectId(subject.getId());
+                                                enrollmentNew.setId(enrolledId);
+                                                enrollmentNew.setIsMatriculate(newValue);
+                                                subject.setStatus(newValue);
+                                                try {
+                                                    enrolledInterface.createEnrolled(enrollmentNew);
+                                                } catch (CreateErrorException ex) {
+                                                    Logger.getLogger(SubjectController.class.getName()).log(Level.SEVERE, null, ex);
+                                                }
+                                            }
+                                            subject.setStudentsCount(subject.getStudentsCount() + 1);
+                                            tbSubjects.refresh();
+                                        });
+                                    }
+                                }
+
+                            } else {
+
+                                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                                        "Are you sure you want to unenroll from this subject " + subject.getName() + " ?",
+                                        ButtonType.YES, ButtonType.NO);
+                                Optional<ButtonType> result = alert.showAndWait();
+
+                                if (result.isPresent() && result.get() == ButtonType.YES) {
+                                    subject.getEnrollments().forEach(enrollment -> {
+                                        if (user.getId() == enrollment.getId().getStudentId()) {
+                                            try {
+                                                enrollment.setIsMatriculate(newValue);
+                                                subject.setStatus(newValue);
+                                                enrolledInterface.updateEnrolled(enrollment);
+                                            } catch (UpdateErrorException ex) {
+                                                Logger.getLogger(SubjectController.class.getName()).log(Level.SEVERE, null, ex);
+                                            }
+                                        }
+
+                                    });
+                                    subject.setStudentsCount(subject.getStudentsCount() - 1);
+                                    tbSubjects.refresh();
+                                }
+
+                            }
+
+                        }
+                        )
+        );
         //Establecer los action y los listeners
         btnSearchSubject.setOnAction(
-                this::handelSearchButtonAction);
+                this::handleSearchButtonAction);
         tfSearchSubject.textProperty()
                 .addListener(this::textChanged);
 
@@ -521,6 +613,80 @@ public class SubjectController {
         btnDeleteSubject.setOnAction(
                 this::handelDeleteButtonAction);
 
+        //Menus de contexto
+        final ContextMenu contextMenu = new ContextMenu();
+        MenuItem createNewSubjectMenuItem = new MenuItem("Create new Subject");
+        createNewSubjectMenuItem.setOnAction((ActionEvent e) -> {
+            ObservableList<Subject> newSubjects = null;
+            try {
+                newSubjects = FXCollections.observableArrayList(subjectManager.findAllSubjects());
+            } catch (FindErrorException ex) {
+                showErrorAlert(ex.getMessage());
+            }
+            Subject defaultSubject = new Subject();
+            defaultSubject.setName(null);
+            defaultSubject.setHours(null);
+            defaultSubject.setLevelType(LevelType.BEGGINER);
+            defaultSubject.setLanguageType(LanguageType.SPANISH);
+            defaultSubject.setDateInit(new Date());
+            defaultSubject.setDateEnd(new Date());
+            try {
+                //Después, se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager 
+                //y se invocará al método createSubject, pasando como parámetro un objeto Subject.
+                subjectManager.createSubject(defaultSubject);
+            } catch (CreateErrorException ex) {
+                showErrorAlert(ex.getMessage());
+            }
+            //Si la operación se lleva a cabo sin errores, la fila recién creada se mostrará en la tabla.
+            if (newSubjects != null) {
+                newSubjects.add(defaultSubject);
+                tbSubjects.setItems(newSubjects);
+            }
+
+        });
+        MenuItem deleteSubjectMenuItem = new MenuItem("Delete a subject");
+        deleteSubjectMenuItem.setOnAction((ActionEvent e) -> {
+            Subject subjectDelete = null;
+            subjectDelete = tbSubjects.getSelectionModel().getSelectedItem();
+            if (subjectDelete != null) {
+                //Se mostrará un mensaje de confirmación.
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Are you you want to delete the subject ?",
+                        ButtonType.YES, ButtonType.NO);
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.YES) {
+                    try {
+                        // Se verificará si existen matriculaciones para dicha asignatura; en caso afirmativo, se llamará a la factoría EnrolledFactory para obtener una implementación de la interfaz EnrolledManager 
+                        //y se invocará al método deleteEnrolled, pasando como parámetro un objeto Enrolled. 
+                        //se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager y 
+                        //se invocará al método deleteSubject, pasando como parámetro un objeto Subject.
+                        if (subjectDelete.getEnrollments().size() > 0) {
+                            for (Enrolled enrollment : subjectDelete.getEnrollments()) {
+                                enrolledInterface.deleteEnrolled(enrollment.getId().getStudentId().toString(), enrollment.getId().getSubjectId().toString());
+                            }
+                        }
+
+                        subjectManager.deleteSubject(subjectDelete.getId().toString());
+                       //AÑADIR EL MÉTODO PARA HACER REFRESH
+
+                    } catch (DeleteErrorException ex) {
+                        Logger.getLogger(SubjectController.class
+                                .getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+            } else {
+                showErrorAlert("You need to select a subject to be deleted");
+            }
+
+        });
+
+        if (user.getUser_type().equals("Teacher")) {
+            contextMenu.getItems().add(createNewSubjectMenuItem);
+            contextMenu.getItems().add(deleteSubjectMenuItem);
+            tbSubjects.setContextMenu(contextMenu);
+        }
         //Mostrar la ventana.
         stage.show();
 
@@ -575,7 +741,7 @@ public class SubjectController {
         }
     }
 
-    public void handelSearchButtonAction(ActionEvent event) {
+    public void handleSearchButtonAction(ActionEvent event) {
         String selectedOption = (String) cbSearchSubject.getSelectionModel().getSelectedItem();
         ObservableList<Subject> subjectsResult = null;
         try {
@@ -583,6 +749,7 @@ public class SubjectController {
 
                 try {
                     subjectsResult = FXCollections.observableArrayList(subjectManager.findSubjectsByName(tfSearchSubject.getText()));
+
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
@@ -638,6 +805,16 @@ public class SubjectController {
             showErrorAlert("Error trying to get the information");
             new Alert(Alert.AlertType.ERROR, "Error trying to get the information", ButtonType.OK).showAndWait();
         }
+        if (!subjectsResult.isEmpty()) {
+            //Recoge el número de estudiantes
+            for (Subject subject : subjects) {
+                for (Subject subjectNew : subjectsResult) {
+                    if (subject.getId() == subjectNew.getId()) {
+                        subjectNew.setStudentsCount(subject.getStudentsCount());
+                    }
+                }
+            }
+        }
 
         tbSubjects.setItems((ObservableList) subjectsResult);
 
@@ -686,20 +863,23 @@ public class SubjectController {
         //Se mostrará un mensaje de confirmación.
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                 "Are you sure you want to exit the application?",
-                ButtonType.OK, ButtonType.CANCEL);
+                ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
 
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (result.isPresent() && result.get() == ButtonType.YES) {
             try {
                 // Se verificará si existen matriculaciones para dicha asignatura; en caso afirmativo, se llamará a la factoría EnrolledFactory para obtener una implementación de la interfaz EnrolledManager 
                 //y se invocará al método deleteEnrolled, pasando como parámetro un objeto Enrolled. 
-                if (user instanceof Student) {
-
-                }
                 //se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager y 
                 //se invocará al método deleteSubject, pasando como parámetro un objeto Subject.
+                if (subjectDelete.getEnrollments().size() > 0) {
+                    for (Enrolled enrollment : subjectDelete.getEnrollments()) {
+                        enrolledInterface.deleteEnrolled(enrollment.getId().getStudentId().toString(), enrollment.getId().getSubjectId().toString());
+                    }
+                }
+
                 subjectManager.deleteSubject(subjectDelete.getId().toString());
-                refresh();
+                tbSubjects.refresh();
 
             } catch (DeleteErrorException ex) {
                 Logger.getLogger(SubjectController.class
@@ -708,15 +888,6 @@ public class SubjectController {
 
         }
 
-    }
-
-    public void refresh() {
-        try {
-            subjects = FXCollections.observableArrayList(subjectManager.findAllSubjects());
-        } catch (FindErrorException ex) {
-            showErrorAlert(ex.getMessage());
-        }
-        tbSubjects.setItems(subjects);
     }
 
 }

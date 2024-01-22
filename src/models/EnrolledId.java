@@ -7,6 +7,7 @@ package models;
 
 import java.io.Serializable;
 import javafx.beans.property.SimpleIntegerProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
