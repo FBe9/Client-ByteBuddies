@@ -1,25 +1,26 @@
 package view.unit;
 
+import exceptions.CreateErrorException;
 import exceptions.FindErrorException;
 import factories.*;
 import interfaces.SubjectManager;
 import interfaces.UnitInterface;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Observable;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -38,11 +39,11 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javax.ws.rs.core.GenericType;
 import models.Subject;
 import models.Teacher;
 import models.Unit;
 import models.User;
+import view.MenuBarController;
 
 /**
  * FXML Controller class
@@ -351,16 +352,49 @@ public class UnitWindowController {
      * @param event
      */
     public void handelCreateButtonAction(Event event) {
-        //Se creará una nueva fila en la tabla con valores por defecto:
-        //Las columnas Name y Description estarán vacías.
-        //La columna Subject en caso de que una subject esté seleccionada en el combobox “cbSubjects”, se selecciona esta en este campo.
-        //Si no es el caso, será la posición 1 del combobox “cbSubjects” la que se seleccione.
-        //Las columnas de Date Init y Date  End estarán cargadas con la fecha de hoy (Init) y la de mañana (End).
-        //La columna de Hours estará a 0.
-        //La columna de Exercises tendrá el valor “View Exercises”.
-        //Después se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “createUnit” para crear una Unit con los valores por defecto que hemos estipulado pasandoselos en un objeto de tipo Unit.
-        //Si la operación se lleva a cabo sin errores, la fila recién creada se mostrará en la tabla.
-        //Si se produce algún error, se le mostrará al usuario una alerta con el error y se cancelará la creación de la asignatura.
+        try {
+            //Se creará una nueva fila en la tabla con valores por defecto:
+            Unit newUnit = new Unit();
+            //Las columnas Name y Description estarán vacías.
+            newUnit.setName("");
+            newUnit.setDescription("");
+
+            String subjectUnit = (String) cbSubjects.getSelectionModel().getSelectedItem();
+            if (!cbSubjects.getSelectionModel().isEmpty()) {
+                //La columna Subject en caso de que una subject esté seleccionada en el combobox “cbSubjects”, se selecciona esta en este campo.
+                clientsDataS = FXCollections.observableArrayList(clientS.findAllSubjects());
+                for (int i = 0; i < clientsDataS.size(); i++) {
+                    if (clientsDataS.get(i).getName().equalsIgnoreCase(subjectUnit)) {
+                        newUnit.setSubject(clientsDataS.get(i));
+                    }
+                }
+            }else{
+            //Si no es el caso, será la posición 1 del combobox “cbSubjects” la que se seleccione.
+                cbSubjects.getSelectionModel().selectFirst();
+                subjectUnit = cbSubjects.getSelectionModel().getSelectedItem().toString();
+                clientsDataS = FXCollections.observableArrayList(clientS.findAllSubjects());
+                for (int i = 0; i < clientsDataS.size(); i++) {
+                    if (clientsDataS.get(i).getName().equalsIgnoreCase(subjectUnit)) {
+                        newUnit.setSubject(clientsDataS.get(i));
+                    }
+                }
+            }
+            //Las columnas de Date Init y Date  End estarán cargadas con la fecha de hoy (Init) y la de mañana (End).
+            newUnit.setDateInit(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            newUnit.setDateEnd(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+            //La columna de Hours estará a 0.
+            newUnit.setHours("0");
+            //La columna de Exercises tendrá el valor “View Exercises”.
+            //Se usará el método “createUnit” para crear una Unit con los valores por defecto que hemos estipulado pasandoselos en un objeto de tipo Unit.
+            clientU.createUnit(newUnit);
+
+            //Si la operación se lleva a cabo sin errores, la fila recién creada se mostrará en la tabla.
+            //Si se produce algún error, se le mostrará al usuario una alerta con el error y se cancelará la creación de la asignatura.
+        } catch (FindErrorException | CreateErrorException ex) {
+            Logger.getLogger(UnitWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            new Alert(Alert.AlertType.INFORMATION, "There was a problem while creating the unit", ButtonType.OK).showAndWait();
+        }
     }
 
     /**
@@ -405,5 +439,19 @@ public class UnitWindowController {
      */
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    private void superRefresh() {
+        try {
+            stage.close();
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("UnitWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            // Obtain the Sign In window controller
+            UnitWindowController controller = (UnitWindowController) loader.getController();
+            controller.setStage(stage);
+            controller.initStage(root, loggedUser);
+        } catch (IOException ex) {
+            Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

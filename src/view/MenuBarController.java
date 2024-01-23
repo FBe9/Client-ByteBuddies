@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -59,13 +60,18 @@ public class MenuBarController {
      * @param loggedUser
      */
     public void initStage(User loggedUser) {
+        loggedUser.setId(1);
+        loggedUser.setUser_type("Teacher");
         this.loggedUser = loggedUser;
-
+        miSubjects.setOnAction(this::handleSubjectMenuItemAction);
+        miUnits.setOnAction(this::handleUnitMenuItemAction);
+        miExams.setOnAction(this::handleExamMenuItemAction);
+        miCloseApp.setOnAction(this::handleCloseApplicationMenuItemAction);
     }
 
     public void handleSubjectMenuItemAction(Event event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/unit/subject.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("unit/subject.fxml"));
             Parent root = (Parent) loader.load();
             // Obtain the Sign In window controller
             SubjectController controller = (SubjectController) loader.getController();
@@ -78,13 +84,10 @@ public class MenuBarController {
 
     public void handleUnitMenuItemAction(Event event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/unit/UnitWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("unit/UnitWindow.fxml"));
             Parent root = (Parent) loader.load();
             // Obtain the Sign In window controller
             UnitWindowController controller = (UnitWindowController) loader.getController();
-            User user = new Teacher();
-            user.setId(1);
-            user.setUser_type("Teacher");
             controller.setStage(stage);
             controller.initStage(root, loggedUser);
         } catch (IOException ex) {

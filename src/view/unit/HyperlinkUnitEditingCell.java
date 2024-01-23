@@ -1,5 +1,6 @@
 package view.unit;
 
+import javafx.event.Event;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.Hyperlink;
 
@@ -16,40 +17,10 @@ public class HyperlinkUnitEditingCell extends TableCell<Unit, Hyperlink> {
     public HyperlinkUnitEditingCell() {
         // Configurar el Hyperlink
         httpUnitCell = new Hyperlink();
+        httpUnitCell.setText("View all Exercises");
     }
 
-    @Override
-    protected void updateItem(Hyperlink http, boolean empty) {
-        super.updateItem(http, empty);
-       
-        if (empty) {
-            setText(null);
-        } else {
-
-            if (isEditing()) {
-                
-            } else if (http != null) {
-                
-            }
-        }
+    public void handleHyperlinkActionEvent(Event event) {
+    
     }
-
-    @Override
-    public void startEdit() {
-        if (!isEmpty()) {
-            super.startEdit();
-            httpUnitCell = new Hyperlink();
-            httpUnitCell.setOnAction((e) -> {
-                //commitEdit(Hyperlink.);
-            });
-            setText(null);
-        }
-    }
-
-    @Override
-    public void cancelEdit() {
-        super.cancelEdit();
-        setGraphic(null);
-    }
-
 }

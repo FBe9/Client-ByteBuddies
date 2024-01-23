@@ -5,42 +5,42 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:id="hBoxMenu" fx:controller="view.MenuBarController">
+<HBox fx:id="hBoxMenu" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="26.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MenuBarController">
    <children>
       <MenuBar style="-fx-background-color: #74B0E7;" HBox.hgrow="ALWAYS">
          <menus>
             <Menu mnemonicParsing="false" text="Subject">
                <items>
-                  <MenuItem fx:id="miSubjects" mnemonicParsing="false" text="Show Subjects"/>
+                  <MenuItem fx:id="miSubjects" mnemonicParsing="false" onAction="#handleSubjectMenuItemAction" text="Show Subjects" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Exam">
                <items>
-                  <MenuItem fx:id="miExams" mnemonicParsing="false" text="Show Exams" />
+                  <MenuItem fx:id="miExams" mnemonicParsing="false" onAction="#handleExamMenuItemAction" text="Show Exams" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Unit">
                <items>
-                  <MenuItem fx:id="miUnits" mnemonicParsing="false" text="Show Unit" />
+                  <MenuItem fx:id="miUnits" mnemonicParsing="false" onAction="#handleUnitMenuItemAction" text="Show Unit" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Exercise">
                <items>
-                  <MenuItem fx:id="miExercises" mnemonicParsing="false" text="Show Exercise" />
+                  <MenuItem fx:id="miExercises" mnemonicParsing="false" onAction="#handleExerciseMenuItemAction" text="Show Exercise" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
                <items>
-                  <MenuItem fx:id="miHelpSubjects" mnemonicParsing="false" text="Help Subjects Window" />
-                  <MenuItem fx:id="miHelpExams" mnemonicParsing="false" text="Help Exams Window" />
-                  <MenuItem fx:id="miHelpUnits" mnemonicParsing="false" text="Help Units Window" />
-                  <MenuItem fx:id="miHelpExercises" mnemonicParsing="false" text="Help Exercises Window" />
+                  <MenuItem fx:id="miHelpSubjects" mnemonicParsing="false" onAction="#handleSubjectHelpMenuItemAction" text="Help Subjects Window" />
+                  <MenuItem fx:id="miHelpExams" mnemonicParsing="false" onAction="#handleExamHelpMenuItemAction" text="Help Exams Window" />
+                  <MenuItem fx:id="miHelpUnits" mnemonicParsing="false" onAction="#handleUnitHelpMenuItemAction" text="Help Units Window" />
+                  <MenuItem fx:id="miHelpExercises" mnemonicParsing="false" onAction="#handleExerciseHelpMenuItemAction" text="Help Exercises Window" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Exit">
                <items>
-                  <MenuItem fx:id="miCloseApp" mnemonicParsing="false" text="Close the application" />
-                  <MenuItem fx:id="miLogOut" mnemonicParsing="false" text="Log Out" />
+                  <MenuItem fx:id="miCloseApp" mnemonicParsing="false" onAction="#handleCloseApplicationMenuItemAction" text="Close the application" />
+                  <MenuItem fx:id="miLogOut" mnemonicParsing="false" onAction="#handleLogOutMenuItemAction" text="Log Out" />
                </items>
             </Menu>
          </menus>
