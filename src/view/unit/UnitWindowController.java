@@ -223,6 +223,7 @@ public class UnitWindowController {
                 tbvUnit.setItems((ObservableList) clientsDataU);
             }
 
+            cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSubjects);
             cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSearchType);
             stage.setOnCloseRequest(this::handleOnActionExit);
             tfSearch.textProperty().addListener(this::textPropertyChange);
@@ -232,6 +233,22 @@ public class UnitWindowController {
             LOGGER.info(e.getMessage());
         }
 
+    }
+
+    /**
+     *
+     * @param observable
+     * @param oldValue
+     * @param newValue
+     */
+    public void handleOnSelectSubjects(ObservableValue<Object> observable,
+            Object oldValue, Object newValue) {
+        //Comprobar qué valor está seleccionado:
+        //Si no hay nada seleccionado: Se carga la tabla con valor de todas las unidades de todas las asignaturas en las que esté registrado el usuario conectado a la aplicación. El usuario puede ser de dos tipos:
+        //Si el usuario es de tipo “Teacher”: Se usará el método “findUnitsFromTeacherSubjects” para rellenar la tabla pasandole el id del usuario conectado a la aplicación. 
+        //Si el usuario es de tipo “Student”: Se usará el método “findUnitsFromStudentSubjects” para rellenar la tabla pasandole el id del usuario conectado a la aplicación. 
+        //Si está seleccionado ”No Subjects found”: el combobox de search type(cbSearchType), el textfield(tfSearch), el datepicker(dpSearch) y los botones de search(btnSearch), create(btnCreateUnit) y delete(btnDeleteUnit) se desactivan.
+        //Si hay un valor: Se usará el método “findSubjectUnits” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox. 
     }
 
     /**
@@ -368,8 +385,8 @@ public class UnitWindowController {
                         newUnit.setSubject(clientsDataS.get(i));
                     }
                 }
-            }else{
-            //Si no es el caso, será la posición 1 del combobox “cbSubjects” la que se seleccione.
+            } else {
+                //Si no es el caso, será la posición 1 del combobox “cbSubjects” la que se seleccione.
                 cbSubjects.getSelectionModel().selectFirst();
                 subjectUnit = cbSubjects.getSelectionModel().getSelectedItem().toString();
                 clientsDataS = FXCollections.observableArrayList(clientS.findAllSubjects());
@@ -388,8 +405,17 @@ public class UnitWindowController {
             //La columna de Exercises tendrá el valor “View Exercises”.
             //Se usará el método “createUnit” para crear una Unit con los valores por defecto que hemos estipulado pasandoselos en un objeto de tipo Unit.
             clientU.createUnit(newUnit);
-
             //Si la operación se lleva a cabo sin errores, la fila recién creada se mostrará en la tabla.
+            new Alert(Alert.AlertType.INFORMATION, "Unit added successfully", ButtonType.OK).showAndWait();
+            if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
+                clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
+                tbvUnit.setItems((ObservableList) clientsDataU);
+                tbvUnit.refresh();
+            } else {
+                clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromStudentSubjects(loggedUser.getId().toString()));
+                tbvUnit.setItems((ObservableList) clientsDataU);
+                tbvUnit.refresh();
+            }
             //Si se produce algún error, se le mostrará al usuario una alerta con el error y se cancelará la creación de la asignatura.
         } catch (FindErrorException | CreateErrorException ex) {
             Logger.getLogger(UnitWindowController.class.getName()).log(Level.SEVERE, null, ex);
