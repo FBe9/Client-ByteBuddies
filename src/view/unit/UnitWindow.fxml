@@ -2,8 +2,10 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -12,10 +14,10 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #ECF4FF;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.unit.UnitWindowController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #ECF4FF;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.unit.UnitWindowController">
     <children>
         <fx:include fx:id="hBoxMenu" source="../MenuBar.fxml" />
-        <ImageView fitHeight="744.0" fitWidth="170.0" layoutY="24.0" pickOnBounds="true">
+        <ImageView fitHeight="742.0" fitWidth="170.0" layoutY="26.0" pickOnBounds="true">
             <image>
                 <Image url="@../../resources/BlueWallpaper.jpg" />
             </image>
@@ -45,6 +47,13 @@
                 <TableColumn fx:id="tbcHours" prefWidth="85.0" text="Hours" />
                 <TableColumn fx:id="tbcExercises" prefWidth="82.0" text="Exercises" />
             </columns>
+         <contextMenu>
+            <ContextMenu>
+              <items>
+                <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+              </items>
+            </ContextMenu>
+         </contextMenu>
         </TableView>
         <TextField fx:id="tfSearch" layoutX="623.0" layoutY="186.0" prefHeight="28.0" prefWidth="395.0" promptText="Search...">
             <font>
