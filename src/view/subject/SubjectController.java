@@ -16,23 +16,20 @@ import exceptions.WrongNameFormatException;
 import exceptions.WrongNumberFormatException;
 import factories.EnrolledFactory;
 import factories.SubjectFactory;
-import factories.UnitFactory;
 import interfaces.EnrolledInterface;
 
 import interfaces.SubjectManager;
-import interfaces.UnitInterface;
 
 import javafx.event.ActionEvent;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
@@ -45,13 +42,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -63,7 +59,6 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import javax.ws.rs.core.GenericType;
 import models.Enrolled;
 import models.EnrolledId;
 import models.LanguageType;
@@ -72,6 +67,13 @@ import models.Student;
 import models.Subject;
 import models.Teacher;
 import models.User;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * FXML Controller class
@@ -111,9 +113,13 @@ public class SubjectController {
     @FXML
     private Button btnDeleteSubject;
     @FXML
+    private Button btnPrintSubject;
+    @FXML
     private DatePicker dpDateSearchSubject;
     @FXML
     private TableColumn<Subject, String> tbColUnits;
+    @FXML
+    private TableColumn<Subject, String> tbColExams;
 
     private static final Logger LOGGER = Logger.getLogger("package view.subject");
 
@@ -153,12 +159,19 @@ public class SubjectController {
         HBox hBoxMenu = (HBox) root.getChildrenUnmodifiable().get(0);
         //Get the menu bar from the children of the layout got before
         MenuBar menuBar = (MenuBar) hBoxMenu.getChildren().get(0);
+        //Get the second menu from the menu bar
+        Menu menuHelp = menuBar.getMenus().get(1);
+        //Add a listener for the showing property that fires the action event
+        //on the first menu item of that menu
+       
         //Cargar la comboBox “cbSearchSubject” con los siguientes  valores posibles: "Find Subjects by Name", "Find Subjects by Date Init", "Find Subjects by Date End",  "Find Subjects by Teacher Name",   "Find Subjects with at Least X number of units", “Find your subjects”. 
         ObservableList<String> cbItems = FXCollections.observableArrayList("name", "all subjects", "start date", "end date", "teacher name", "with at leats _ number of units", "your subjects");
         //Si el usuario es un profesor añadir también a la combobox el siguiente valor:" with at least _ number of enrolled students"
         if (user.getUser_type().equals("Teacher")) {
             cbItems.add("with at least _ number of students");
             tbColMatriculated.setVisible(false);
+            tbSubjects.setPrefWidth(994);
+            btnPrintSubject.setLayoutX(1110);
 
         } else {
             btnCreateSubject.setVisible(false);
@@ -228,15 +241,19 @@ public class SubjectController {
                 = (TableColumn<Subject, ObservableSet<Teacher>> param) -> new ListViewEditingCell();
         final Callback<TableColumn<Subject, Date>, TableCell<Subject, Date>> dateCell
                 = (TableColumn<Subject, Date> param) -> new DateSubjectEditingCell();
-       /* final Callback<TableColumn<Subject, String>, TableCell<Subject, String>> hyperlinkCell
-                = (TableColumn<Subject, String> param) -> new HyperLinkEditingCell(); */
+
+        final Callback<TableColumn<Subject, String>, TableCell<Subject, String>> hyperlinkCellUnit
+                = (TableColumn<Subject, String> param) -> new HyperLinkEditingCellUnit(user, stage);
+
+        final Callback<TableColumn<Subject, String>, TableCell<Subject, String>> hyperlinkCellExam
+                = (TableColumn<Subject, String> param) -> new HyperLinkEditingCellExam(user, stage);
 
         //Asignar las factorias de celda
         tbColTeachersSub.setCellFactory(listviewCell);
         tbColInitDateSub.setCellFactory(dateCell);
         tbColEndDateSub.setCellFactory(dateCell);
-       // tbColUnits.setCellFactory(hyperlinkCell);
-
+        tbColUnits.setCellFactory(hyperlinkCellUnit);
+        tbColExams.setCellFactory(hyperlinkCellExam);
         // 1. Columna Name
         //Regex para las comprobaciones
         String regexLetters = "^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]+$";
@@ -246,6 +263,7 @@ public class SubjectController {
         tbColNameSub.setOnEditCommit(
                 (TableColumn.CellEditEvent<Subject, String> t) -> {
                     try {
+
                         Subject subject = tbSubjects.getSelectionModel().getSelectedItem();
                         String name = subject.getName();
 
@@ -259,9 +277,12 @@ public class SubjectController {
 
                             // Verificar si el nuevo nombre ya existe
                             for (Subject subjectCheck : subjects) {
-                                if (subjectCheck.getName().equalsIgnoreCase(t.getNewValue())) {
-                                    throw new SubjectNameAlreadyExistsException();
+                                if (subjectCheck.getName() != null) {
+                                    if (subjectCheck.getName().equalsIgnoreCase(t.getNewValue())) {
+                                        throw new SubjectNameAlreadyExistsException();
+                                    }
                                 }
+
                             }
 
                             // Tras la validación, llamar a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager y llamar al método updateSubject
@@ -276,8 +297,9 @@ public class SubjectController {
                             throw new MaxLengthException();
                         }
                     } catch (SubjectNameAlreadyExistsException ex) {
-                        
+                        tbSubjects.refresh();
                         showErrorAlert("Subject name already exists.");
+
                     } catch (WrongNameFormatException ex) {
                         tbSubjects.refresh();
                         showErrorAlert("Invalid input " + t.getNewValue() + ". Please enter only letters.");
@@ -287,6 +309,26 @@ public class SubjectController {
                         showErrorAlert(ex.getMessage());
                     }
                 });
+        //2. Columna Teachers
+        tbColTeachersSub.setOnEditCommit(
+                (TableColumn.CellEditEvent<Subject, ObservableSet<Teacher>> t) -> {
+                    Subject subject = t.getTableView().getItems().get(t.getTablePosition().getRow());
+
+                    // Vaciar el array actual de profesores
+                    subject.getTeachers().clear();
+
+                    // Añadir los nuevos profesores seleccionados
+                    subject.getTeachers().addAll(t.getNewValue());
+
+                    try {
+                        // Lógica para actualizar el sujeto en el backend
+                        subjectManager.updateSubject(subject);
+                    } catch (UpdateErrorException ex) {
+                        showErrorAlert(ex.getMessage());
+                        t.consume();
+                    }
+                }
+        );
 
         //3. Columna LevelType
         //Establecer los valores para poder visualizarlos en la combobox
@@ -309,7 +351,7 @@ public class SubjectController {
                         //Si se produce algún error, se le mostrará al usuario una alerta con el error.
                         showErrorAlert(ex.getMessage());
                         //Se cancelará la edición.
-                        subject.setLevelType(originalValueLevel);
+                        tbSubjects.refresh();
                         t.consume();
                     }
                 });
@@ -603,6 +645,7 @@ public class SubjectController {
                 this::handleSearchButtonAction);
         tfSearchSubject.textProperty()
                 .addListener(this::textChanged);
+        btnPrintSubject.setOnAction(this::handleImprimirAction);
 
         cbSearchSubject.valueProperty()
                 .addListener(this::textChanged);
@@ -668,7 +711,7 @@ public class SubjectController {
                         }
 
                         subjectManager.deleteSubject(subjectDelete.getId().toString());
-                       //AÑADIR EL MÉTODO PARA HACER REFRESH
+                        //AÑADIR EL MÉTODO PARA HACER REFRESH
 
                     } catch (DeleteErrorException ex) {
                         Logger.getLogger(SubjectController.class
@@ -681,13 +724,48 @@ public class SubjectController {
             }
 
         });
+        MenuItem printSubjectMenuItem = new MenuItem("Print a report");
+        printSubjectMenuItem.setOnAction((ActionEvent e) -> {
 
-        if (user.getUser_type().equals("Teacher")) {
+            try {
+                LOGGER.info("Beginning printing action...");
+                JasperReport report
+                        = JasperCompileManager.compileReport(getClass()
+                                .getResourceAsStream("/reports/SubjectReport.jrxml"));
+                //Data for the report: a collection of UserBean passed as a JRDataSource 
+                //implementation 
+                JRBeanCollectionDataSource dataItems
+                        = new JRBeanCollectionDataSource((Collection<Subject>) this.tbSubjects.getItems());
+                //Map of parameter to be passed to the report
+                Map<String, Object> parameters = new HashMap<>();
+                //Fill report with data
+                JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+                //Create and show the report window. The second parameter false value makes 
+                //report window not to close app.
+                JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+                jasperViewer.setVisible(true);
+                // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+            } catch (JRException ex) {
+                //If there is an error show message and
+                //log it.
+                showErrorAlert("Error al imprimir:\n"
+                        + ex.getMessage());
+                LOGGER.log(Level.SEVERE,
+                        "UI GestionUsuariosController: Error printing report: {0}",
+                        ex.getMessage());
+            }
+        }
+        );
+
+        if (user.getUser_type()
+                .equals("Teacher")) {
             contextMenu.getItems().add(createNewSubjectMenuItem);
             contextMenu.getItems().add(deleteSubjectMenuItem);
+            contextMenu.getItems().add(printSubjectMenuItem);
             tbSubjects.setContextMenu(contextMenu);
         }
         //Mostrar la ventana.
+
         stage.show();
 
     }
@@ -888,6 +966,36 @@ public class SubjectController {
 
         }
 
+    }
+
+    private void handleImprimirAction(ActionEvent event) {
+        try {
+            LOGGER.info("Beginning printing action...");
+            JasperReport report
+                    = JasperCompileManager.compileReport(getClass()
+                            .getResourceAsStream("/reports/SubjectReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems
+                    = new JRBeanCollectionDataSource((Collection<Subject>) this.tbSubjects.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            showErrorAlert("Error al imprimir:\n"
+                    + ex.getMessage());
+            LOGGER.log(Level.SEVERE,
+                    "UI GestionUsuariosController: Error printing report: {0}",
+                    ex.getMessage());
+        }
     }
 
 }

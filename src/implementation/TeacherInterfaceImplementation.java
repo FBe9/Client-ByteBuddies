@@ -47,7 +47,7 @@ public class TeacherInterfaceImplementation implements TeacherInterface {
         List<Teacher> teachers;
         try {
             LOGGER.info("Finding all teachers");
-            teachers = webClient.findAll_JSON(new GenericType<List<Teacher>>() {});
+            teachers = webClient.findAll_XML(new GenericType<List<Teacher>>() {});
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "TeacherInterface: Error finding all teachers - " + e.getMessage());
             throw new FindErrorException("Error finding all teachers");
