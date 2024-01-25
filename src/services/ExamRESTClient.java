@@ -6,7 +6,7 @@
 package services;
 
 import java.util.ResourceBundle;
-import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
@@ -36,37 +36,37 @@ public class ExamRESTClient {
         webTarget = client.target(BASE_URI).path("entities.exam");
     }
     
-    public void createExam_XML(Object requestEntity) throws ClientErrorException {
+    public void createExam_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity,javax.ws.rs.core.MediaType.APPLICATION_XML),Exam.class);
     }
     
-    public void deleteExam(Integer id) throws ClientErrorException {
+    public void deleteExam(Integer id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Exam.class);
     }
 
-    public void updateExam_XML(Object requestEntity) throws ClientErrorException {
+    public void updateExam_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Exam.class);
     }
 
-    public <T> T findBySubject_XML(GenericType<T> responseType, String subjectId) throws ClientErrorException {
+    public <T> T findBySubject_XML(GenericType<T> responseType, String subjectId) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findBySubject/{0}", new Object[]{subjectId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T find_XML(Class<T> responseType, Integer id) throws ClientErrorException {
+    public <T> T find_XML(Class<T> responseType, Integer id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findByDescription_XML(GenericType<T> responseType, String description) throws ClientErrorException {
+    public <T> T findByDescription_XML(GenericType<T> responseType, String description) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findByDescription/{0}", new Object[]{description}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findAll_XML(GenericType<T> responseType) throws ClientErrorException {
+    public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }

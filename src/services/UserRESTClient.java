@@ -5,6 +5,7 @@
  */
 package services;
 
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -32,6 +33,10 @@ public class UserRESTClient {
     public UserRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.user");
+    }
+
+    public void resetPassword(String email) throws ClientErrorException {
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{email})).request().post(null);
     }
 
     public void removeUser(String id) throws WebApplicationException {
@@ -107,5 +112,5 @@ public class UserRESTClient {
     public void close() {
         client.close();
     }
-    
+
 }

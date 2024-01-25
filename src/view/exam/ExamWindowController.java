@@ -9,12 +9,17 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -24,6 +29,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ComboBoxTableCell;
@@ -108,6 +114,8 @@ public class ExamWindowController {
     private ObservableList<Subject> userSubjects = FXCollections.observableArrayList();
     private ObservableList<String> subjectNames = FXCollections.observableArrayList();
     private ObservableList<Exam> exams = FXCollections.observableArrayList();
+    private Exam examEditing = new Exam();
+    private Boolean flagNewRow = false;
 
     public void initStage(Parent root) {
 
@@ -137,11 +145,8 @@ public class ExamWindowController {
         btnDeleteExam.setOnAction(this::handlerButton);
         btnPrintExam.setOnAction(this::handlerButton);
         btnCancelExam.setOnAction(this::handlerButton);
+        btnSaveExam.setOnAction(this::handlerButton);
         stage.setOnCloseRequest(this::handleOnActionExit);
-        /*tcDescription.setOnEditCommit(this::handlerOnEditCommit);
-        tcSubject.setOnEditCommit(this::handlerOnEditCommit);
-        tcDuration.setOnEditCommit(this::handlerOnEditCommit);
-        tcDate.setOnEditCommit(this::handlerOnEditCommit);*/
 
         // Ventana no modal        
         // Incluir el Menubar FXML
@@ -190,9 +195,9 @@ public class ExamWindowController {
             if (currentUser instanceof Student) {
                 userSubjects = FXCollections.observableArrayList(subjectInterface.findByEnrollments(currentUser.getId().toString()));
             }
-            for (Subject s : userSubjects) {
+            userSubjects.forEach((s) -> {
                 subjectNames.add(s.getName());
-            }
+            });
             cbBySubject.setItems(subjectNames);
         } catch (FindErrorException ex) {
             LOGGER.log(Level.INFO, "No subjects found for user {0}", currentUser.getId());
@@ -225,16 +230,73 @@ public class ExamWindowController {
                 LOGGER.log(Level.SEVERE, ex.getMessage());
             }
         }
+
+        IntegerProperty disableRowIndex = new SimpleIntegerProperty();
+
         tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
         tcSubject.setCellValueFactory(new PropertyValueFactory<>("subject"));
         tcDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
         tcDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         tcFile.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
+        tcDescription.setOnEditStart((TableColumn.CellEditEvent<Exam, String> t) -> {
+            cbSearchCriteria.setDisable(true);
+            cbBySubject.setDisable(true);
+            tfSearchExam.setDisable(true);
+            btnSearchExam.setDisable(true);
+            btnCreateExam.setDisable(true);
+            btnPrintExam.setDisable(true);
+            btnCancelExam.setDisable(false);
+            btnSaveExam.setDisable(false);
+            disableRowIndex.setValue(t.getTablePosition().getRow());
 
+        });
+        tcSubject.setOnEditStart((TableColumn.CellEditEvent<Exam, Subject> t) -> {
+            cbSearchCriteria.setDisable(true);
+            cbBySubject.setDisable(true);
+            tfSearchExam.setDisable(true);
+            btnSearchExam.setDisable(true);
+            btnCreateExam.setDisable(true);
+            btnPrintExam.setDisable(true);
+            btnCancelExam.setDisable(false);
+            btnSaveExam.setDisable(false);
+        });
+        tcDuration.setOnEditStart((TableColumn.CellEditEvent<Exam, String> t) -> {
+            cbSearchCriteria.setDisable(true);
+            cbBySubject.setDisable(true);
+            tfSearchExam.setDisable(true);
+            btnSearchExam.setDisable(true);
+            btnCreateExam.setDisable(true);
+            btnPrintExam.setDisable(true);
+            btnCancelExam.setDisable(false);
+            btnSaveExam.setDisable(false);
+        });
+        tcDate.setOnEditStart((TableColumn.CellEditEvent<Exam, Date> t) -> {
+            cbSearchCriteria.setDisable(true);
+            cbBySubject.setDisable(true);
+            tfSearchExam.setDisable(true);
+            btnSearchExam.setDisable(true);
+            btnCreateExam.setDisable(true);
+            btnPrintExam.setDisable(true);
+            btnCancelExam.setDisable(false);
+            btnSaveExam.setDisable(false);
+
+        });
+        tvExam.setRowFactory(tv -> {
+            TableRow<Exam> row = new TableRow<>();
+            tvExam.editingCellProperty().addListener((obs, oldCell, newCell) -> {
+                if (newCell != null) {
+                    row.setDisable(row.getIndex() != newCell.getRow());
+                } else {
+                    row.setDisable(false);
+                }
+            });
+            return row;
+        });
         tvExam.setItems(exams);
 
         // La tabla “tvExam” será editable.
-        tvExam.setEditable(true);
+        tvExam.setEditable(
+                true);
         if (currentUser instanceof Student) {
             tcDescription.setEditable(false);
             tcSubject.setEditable(false);
@@ -242,23 +304,61 @@ public class ExamWindowController {
             tcDate.setEditable(false);
         }
 
+        Callback<TableColumn<Exam, String>, TableCell<Exam, String>> cellFactory
+                = (TableColumn<Exam, String> param) -> new CustomEditingCell();
+
         Callback<TableColumn<Exam, Date>, TableCell<Exam, Date>> dateCell
                 = (TableColumn<Exam, Date> param) -> new DateExamEditingCell();
 
-        Callback<TableColumn<Exam, String>, TableCell<Exam, String>> cellFactory
-                = (TableColumn<Exam, String> param) -> new ButtonEditingCell(currentUser);
+        Callback<TableColumn<Exam, String>, TableCell<Exam, String>> buttonCellFactory
+                = (TableColumn<Exam, String> param) -> new ButtonEditingCell(currentUser, stage);
 
-        tcDescription.setCellFactory(TextFieldTableCell.forTableColumn());
+        tcDescription.setCellFactory(cellFactory);
         tcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(userSubjects));
-        tcDuration.setCellFactory(TextFieldTableCell.forTableColumn());
+        tcDuration.setCellFactory(cellFactory);
         // La columna “Date” de la tabla “tvExam” se mostrará con un patrón formateado de acuerdo a la configuración del sistema
         tcDate.setCellFactory(dateCell);
-        tcFile.setCellFactory(cellFactory);
+
+        tcFile.setCellFactory(buttonCellFactory);
+
+        tcDescription.setOnEditCommit(
+                (TableColumn.CellEditEvent<Exam, String> t) -> {
+                    if (!flagNewRow) {
+                        examEditing.setId(t.getRowValue().getId());
+                    }
+                    examEditing.setDescription(t.getNewValue());
+                }
+        );
+        tcSubject.setOnEditCommit(
+                (TableColumn.CellEditEvent<Exam, Subject> t) -> {
+                    if (!flagNewRow) {
+                        examEditing.setId(t.getRowValue().getId());
+                    }
+                    examEditing.setSubject(t.getNewValue());
+                });
+        tcDuration.setOnEditCommit(
+                (TableColumn.CellEditEvent<Exam, String> t) -> {
+                    if (!flagNewRow) {
+                        examEditing.setId(t.getRowValue().getId());
+                    }
+                    examEditing.setDuration(t.getNewValue());
+                }
+        );
+        tcDate.setOnEditCommit(
+                (TableColumn.CellEditEvent<Exam, Date> t) -> {
+                    if (!flagNewRow) {
+                        examEditing.setId(t.getRowValue().getId());
+                    }
+                    examEditing.setDateInit(t.getNewValue());
+                }
+        );
 
         // El botón “btnPrintExam” [...] solo estará habilitado cuando la tabla “tvExam” tenga valores.
         if (tvExam.getItems().size() > 0) {
             btnPrintExam.setDisable(false);
         }
+
+        btnDeleteExam.disableProperty().bind(Bindings.isEmpty(tvExam.getSelectionModel().getSelectedItems()));
 
         // Mostrar la ventana.
         stage.show();
@@ -267,6 +367,10 @@ public class ExamWindowController {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 
     public void setUser(User user) {
@@ -280,9 +384,8 @@ public class ExamWindowController {
             if (cbSearchCriteria.getValue() == allExams) {
                 // Si el valor seleccionado es “All exams” se carga la tabla “tvExam” con los valores de todos los exámenes que pertenezcan
                 // a las asignaturas del usuario
-
-                // Si no hay exámenes disponibles, se muestra en la tabla un mensaje indicando que el usuario no tiene exámenes
                 if (exams.isEmpty()) {
+                    // Si no hay exámenes disponibles, se muestra en la tabla un mensaje indicando que el usuario no tiene exámenes
                     tvExam.setPlaceholder(new Label("No exams here."));
                 } else {
                     tvExam.setItems(exams);
@@ -329,7 +432,6 @@ public class ExamWindowController {
                     }
                 }
                 if (subjectToSet != null) {
-
                     // Si la tabla no tiene exámenes, la tabla mostrará un mensaje (Placeholder) indicando que la asignatura seleccionada no tiene exámenes.
                     if (!exams.isEmpty()) {
                         ObservableList<Exam> currentExams = FXCollections.observableArrayList();
@@ -395,18 +497,16 @@ public class ExamWindowController {
             // Se muestran los botones “btnCancelExam” y “btnSaveExam”, pero se mantienen deshabilitados.
             btnCancelExam.setVisible(true);
             btnSaveExam.setVisible(true);
-            btnCancelExam.setDisable(true);
-            btnSaveExam.setDisable(true);
+            btnCancelExam.setDisable(false);
+            btnSaveExam.setDisable(false);
             // Todo el resto de botones, ComboBoxes y camps que no sean los mencionados o parte de la tabla se deshabilitarán
             cbSearchCriteria.setDisable(true);
             cbBySubject.setDisable(true);
             tfSearchExam.setDisable(true);
             btnSearchExam.setDisable(true);
             btnCreateExam.setDisable(true);
-            btnDeleteExam.setDisable(true);
             btnPrintExam.setDisable(true);
             // Se crea una nueva fila con valores por defecto, donde todos los campos están vacíos
-            //ObservableList<Exam> thisExams = tvExam.getItems();
             exams.add(new Exam("", null, "", "", null));
             tvExam.setItems(exams);
             int newIndex = tvExam.getItems().size() - 1;
@@ -414,6 +514,9 @@ public class ExamWindowController {
             tvExam.requestFocus();
             tvExam.getSelectionModel().select(newIndex);
             tvExam.getFocusModel().focus(newIndex, tcDescription);
+            tvExam.edit(newIndex, tcDescription);
+            flagNewRow = true;
+            LOGGER.info("New row created.");
         }
         if (event.getSource() == btnDeleteExam) {
             LOGGER.info("btnDeleteExam pressed.");
@@ -424,6 +527,7 @@ public class ExamWindowController {
             Optional<ButtonType> result = alert.showAndWait();
 
             if (result.isPresent() && result.get() == ButtonType.YES) {
+                LOGGER.info("Response yes. Delete exam.");
                 // Si elige “Yes” se llamará al método “deleteExam” de la Interfaz “ExamInterface”, pasando como parámetro el objeto Exam entero seleccionado en la tabla
 
                 // Si ha elegido “Yes” y no ha ocurrido ningún error, la información de la tabla se actualizará
@@ -432,7 +536,8 @@ public class ExamWindowController {
 
             }
             // En cualquiera de todos los casos, el botón “btnDeleteExam” se deshabilitará
-            btnDeleteExam.setDisable(true);
+
+            tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex()); // Esta linea causa que el boton btnDeleteExam se deshabilite
         }
         if (event.getSource() == btnPrintExam) {
             LOGGER.info("btnPrintExam pressed.");
@@ -441,11 +546,34 @@ public class ExamWindowController {
         if (event.getSource() == btnCancelExam) {
             LOGGER.info("btnCancelExam pressed.");
             // Se muestra un mensaje de confirmación recordando al usuario que perderá los datos editados no guardados
-
-            // Si elige “Yes” se cancela la edición, se revierten los datos de la tabla a su estado anterior a la edición actual. 
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                    "All unsaved changes will be lost.\nAre you sure you want to proceed?",
+                    ButtonType.YES, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+            // Si elige “Yes” se cancela la edición, se revierten los datos de la tabla a su estado anterior a la edición actual.
+            if (result.isPresent() && result.get() == ButtonType.YES) {
+                LOGGER.info("Response yes. Cancel edit.");
+                tvExam.setItems(exams);
+                if(flagNewRow){
+                    tvExam.getItems().remove(tvExam.getItems().size() - 1);
+                }
+                tvExam.refresh();
+                examEditing = new Exam();
+                // Se deshabilita el botón “btnDeleteExam” y se esconden los botones “btnCancelExam” y “btnSaveExam” y se vuelven a
+                // habilitar el resto de campos, ComboBoxes y botones que se han deshabilitado anteriormente.
+                cbSearchCriteria.setDisable(false);
+                //cbBySubject.setDisable(true);
+                //tfSearchExam.setDisable(true);
+                //btnSearchExam.setDisable(true);
+                btnCreateExam.setDisable(false);
+                btnPrintExam.setDisable(false);
+                btnCancelExam.setDisable(true);
+                btnSaveExam.setDisable(true);
+                tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex());
+                flagNewRow = false;
+            }
             // Si elige “No” se cierra la ventana del mensaje
-            // Se deshabilita el botón “btnDeleteExam” y se esconden los botones “btnCancelExam” y “btnSaveExam” y se vuelven a
-            // habilitar el resto de campos, ComboBoxes y botones que se han deshabilitado anteriormente.
+
         }
         if (event.getSource() == btnSaveExam) {
             LOGGER.info("btnSaveExam pressed.");
@@ -455,11 +583,17 @@ public class ExamWindowController {
             // Se muestra un mensaje de confirmación indicando que se va a guardar nueva información, indicar también el nombre del examen que se va a guardar
             // Si elige “Cancel” se cancelará la actualización o creación.
             // Si elige “Ok”, se comprueba si el Examen a guardar ya existe o no llamando al método “findExamById” de la Interfaz “ExamInterface”
+            cbSearchCriteria.setDisable(false);
+            //cbBySubject.setDisable(true);
+            //tfSearchExam.setDisable(true);
+            //btnSearchExam.setDisable(true);
+            btnCreateExam.setDisable(false);
+            btnPrintExam.setDisable(false);
+            btnCancelExam.setDisable(true);
+            btnSaveExam.setDisable(true);
+            tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex());
+            flagNewRow = false;
         }
-    }
-
-    private void handlerOnEditCommit(Event event) {
-
     }
 
     private void handleOnActionExit(Event event) {
@@ -468,18 +602,3 @@ public class ExamWindowController {
 
     }
 }
-
-
-/*
-
-PALLETE
-
-LOGGER.info("");
-
-tvExam.setPlaceholder(new Label("No exams here."));
-
-Alert alert = new Alert(Alert.AlertType.ERROR, errorMessage, ButtonType.OK).showAndWait();
-
-tcDescription.setCellValueFactory(new PropertyValueFactory<Exam, String>(""));
-
- */

@@ -16,6 +16,7 @@ import services.UserRESTClient;
 
 /**
  * Implementation of the UserInterface interface for user management.
+ *
  * @author irati
  */
 public class UserInterfaceImplementation implements UserInterface {
@@ -153,7 +154,7 @@ public class UserInterfaceImplementation implements UserInterface {
      */
     @Override
     public User login(User user) throws FindErrorException {
-       User userSearch;
+        User userSearch;
         try {
             LOGGER.info("Logging in user with ID " + user.getId());
             userSearch = webClient.login(user, User.class);
@@ -162,5 +163,11 @@ public class UserInterfaceImplementation implements UserInterface {
             throw new FindErrorException("User not found");
         }
         return userSearch;
+    }
+
+    @Override
+    public void resetPassword(String email) {
+        LOGGER.info("Sending password reset request for " + email);
+        webClient.resetPassword(email);
     }
 }
