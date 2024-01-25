@@ -11,7 +11,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +48,12 @@ import models.Subject;
 import models.Teacher;
 import models.Unit;
 import models.User;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 import view.MenuBarController;
 
 /**
@@ -94,7 +102,7 @@ public class UnitWindowController {
     private static final Logger LOGGER = Logger.getLogger("package view.Unit");
     private ObservableList<Unit> clientsDataU;
     private ObservableList<Subject> clientsDataS;
-    private List<String> Subjects;
+    private Subject subject;
     private User loggedUser;
     private UnitInterface clientU;
     private SubjectManager clientS;
@@ -124,10 +132,11 @@ public class UnitWindowController {
             //Ventana no modal.
             //Se añade el MenuBar.fxml a nuestra ventana.
             HBox hBoxMenu = (HBox) root.getChildrenUnmodifiable().get(0);
-            //Get the menu bar from the children of the layout got before
+            //Get the menu bar from the children of the layout got before   
             MenuBar menuBar = (MenuBar) hBoxMenu.getChildren().get(0);
             //La ventana de Sign In nos pasará un Objeto User con los datos del usuario registrado en la aplicación.
             this.loggedUser = loggedUser;
+            menuBar.setUserData(loggedUser);
             //Comprobar que tipo de usuario está conectado a la aplicación:
             if (loggedUser instanceof Teacher) {
                 //En el caso del “Teacher”: Tendrá las opciones CRUD disponibles, así como el menú de contexto que aparecerá al hacer clic derecho en la tabla. 
@@ -214,15 +223,39 @@ public class UnitWindowController {
                     = (TableColumn<Unit, String> param) -> new HyperlinkUnitEditingCell(this.loggedUser, stage);
             tbcExercises.setCellFactory(hyperlinkExercisesCell);
 
-            //Charge tables data
-            if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
-                clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
-                tbvUnit.setItems((ObservableList) clientsDataU);
-            } else {
-                clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromStudentSubjects(loggedUser.getId().toString()));
-                tbvUnit.setItems((ObservableList) clientsDataU);
-            }
+            //Los atributos de la tabla corresponden a estas columnas de la base de datos:
+            //Name, Description, Date Init, Date End y Hours corresponden a los atributos de la tabla de “Unit” de la base de datos con los mismos nombres. La diferencia es que están escritas en lowerCamelCase.
+            //Subject mostrará el nombre de la Subject, que corresponda al atributo name de la tabla de “Subject“ en la base de datos.
+            //Exercises no corresponde a ninguna base de datos dado que mostrará un hiperlink con el nombre “View Exercises” para cambiar a la ventana de Exercises.
+            //Las columnas de fechas las mostrará con un patrón formateado de acuerdo a la configuración del sistema.
+            //La tabla “tbvUnit” será en su mayoría editable. En modo edición:
+            //La columna “Exercises” será la única que no se podrá editar.
+            //Las columnas “Name”, “Description” y “Hours” serán textfields.
+            //La columna “Subjects” será un combobox, cargado con los mismos valores que la combobox “cbSubjects”. 
+            //Las columnas “Date Init” y “Date End” serán datepickers.
+            //Se carga la tabla en base de la conbobox de Subjects.
+            actualizarTabla();
 
+            /**
+             * Al hacer clic derecho en una fila de la tabla se mostrará un menú
+             * de contexto con las siguientes opciones: “Create new Unit”,
+             * “Delete Unit” y “Create a report”: Si se selecciona “Create new
+             * Unit”: Se llamará al método del controlador de la ventana de
+             * Units, “handelCreateButtonAction”, que será el método que
+             * controle el evento de pulsación del botón “btnCreateUnit”.
+             */
+            /**
+             * Si se selecciona “Delete Unit”: Se llamará al método del
+             * controlador de la ventana de Units, “handelDeleteButtonAction”,
+             * que será el método que controle el evento de pulsación del botón
+             * “btnDeleteUnit”.
+             */
+            /**
+             * Si se selecciona “Create a report”: Se llamará al método del
+             * controlador de la ventana de Units, “handelPrinteButtonAction”,
+             * que será el método que controle el evento de pulsación del botón
+             * “btnPrint”.
+             */
             cbSubjects.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSubjects);
             cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSearchType);
             stage.setOnCloseRequest(this::handleOnActionExit);
@@ -230,7 +263,7 @@ public class UnitWindowController {
             //dpSearch.ValueProperty().addListener(this::textPropertyChange);
             tbvUnit.getSelectionModel().selectedItemProperty().addListener(this::handleUnitTableSelectionChanged);
             stage.show();
-        } catch (FindErrorException e) {
+        } catch (Exception e) {
             LOGGER.info(e.getMessage());
         }
 
@@ -297,6 +330,9 @@ public class UnitWindowController {
             tfSearch.setVisible(false);
             dpSearch.setVisible(true);
         }
+        tfSearch.setText("");
+        dpSearch.setValue(null);
+        actualizarTabla();
     }
 
     /**
@@ -496,7 +532,16 @@ public class UnitWindowController {
     public void handelPrinteButtonAction(Event event) {
         /*Se inicia la acción de impresión de los datos que tenga la tabla de Units en ese momento con todas las columnas de la misma.
          */
-        //Compilar el informe, (crear una clase llamada compilador y que compile el informe)compilador recoje un .jrexml y devuelve un .jasper
+        try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/UnitReport.jrxml"));
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((List<Unit>) this.tbvUnit.getItems());
+            Map<String, Object> parameters = new HashMap<>();
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+        }
     }
 
     /**
@@ -523,14 +568,6 @@ public class UnitWindowController {
             alert.showAndWait();
             LOGGER.log(Level.SEVERE, errorMsg);
         }
-    }
-
-    /**
-     *
-     * @param stage
-     */
-    public void setStage(Stage stage) {
-        this.stage = stage;
     }
 
     private void superRefresh() {
@@ -576,5 +613,19 @@ public class UnitWindowController {
         } catch (FindErrorException ex) {
             Logger.getLogger(UnitWindowController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     *
+     * @param stage
+     */
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    public void setCurrentSubject(Subject subject) {
+        this.subject = subject;
+        String subjectName = subject.toString();
+        cbSubjects.getSelectionModel().select(subjectName);
     }
 }
