@@ -37,15 +37,15 @@
                 <Image url="@../../resources/AllWhiteStar.png" />
             </image>
         </ImageView>
-        <TableView fx:id="tbvUnit" layoutX="228.0" layoutY="233.0" prefHeight="416.0" prefWidth="1076.0" style="-fx-border-color: #74B0E7;">
+        <TableView fx:id="tbvUnit" layoutX="212.0" layoutY="233.0" prefHeight="416.0" prefWidth="1109.0" style="-fx-border-color: #74B0E7;">
             <columns>
-                <TableColumn fx:id="tbcName" prefWidth="238.0" text="Name" />
-                <TableColumn fx:id="tbcSubject" prefWidth="211.0" text="Subject" />
-                <TableColumn fx:id="tbcDescription" prefWidth="214.0" text="Description" />
-                <TableColumn fx:id="tbcDateInit" prefWidth="122.0" text="Date Init" />
-                <TableColumn fx:id="tbcDateEnd" prefWidth="120.0" text="Date End" />
-                <TableColumn fx:id="tbcHours" prefWidth="85.0" text="Hours" />
-                <TableColumn fx:id="tbcExercises" prefWidth="82.0" text="Exercises" />
+                <TableColumn fx:id="tbcName" prefWidth="214.39996337890625" text="Name" />
+                <TableColumn fx:id="tbcSubject" prefWidth="183.99990844726562" text="Subject" />
+                <TableColumn fx:id="tbcDescription" prefWidth="196.0" text="Description" />
+                <TableColumn fx:id="tbcDateInit" prefWidth="152.0" text="Date Init" />
+                <TableColumn fx:id="tbcDateEnd" prefWidth="137.60003662109375" text="Date End" />
+                <TableColumn fx:id="tbcHours" prefWidth="82.4000244140625" text="Hours" />
+                <TableColumn fx:id="tbcExercises" prefWidth="148.0" text="Exercises" />
             </columns>
          <contextMenu>
             <ContextMenu>
@@ -72,17 +72,17 @@
                 </ImageView>
             </graphic>
         </Button>
-        <Button fx:id="btnDeleteUnit" layoutX="305.0" layoutY="664.0" mnemonicParsing="false" onAction="#handelDeleteButtonAction" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Delete">
+        <Button fx:id="btnDeleteUnit" layoutX="294.0" layoutY="664.0" mnemonicParsing="false" onAction="#handelDeleteButtonAction" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Delete">
             <font>
                 <Font name="Calibri Italic" size="12.0" />
             </font>
         </Button>
-        <Button fx:id="btnCreateUnit" layoutX="228.0" layoutY="664.0" mnemonicParsing="false" onAction="#handelCreateButtonAction" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Create">
+        <Button fx:id="btnCreateUnit" layoutX="212.0" layoutY="664.0" mnemonicParsing="false" onAction="#handelCreateButtonAction" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Create">
             <font>
                 <Font name="Calibri Italic" size="12.0" />
             </font>
         </Button>
-        <Button fx:id="btnPrint" layoutX="1234.0" layoutY="664.0" mnemonicParsing="false" onAction="#handelPrinteButtonAction" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Print">
+        <Button fx:id="btnPrint" layoutX="1251.0" layoutY="664.0" mnemonicParsing="false" onAction="#handelPrinteButtonAction" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Print">
             <font>
                 <Font name="Calibri Italic" size="12.0" />
             </font>

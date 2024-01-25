@@ -31,6 +31,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -40,6 +41,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import models.Subject;
 import models.Teacher;
 import models.Unit;
@@ -54,7 +56,7 @@ import view.MenuBarController;
 public class UnitWindowController {
 
     @FXML
-    private TableView tbvUnit;
+    private TableView<Unit> tbvUnit;
     @FXML
     private TableColumn<Unit, String> tbcName;
     @FXML
@@ -68,7 +70,7 @@ public class UnitWindowController {
     @FXML
     private TableColumn<Unit, String> tbcHours;
     @FXML
-    private TableColumn<Unit, Hyperlink> tbcExercises;
+    private TableColumn<Unit, String> tbcExercises;
     @FXML
     private TextField tfSearch;
     @FXML
@@ -193,27 +195,24 @@ public class UnitWindowController {
             btnSearch.setDisable(true);
             btnDeleteUnit.setDisable(true);
             //La tabla mostrará los atributos: Name(tbcName), Subject(tbcSubject), Description(tbcDescription), Date Init(tbcDateInit), Date End(tbcDateEnd), Hours(tbcHours) and Exercises(tbcExercises).
-            tbcName.setCellValueFactory(
-                    new PropertyValueFactory<>("name"));
+            tbcName.setCellValueFactory(new PropertyValueFactory<>("name"));
             tbcName.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
-            tbcSubject.setCellValueFactory(
-                    new PropertyValueFactory<>("subject"));
+            tbcSubject.setCellValueFactory(new PropertyValueFactory<>("subject"));
             tbcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(cbSubjects.getItems()));
-            tbcDescription.setCellValueFactory(
-                    new PropertyValueFactory<>("description"));
+            tbcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
             tbcDescription.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
-            tbcDateInit.setCellValueFactory(
-                    new PropertyValueFactory<>("dateInit"));
-            //tbcDateInit.setCellFactory(DateUnitEditingCell);
-            tbcDateEnd.setCellValueFactory(
-                    new PropertyValueFactory<>("dateEnd"));
-            //CellFacttoy Date
-            tbcHours.setCellValueFactory(
-                    new PropertyValueFactory<>("hours"));
+            tbcDateInit.setCellValueFactory(new PropertyValueFactory<>("dateInit"));
+            final Callback<TableColumn<Unit, Date>, TableCell<Unit, Date>> dateCell
+                    = (TableColumn<Unit, Date> param) -> new DateUnitEditingCell();
+            tbcDateInit.setCellFactory(dateCell);
+            tbcDateEnd.setCellValueFactory(new PropertyValueFactory<>("dateEnd"));
+            tbcDateEnd.setCellFactory(dateCell);
+            tbcHours.setCellValueFactory(new PropertyValueFactory<>("hours"));
             tbcHours.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
-            tbcExercises.setCellValueFactory(
-                    new PropertyValueFactory<>("exercises"));
-            //CellFactory Hyperlink
+            tbcExercises.setCellValueFactory(new PropertyValueFactory<>("exercises"));
+            final Callback<TableColumn<Unit, String>, TableCell<Unit, String>> hyperlinkExercisesCell
+                    = (TableColumn<Unit, String> param) -> new HyperlinkUnitEditingCell(this.loggedUser, stage);
+            tbcExercises.setCellFactory(hyperlinkExercisesCell);
 
             //Charge tables data
             if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
@@ -371,7 +370,7 @@ public class UnitWindowController {
                     clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnitsByName(tfSearch.getText(), subjectValue));
                     tbvUnit.setItems(clientsDataU);
                     tbvUnit.refresh();
-                    
+
                 } else if (searchValue.equalsIgnoreCase("Date Init")) {
                     //Si el valor es Date Init: Se rellena la tabla con el método “findSubjectUnitsByDateInit” pasandole el nombre de la subject seleccionada en la combobox y la fecha de la unidad escrita en el datePicker. 
                     LocalDate datePicker = dpSearch.getValue();
@@ -450,6 +449,7 @@ public class UnitWindowController {
                 for (int i = 0; i < clientsDataS.size(); i++) {
                     if (clientsDataS.get(i).getName().equalsIgnoreCase(subjectUnit)) {
                         newUnit.setSubject(clientsDataS.get(i));
+                        i = clientsDataS.size();
                     }
                 }
             } else {
@@ -458,8 +458,9 @@ public class UnitWindowController {
                 list.get(1);
                 clientsDataS = FXCollections.observableArrayList(clientS.findAllSubjects());
                 for (int i = 0; i < clientsDataS.size(); i++) {
-                    if (clientsDataS.get(i).getName().equalsIgnoreCase((String) list.get(1))) {
+                    if (clientsDataS.get(i).getName().equalsIgnoreCase((String) list.get(0))) {
                         newUnit.setSubject(clientsDataS.get(i));
+                        i = clientsDataS.size();
                     }
                 }
             }

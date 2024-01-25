@@ -1,26 +1,77 @@
 package view.unit;
 
-import javafx.event.Event;
+import exceptions.ExerciseErrorException;
+import exceptions.FindErrorException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.Hyperlink;
-
+import javafx.scene.control.TableRow;
+import javafx.stage.Stage;
 import models.Unit;
+import models.User;
+import view.exercise.ExerciseController;
 
 /**
- * TableCell implementation for editing a Date with a DatePicker. Displays the
- * date in text form when not in editing mode.
+ * TableCell implementation for Hyperlink for Unit table to open exercises window.
+ *
+ * @author Nerea
  */
-public class HyperlinkUnitEditingCell extends TableCell<Unit, Hyperlink> {
-
+public class HyperlinkUnitEditingCell extends TableCell<Unit, String> {
+    private User loggedUser;
     private Hyperlink httpUnitCell;
-
+    private Stage stage;
+      /**
+     * Default constructor for HyperlinkUnitEditingCell.
+     */
     public HyperlinkUnitEditingCell() {
+    }
+
+    /**
+     * Constructor for HyperlinkUnitEditingCell.
+     *
+     * @param loggedUser The user that is connected to the application.
+     * @param stage The stage that the window used.
+     */
+    public HyperlinkUnitEditingCell(User loggedUser, Stage stage) {
         // Configurar el Hyperlink
         httpUnitCell = new Hyperlink();
         httpUnitCell.setText("View all Exercises");
+        httpUnitCell.setOnAction(evt -> {
+            try {
+            
+            Integer index = getTableRow().getIndex();
+            Unit unit = getTableView().getItems().get(index);
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exercise/exercise.fxml"));
+            Parent root = (Parent) loader.load();
+            // Obtain the Sign In window controller
+            ExerciseController controller = (ExerciseController) loader.getController();
+            controller.setStage(stage);
+            controller.initialize(root, loggedUser);
+            controller.setCurrentUnit(unit);
+        } catch (IOException | ExerciseErrorException | FindErrorException ex) {
+            Logger.getLogger(HyperlinkUnitEditingCell.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        });
     }
 
-    public void handleHyperlinkActionEvent(Event event) {
-    
+    /**
+     * Updates the graphic content of the cell based on the provided item.
+     * Displays the hyperlink to show units.
+     * @param item
+     * @param empty
+     */
+    @Override
+    protected void updateItem(String item, boolean empty) {
+        super.updateItem(item, empty);
+
+        if (empty) {
+            setGraphic(null);
+        } else {
+            setGraphic(httpUnitCell);
+        }
     }
 }
