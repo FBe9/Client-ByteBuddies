@@ -11,10 +11,13 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Security;
+import java.security.spec.ECGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Cipher;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * This class provides methods for asymmetric encryption using the RSA
@@ -24,8 +27,13 @@ import javax.crypto.Cipher;
  */
 public class AsimetricaClient {
 
+    static {
+        // Add Bouncy Castle as a security provider
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     /**
-     * Encrypts the provided password using the RSA public key.
+     * Encrypts the provided password using the ECC public key.
      *
      * @param password The password to be encrypted.
      * @return The encrypted data.
@@ -34,19 +42,20 @@ public class AsimetricaClient {
         byte[] encryptedData = null;
         try {
             keyGenerator();
-            // Load Private Key
+
+            // Load ECC Public Key
             Path workingDirectory = Paths.get(System.getProperty("user.home") + "/ByteBuddies/security/asymmetric/publickey.der");
             FileInputStream fis = new FileInputStream(workingDirectory.toFile());
             byte[] publicKeyBytes = new byte[fis.available()];
             fis.read(publicKeyBytes);
             fis.close();
 
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            KeyFactory keyFactory = KeyFactory.getInstance("EC");
             X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
 
             PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 
-            Cipher cipher = Cipher.getInstance("RSA");
+            Cipher cipher = Cipher.getInstance("ECIES");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             encryptedData = cipher.doFinal(password.getBytes());
 
@@ -74,7 +83,7 @@ public class AsimetricaClient {
     }
 
     /**
-     * Generates an RSA key pair and saves the public and private keys in the
+     * Generates an ECC key pair and saves the public and private keys in the
      * specified directory. If keys already exist, the method does not
      * regenerate them.
      */
@@ -86,14 +95,15 @@ public class AsimetricaClient {
             // Thats the paths of public key and private key
             Path publicKeyFind = workingDirectory.resolve("publickey.der");
             Path privateKeyFind = workingDirectory.resolve("privatekey.der");
-            //Verifies that the key doesn't exits and creates it.
+            // Verifies that the key doesn't exist and creates it.
             if (!Files.exists(publicKeyFind) && !Files.exists(privateKeyFind)) {
                 try {
-                    // Especificamos el algoritmo de encriptación
-                    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-                    // Especificamos el tamaño en bits de las claves
-                    keyPairGenerator.initialize(2048);
-                    // Se genera el par de claves
+                    // Specify the ECC algorithm for key pair generation
+                    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
+                    // Specify the elliptic curve parameters.
+                    ECGenParameterSpec ecGenSpec = new ECGenParameterSpec("secp256r1");
+                    keyPairGenerator.initialize(ecGenSpec);
+                    // Generate the ECC key pair
                     KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
                     PublicKey publicKeyAndMore = keyPair.getPublic();
@@ -112,10 +122,11 @@ public class AsimetricaClient {
                     }
 
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(AsimetricaClient.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
