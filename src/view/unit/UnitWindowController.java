@@ -33,6 +33,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -106,6 +107,12 @@ public class UnitWindowController {
     private User loggedUser;
     private UnitInterface clientU;
     private SubjectManager clientS;
+    @FXML
+    private MenuItem cmiCreateUnit;
+    @FXML
+    private MenuItem cmiDeleteUnit;
+    @FXML
+    private MenuItem cmiPrintReport;
 
     /**
      * Initializes the controller class.
@@ -130,20 +137,41 @@ public class UnitWindowController {
             //Ventana no redimensionable.
             stage.setResizable(false);
             //Ventana no modal.
-            //Se añade el MenuBar.fxml a nuestra ventana.
-            HBox hBoxMenu = (HBox) root.getChildrenUnmodifiable().get(0);
-            //Get the menu bar from the children of the layout got before   
-            MenuBar menuBar = (MenuBar) hBoxMenu.getChildren().get(0);
-            //La ventana de Sign In nos pasará un Objeto User con los datos del usuario registrado en la aplicación.
             this.loggedUser = loggedUser;
-            menuBar.setUserData(loggedUser);
             //Comprobar que tipo de usuario está conectado a la aplicación:
             if (loggedUser instanceof Teacher) {
                 //En el caso del “Teacher”: Tendrá las opciones CRUD disponibles, así como el menú de contexto que aparecerá al hacer clic derecho en la tabla. 
                 btnCreateUnit.setVisible(true);
                 btnDeleteUnit.setVisible(true);
                 tbvUnit.setEditable(true);
+                //La columna “Exercises” será la única que no se podrá editar.
                 tbcExercises.setEditable(false);
+
+                /**
+                 * Al hacer clic derecho en una fila de la tabla se mostrará un
+                 * menú de contexto con las siguientes opciones: “Create new
+                 * Unit”, “Delete Unit” y “Create a report”: Si se selecciona
+                 * “Create new Unit”: Se llamará al método del controlador de la
+                 * ventana de Units, “handelCreateButtonAction”, que será el
+                 * método que controle el evento de pulsación del botón
+                 * “btnCreateUnit”.
+                 */
+                cmiCreateUnit.setOnAction(this::handelCreateButtonAction);
+                /**
+                 * Si se selecciona “Delete Unit”: Se llamará al método del
+                 * controlador de la ventana de Units,
+                 * “handelDeleteButtonAction”, que será el método que controle
+                 * el evento de pulsación del botón “btnDeleteUnit”.
+                 */
+                cmiDeleteUnit.setOnAction(this::handelDeleteButtonAction);
+                /**
+                 * Si se selecciona “Create a report”: Se llamará al método del
+                 * controlador de la ventana de Units,
+                 * “handelPrinteButtonAction”, que será el método que controle
+                 * el evento de pulsación del botón “btnPrint”.
+                 */
+                cmiPrintReport.setOnAction(this::handelPrinteButtonAction);
+
             } else {
                 //En el caso del “Student”: Tendrá solo las consultas disponibles y el botón de create y delete se ocultaran y no le permitirá desplegar ni usar el menú de contexto.
                 btnCreateUnit.setVisible(false);
@@ -203,59 +231,36 @@ public class UnitWindowController {
             //Los botones “btnSearch” y “btnDeleteUnit” estarán deshabilitados.
             btnSearch.setDisable(true);
             btnDeleteUnit.setDisable(true);
+
             //La tabla mostrará los atributos: Name(tbcName), Subject(tbcSubject), Description(tbcDescription), Date Init(tbcDateInit), Date End(tbcDateEnd), Hours(tbcHours) and Exercises(tbcExercises).
             tbcName.setCellValueFactory(new PropertyValueFactory<>("name"));
-            tbcName.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
             tbcSubject.setCellValueFactory(new PropertyValueFactory<>("subject"));
-            tbcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(cbSubjects.getItems()));
             tbcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-            tbcDescription.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
             tbcDateInit.setCellValueFactory(new PropertyValueFactory<>("dateInit"));
+            tbcDateEnd.setCellValueFactory(new PropertyValueFactory<>("dateEnd"));
+            tbcHours.setCellValueFactory(new PropertyValueFactory<>("hours"));
+            tbcHours.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
+            //La tabla “tbvUnit” será en su mayoría editable. En modo edición:
+            //Las columnas “Name”, “Description” y “Hours” serán textfields.
+            tbcName.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
+            tbcDescription.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
+            tbcExercises.setCellValueFactory(new PropertyValueFactory<>("exercises"));
+            //La columna “Subjects” será un combobox, cargado con los mismos valores que la combobox “cbSubjects”. 
+            tbcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(cbSubjects.getItems()));
+            //Las columnas “Date Init” y “Date End” serán datepickers.
             final Callback<TableColumn<Unit, Date>, TableCell<Unit, Date>> dateCell
                     = (TableColumn<Unit, Date> param) -> new DateUnitEditingCell();
             tbcDateInit.setCellFactory(dateCell);
-            tbcDateEnd.setCellValueFactory(new PropertyValueFactory<>("dateEnd"));
             tbcDateEnd.setCellFactory(dateCell);
-            tbcHours.setCellValueFactory(new PropertyValueFactory<>("hours"));
-            tbcHours.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
-            tbcExercises.setCellValueFactory(new PropertyValueFactory<>("exercises"));
+            //Exercises no corresponde a ninguna base de datos dado que mostrará un hiperlink con el nombre “View Exercises” para cambiar a la ventana de Exercises.
             final Callback<TableColumn<Unit, String>, TableCell<Unit, String>> hyperlinkExercisesCell
                     = (TableColumn<Unit, String> param) -> new HyperlinkUnitEditingCell(this.loggedUser, stage);
             tbcExercises.setCellFactory(hyperlinkExercisesCell);
-
-            //Los atributos de la tabla corresponden a estas columnas de la base de datos:
-            //Name, Description, Date Init, Date End y Hours corresponden a los atributos de la tabla de “Unit” de la base de datos con los mismos nombres. La diferencia es que están escritas en lowerCamelCase.
-            //Subject mostrará el nombre de la Subject, que corresponda al atributo name de la tabla de “Subject“ en la base de datos.
-            //Exercises no corresponde a ninguna base de datos dado que mostrará un hiperlink con el nombre “View Exercises” para cambiar a la ventana de Exercises.
             //Las columnas de fechas las mostrará con un patrón formateado de acuerdo a la configuración del sistema.
-            //La tabla “tbvUnit” será en su mayoría editable. En modo edición:
-            //La columna “Exercises” será la única que no se podrá editar.
-            //Las columnas “Name”, “Description” y “Hours” serán textfields.
-            //La columna “Subjects” será un combobox, cargado con los mismos valores que la combobox “cbSubjects”. 
-            //Las columnas “Date Init” y “Date End” serán datepickers.
+
             //Se carga la tabla en base de la conbobox de Subjects.
             actualizarTabla();
 
-            /**
-             * Al hacer clic derecho en una fila de la tabla se mostrará un menú
-             * de contexto con las siguientes opciones: “Create new Unit”,
-             * “Delete Unit” y “Create a report”: Si se selecciona “Create new
-             * Unit”: Se llamará al método del controlador de la ventana de
-             * Units, “handelCreateButtonAction”, que será el método que
-             * controle el evento de pulsación del botón “btnCreateUnit”.
-             */
-            /**
-             * Si se selecciona “Delete Unit”: Se llamará al método del
-             * controlador de la ventana de Units, “handelDeleteButtonAction”,
-             * que será el método que controle el evento de pulsación del botón
-             * “btnDeleteUnit”.
-             */
-            /**
-             * Si se selecciona “Create a report”: Se llamará al método del
-             * controlador de la ventana de Units, “handelPrinteButtonAction”,
-             * que será el método que controle el evento de pulsación del botón
-             * “btnPrint”.
-             */
             cbSubjects.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSubjects);
             cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSearchType);
             stage.setOnCloseRequest(this::handleOnActionExit);
@@ -388,6 +393,7 @@ public class UnitWindowController {
      *
      * @param event
      */
+    @FXML
     public void handelSearchButtonAction(Event event) {
         LOGGER.info("Starting Search button action method");
         String subjectValue;
@@ -443,23 +449,28 @@ public class UnitWindowController {
      *
      * @param event
      */
+    @FXML
     public void handelDeleteButtonAction(Event event) {
         try {
-            //Pedir confirmación al usuario para eliminar la unit seleccionada:
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                    "¿Are you sure you want to delete this unit?",
-                    ButtonType.OK, ButtonType.CANCEL);
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                //Si el usuario confirma: Se usará el método “removeUnit” para eliminar la unit pasandole la unit seleccionada en un objeto de tipo Unit. 
-                Unit unit = (Unit) tbvUnit.getSelectionModel().getSelectedItem();
-                clientU.removeUnit(unit);
+            Unit unit = (Unit) tbvUnit.getSelectionModel().getSelectedItem();
+            if (unit == null) {
+                new Alert(Alert.AlertType.INFORMATION, "Please, select a unit to delete", ButtonType.OK).showAndWait();
             } else {
-                //Si no confirma: mantenerse en la ventana.
-                event.consume();
+                //Pedir confirmación al usuario para eliminar la unit seleccionada:
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                        "¿Are you sure you want to delete this unit?",
+                        ButtonType.OK, ButtonType.CANCEL);
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    //Si el usuario confirma: Se usará el método “removeUnit” para eliminar la unit pasandole la unit seleccionada en un objeto de tipo Unit. 
+                    clientU.removeUnit(unit);
+                } else {
+                    //Si no confirma: mantenerse en la ventana.
+                    event.consume();
+                }
+                //Si no se ha producido ningún error, la tabla se actualizará.
+                actualizarTabla();
             }
-            //Si no se ha producido ningún error, la tabla se actualizará.
-            actualizarTabla();
             //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la eliminación de la unit.
         } catch (DeleteErrorException e) {
             new Alert(Alert.AlertType.INFORMATION, "Error while deleting the Unit", ButtonType.OK).showAndWait();
@@ -470,13 +481,14 @@ public class UnitWindowController {
      *
      * @param event
      */
+    @FXML
     public void handelCreateButtonAction(Event event) {
         try {
             //Se creará una nueva fila en la tabla con valores por defecto:
             Unit newUnit = new Unit();
             //Las columnas Name y Description estarán vacías.
-            newUnit.setName(null);
-            newUnit.setDescription(null);
+            newUnit.setName("");
+            newUnit.setDescription("");
 
             String subjectUnit = (String) cbSubjects.getSelectionModel().getSelectedItem();
             if (!cbSubjects.getSelectionModel().isEmpty()) {
@@ -507,11 +519,24 @@ public class UnitWindowController {
             //La columna de Hours estará a 0.
             newUnit.setHours("0");
             //La columna de Exercises tendrá el valor “View Exercises”.
-            //Se usará el método “createUnit” para crear una Unit con los valores por defecto que hemos estipulado pasandoselos en un objeto de tipo Unit.
-            clientU.createUnit(newUnit);
-            //Si la operación se lleva a cabo sin errores, la fila recién creada se mostrará en la tabla.
-            new Alert(Alert.AlertType.INFORMATION, "Unit added successfully", ButtonType.OK).showAndWait();
-            actualizarTabla();
+            Boolean create = true;
+            List<Unit> units = clientU.findSubjectUnits(subjectUnit);
+            for (int i = 0; i < units.size(); i++) {
+                if (units.get(i).getName().equalsIgnoreCase("")) {
+                    create = false;
+                    i = units.size();
+                }
+            }
+            if (create) {
+                //Se usará el método “createUnit” para crear una Unit con los valores por defecto que hemos estipulado pasandoselos en un objeto de tipo Unit.
+                clientU.createUnit(newUnit);
+                //Si la operación se lleva a cabo sin errores, la fila recién creada se mostrará en la tabla.
+                new Alert(Alert.AlertType.INFORMATION, "Unit added successfully", ButtonType.OK).showAndWait();
+                actualizarTabla();
+            } else {
+                new Alert(Alert.AlertType.INFORMATION, "There is a unit at this subject without name, please change it before creating a new one", ButtonType.OK).showAndWait();
+            }
+
             //Si se produce algún error, se le mostrará al usuario una alerta con el error y se cancelará la creación de la asignatura.
         } catch (FindErrorException | CreateErrorException ex) {
             Logger.getLogger(UnitWindowController.class
@@ -529,6 +554,7 @@ public class UnitWindowController {
      *
      * @param event
      */
+    @FXML
     public void handelPrinteButtonAction(Event event) {
         /*Se inicia la acción de impresión de los datos que tenga la tabla de Units en ese momento con todas las columnas de la misma.
          */

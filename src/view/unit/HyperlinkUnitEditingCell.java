@@ -7,9 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.TableRow;
 import javafx.stage.Stage;
 import models.Unit;
 import models.User;
@@ -52,13 +53,18 @@ public class HyperlinkUnitEditingCell extends TableCell<Unit, String> {
             try {
                 Integer index = getTableRow().getIndex();
                 Unit unit = getTableView().getItems().get(index);
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exercise/exercise.fxml"));
-                Parent root = (Parent) loader.load();
-                // Obtain the Sign In window controller
-                ExerciseController controller = (ExerciseController) loader.getController();
-                controller.setStage(stage);
-                controller.initialize(root, loggedUser);
-                controller.setCurrentUnit(unit);
+                if (!unit.getName().equalsIgnoreCase("")) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exercise/exercise.fxml"));
+                    Parent root = (Parent) loader.load();
+                    // Obtain the Sign In window controller
+                    ExerciseController controller = (ExerciseController) loader.getController();
+                    controller.setStage(stage);
+                    controller.initialize(root, loggedUser);
+                    controller.setCurrentUnit(unit);
+                } else {
+                    new Alert(Alert.AlertType.ERROR, "Please change the unit name to can see the exercises", ButtonType.OK).showAndWait();
+
+                }
             } catch (IOException | ExerciseErrorException | FindErrorException ex) {
                 Logger.getLogger(HyperlinkUnitEditingCell.class.getName()).log(Level.SEVERE, null, ex);
             }

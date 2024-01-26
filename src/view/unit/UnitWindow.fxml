@@ -16,12 +16,12 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #ECF4FF;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.unit.UnitWindowController">
     <children>
-        <fx:include fx:id="hBoxMenu" source="../MenuBar.fxml" />
         <ImageView fitHeight="742.0" fitWidth="170.0" layoutY="26.0" pickOnBounds="true">
             <image>
                 <Image url="@../../resources/BlueWallpaper.jpg" />
             </image>
         </ImageView>
+        <fx:include fx:id="hBoxMenu" source="../MenuBar.fxml" />
         <ImageView fitHeight="165.0" fitWidth="139.0" layoutX="1175.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../../resources/BlueStar.png" />
@@ -50,7 +50,9 @@
          <contextMenu>
             <ContextMenu>
               <items>
-                <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                <MenuItem fx:id="cmiCreateUnit" mnemonicParsing="false" onAction="#handelCreateButtonAction" text="Create new Unit" />
+                  <MenuItem fx:id="cmiDeleteUnit" mnemonicParsing="false" onAction="#handelDeleteButtonAction" text="Delete Unit" />
+                  <MenuItem fx:id="cmiPrintReport" mnemonicParsing="false" onAction="#handelPrinteButtonAction" text="Create a report" />
               </items>
             </ContextMenu>
          </contextMenu>
