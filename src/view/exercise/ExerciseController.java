@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view.exercise;
 
 import exceptions.CreateErrorException;
@@ -19,8 +14,11 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +27,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -50,6 +47,12 @@ import models.Exercise;
 import models.LevelType;
 import models.Unit;
 import models.User;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * FXML Controller class
@@ -81,6 +84,7 @@ public class ExerciseController {
     private DatePicker dpDeadline;
     @FXML
     private Button btmSearch, btmDelete, btmModify, btmCreate, btmPrint, btmFile, btmFileSolution;
+    @FXML
     private Label lblErrorCreateModify;
 
     /**
@@ -216,10 +220,10 @@ public class ExerciseController {
 
         //Se rellenará el combobox “cbSearchType” con los tipos de búsqueda: 
         //Number, Level type y Date.
-        //Si el usuario es de tipo Teacher también se añadirán los tipos de 
-        //búsqueda: All y Unit name.
+        //Si el usuario es de tipo Teacher también se añadirá el tipo de 
+        //búsqueda: All.
         if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
-            this.cbSearchType.getItems().addAll("All", "Date", "Level type", "Number", "Unit name");
+            this.cbSearchType.getItems().addAll("All", "Date", "Level type", "Number");
             //El combobox “cbSearchType” tendrá la opción de All por defecto.
             this.cbSearchType.setValue("All");
         } else {
@@ -301,6 +305,7 @@ public class ExerciseController {
         this.tfNumber.textProperty().addListener(this::handleFieldsTextChange);
         this.tfHours.textProperty().addListener(this::handleFieldsTextChange);
         this.tfDescription.textProperty().addListener(this::handleFieldsTextChange);
+        stage.setOnCloseRequest(this::handleOnActionExit);
 
         //
         //this.tfNumber.textProperty().addListener((event) -> this.textOnlyNumbers(KeyEvent.KEY_TYPED));
@@ -359,8 +364,9 @@ public class ExerciseController {
                 this.btmModify.setDisable(true);
                 this.btmDelete.setDisable(true);
             }
-        } catch (Exception e) {
-
+        } catch (Exception ex) {
+            showErrorAlert("Error selection");
+            LOGGER.log(Level.SEVERE, ex.getMessage());
         }
     }
 
@@ -489,7 +495,7 @@ public class ExerciseController {
     }
 
     @FXML
-    private void handleModifyButtonAction(ActionEvent event) {
+    private void handleModifyButtonAction(ActionEvent event) throws UpdateErrorException, FindErrorException {
         try {
             String unitName = this.cbUnitCreate.getSelectionModel().getSelectedItem().toString();
             List<Unit> units = unitInterface.findAllUnits();
@@ -514,9 +520,11 @@ public class ExerciseController {
             Optional<ButtonType> result = alert.showAndWait();
             //If OK to modify
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                //modify mental disease from server side
+                //modify exercise from server side
+                exerciseInterface.edit_XML(exercise);
                 Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "Successfully modified", ButtonType.OK);
                 alert2.showAndWait();
+                tvExercise.refresh();
 
                 //Clean fields
                 this.tfNumber.setText("");
@@ -525,7 +533,7 @@ public class ExerciseController {
                 dpDeadline.setValue(null);
             }
 
-        } catch (FindErrorException ex) {
+        } catch (UpdateErrorException | FindErrorException ex) {
             showErrorAlert("Error modify");
             LOGGER.log(Level.SEVERE,
                     ex.getMessage());
@@ -534,10 +542,67 @@ public class ExerciseController {
 
     @FXML
     private void handleSearchButtonAction(ActionEvent event) {
+        LOGGER.info("Searching...");
+        String unitValue;
+        String searchValue = null;
+        ObservableList<Exercise> exercise = null;
+
+        try {
+            unitValue = cbUnitSearch.getSelectionModel().getSelectedItem().toString();
+            if (unitValue.isEmpty()) {
+                new Alert(Alert.AlertType.ERROR, "Select an unit", ButtonType.OK).showAndWait();
+            } else {
+                searchValue = cbSearchType.getSelectionModel().getSelectedItem().toString();
+                if (searchValue.equalsIgnoreCase("All")) {
+                    exerciseData = FXCollections.observableArrayList(exerciseInterface.getExercisesByUnitName_XML(new GenericType<List<Exercise>>() {
+                    }, unitValue));
+                    tvExercise.setItems((ObservableList) exerciseData);
+                } else if (searchValue.equalsIgnoreCase("Date")) {
+
+                    //TODO 
+                } else if (searchValue.equalsIgnoreCase("Level type")) {
+                    exerciseData = FXCollections.observableArrayList(exerciseInterface.getExercisesByLevelAndUnitName_XML(new GenericType<List<Exercise>>() {
+                    }, tfSearch.getText(), unitValue));
+                    tvExercise.setItems((ObservableList) exerciseData);
+                } else if (searchValue.equalsIgnoreCase("Number")) {
+                    exerciseData = FXCollections.observableArrayList(exerciseInterface.getExercisesByNumberAndUnitName_XML(new GenericType<List<Exercise>>() {
+                    }, tfSearch.getText(), unitValue));
+                    tvExercise.setItems((ObservableList) exerciseData);
+                }
+            }
+            if (exerciseData.isEmpty()) {
+                new Alert(Alert.AlertType.INFORMATION, "There is no Exercise with that " + searchValue, ButtonType.OK).showAndWait();
+            }
+        } catch (ExerciseErrorException e) {
+            new Alert(Alert.AlertType.INFORMATION, "There is no Unit with that " + searchValue, ButtonType.OK).showAndWait();
+        }
     }
 
     @FXML
     private void handlePrintButtonAction(ActionEvent event) {
+        try {
+            LOGGER.info("Beginning printing action...");
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/ExerciseReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Exercise>) this.tvExercise.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            //If there is an error show message and
+            //log it.
+            LOGGER.log(Level.SEVERE,
+                    "UI GestionUsuariosController: Error printing report: {0}",
+                    ex.getMessage());
+        }
     }
 
     /**

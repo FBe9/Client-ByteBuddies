@@ -1,7 +1,7 @@
 package factories;
 
 import interfaces.ExerciseInterface;
-import services.ExerciseFacadeREST;
+import services.ExerciseRESTClient;
 
 /**
  *
@@ -12,7 +12,7 @@ public class ExerciseFactory {
 
     public static ExerciseInterface getModel() {
         if (model == null) {
-            model = new ExerciseFacadeREST();
+            model = new ExerciseRESTClient();
         }
         return model;
     }
