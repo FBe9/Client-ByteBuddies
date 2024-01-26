@@ -65,6 +65,7 @@ public class ExerciseController {
     private Stage stage;
     private User user;
     private Exercise exercise;
+    private Unit unit;
     private ObservableList<Exercise> exerciseData;
     private ObservableList<Unit> unitData;
     private ExerciseInterface exerciseInterface;
@@ -73,9 +74,13 @@ public class ExerciseController {
     private List<Exercise> byUnit = new ArrayList<>();
 
     @FXML
-    private TableView tvExercise;
+    private TableView<Exercise> tvExercise;
     @FXML
-    private TableColumn tcUnit, tcNumber, tcDescription, tcLevelType, tcFile, tcFileSolution, tcDeadline, tcHours;
+    private TableColumn tcNumber, tcDescription, tcFile, tcFileSolution, tcDeadline, tcHours;
+    @FXML
+    private TableColumn<Exercise, Unit> tcUnit;
+    @FXML
+    private TableColumn<Exercise, LevelType> tcLevelType;
     @FXML
     private TextField tfSearch, tfNumber, tfDescription, tfHours;
     @FXML
@@ -190,6 +195,7 @@ public class ExerciseController {
                         unitNames.add(unitName);
                     }
                     this.cbUnitSearch.getItems().addAll(unitNames);
+                    cbUnitSearch.getSelectionModel().selectFirst();
                 }
             } catch (FindErrorException e) {
                 LOGGER.log(Level.SEVERE, "Error searching for teacher unit");
@@ -278,25 +284,10 @@ public class ExerciseController {
         this.tcHours.setCellValueFactory(
                 new PropertyValueFactory<>("hours")
         );
-        //Si el usuario es de tipo Teacher se obtendrá la información de los 
-        //ejercicios  llamando al método getAllExercises de la interfaz 
-        //ExerciseInterface.
-        if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
-            //Si el usuario es de tipo Teacher se obtendrá la información de los 
-            //ejercicios  llamando al método getAllExercises de la interfaz 
-            //ExerciseInterface.
-            exerciseData = FXCollections.observableArrayList(exerciseInterface.getAllExercises_XML(new GenericType<List<Exercise>>() {
-            }));
-            this.tvExercise.setItems(exerciseData);
-        } else {
-            //Si el usuario es de tipo Student se obtendrá la información de los 
-            //ejercicios  llamando al método getExercisesByUnitName de la 
-            //interfaz ExerciseInterface.
-            String unitName = this.cbUnitSearch.getSelectionModel().getSelectedItem().toString();
-            exerciseData = FXCollections.observableArrayList(exerciseInterface.getExercisesByUnitName_XML(new GenericType<List<Exercise>>() {
-            }, unitName));
-            this.tvExercise.setItems(exerciseData);
-        }
+        String unitName = this.cbUnitSearch.getSelectionModel().getSelectedItem().toString();
+        exerciseData = FXCollections.observableArrayList(exerciseInterface.getExercisesByUnitName_XML(new GenericType<List<Exercise>>() {
+        }, unitName));
+        this.tvExercise.setItems(exerciseData);
 
         //Add property change listeners for controls 
         this.tvExercise.getSelectionModel().selectedItemProperty()
@@ -305,6 +296,12 @@ public class ExerciseController {
         this.tfNumber.textProperty().addListener(this::handleFieldsTextChange);
         this.tfHours.textProperty().addListener(this::handleFieldsTextChange);
         this.tfDescription.textProperty().addListener(this::handleFieldsTextChange);
+
+        btmFile.setOnAction(event -> {
+
+        });
+
+        this.tfSearch.textProperty().addListener(this::handleFieldsTextChangeSearch);
         stage.setOnCloseRequest(this::handleOnActionExit);
 
         //
@@ -313,14 +310,30 @@ public class ExerciseController {
         this.tfNumber.textProperty().addListener((event) -> this.textChangeCreate(KeyEvent.KEY_TYPED));
         this.tfHours.textProperty().addListener((event) -> this.textChangeCreate(KeyEvent.KEY_TYPED));
         this.tfDescription.textProperty().addListener((event) -> this.textChangeCreate(KeyEvent.KEY_TYPED));
+
         //
         //this.tfNumber.textProperty().addListener((event) -> this.textChangeModify(KeyEvent.KEY_TYPED));
         //this.tfHours.textProperty().addListener((event) -> this.textChangeModify(KeyEvent.KEY_TYPED));
         //this.tfDescription.textProperty().addListener((event) -> this.textChangeModify(KeyEvent.KEY_TYPED));
-
         stage.setScene(scene);
         //Mostrar la ventana. 
         stage.show();
+    }
+
+    private void handleFieldsTextChangeSearch(ObservableValue observable,
+            Object oldValue,
+            Object newValue) {
+        String searchValue = cbUnitSearch.getSelectionModel().getSelectedItem().toString();
+        if (searchValue.equalsIgnoreCase("All")) {
+            this.btmSearch.setDisable(true);
+        } else {
+            if (!this.tfSearch.getText().trim().isEmpty()) {
+                this.btmSearch.setDisable(false);
+            }
+            if (this.tfSearch.getText().trim().isEmpty()) {
+                this.btmSearch.setDisable(true);
+            }
+        }
     }
 
     private void handleExerciseTableSelectionChanged(ObservableValue observable,
@@ -329,7 +342,7 @@ public class ExerciseController {
         try {
             //If there is a row selected, move row data to corresponding fields in the
             //window and enable create, modify and delete buttons
-            Exercise exercise = (Exercise) newValue;
+            Exercise exerciseModify = (Exercise) newValue;
             if (newValue != null) {
 
                 /**
@@ -337,18 +350,14 @@ public class ExerciseController {
                  * in the designated textfields and enable create, modify and
                  * delete buttons
                  */
-                int selectedRow = tvExercise.getSelectionModel().getSelectedIndex();
-
-                String unitName = exercise.getUnit().toString();
-
-                cbUnitCreate.getSelectionModel().select(unitName);
-                tfNumber.setText(exercise.getNumber());
+                cbUnitCreate.getSelectionModel().select(exerciseModify.getUnit().toString());
+                tfNumber.setText(exerciseModify.getNumber());
                 //file
                 //filesolution
-                tfHours.setText(exercise.getHours());
-                cbLevelTypeCreate.getSelectionModel().select(exercise.getLevelType());
-                dpDeadline.setValue(exercise.getDeadline().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-                tfDescription.setText(exercise.getDescription());
+                tfHours.setText(exerciseModify.getHours());
+                cbLevelTypeCreate.getSelectionModel().select(exerciseModify.getLevelType());
+                dpDeadline.setValue(exerciseModify.getDeadline().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                tfDescription.setText(exerciseModify.getDescription());
                 this.btmModify.setDisable(false);
                 this.btmDelete.setDisable(false);
 
@@ -497,31 +506,33 @@ public class ExerciseController {
     @FXML
     private void handleModifyButtonAction(ActionEvent event) throws UpdateErrorException, FindErrorException {
         try {
-            String unitName = this.cbUnitCreate.getSelectionModel().getSelectedItem().toString();
+            Exercise exerciseModify = tvExercise.getSelectionModel().getSelectedItem();
+            String unitName = cbUnitCreate.getSelectionModel().getSelectedItem().toString();
             List<Unit> units = unitInterface.findAllUnits();
-            Unit unit = new Unit();
             for (int i = 0; i < units.size(); i++) {
                 if (units.get(i).getName().equalsIgnoreCase(unitName)) {
-                    unit = units.get(i);
+                    exerciseModify.setUnit(units.get(i));
+                    i = units.size();
                 }
             }
-            exercise.setUnit(unit);
-            exercise.setNumber(this.tfNumber.getText().trim());
-            //file
+
+            exerciseModify.setNumber(tfNumber.getText().trim());
+            //exercise.setFile(btmFile);
             //filesolution
-            exercise.setHours(this.tfHours.getText().trim());
+            exerciseModify.setHours(tfHours.getText().trim());
             LocalDate datePicker = dpDeadline.getValue();
             Date date = Date.from(datePicker.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            exercise.setDeadline(date);
-            exercise.setLevelType((LevelType) this.cbLevelTypeCreate.getSelectionModel().getSelectedItem());
-            exercise.setDescription(this.tfDescription.getText().trim());
+            exerciseModify.setDeadline(date);
+            exerciseModify.setLevelType((LevelType) cbLevelTypeCreate.getSelectionModel().getSelectedItem());
+            exerciseModify.setDescription(tfDescription.getText().trim());
 
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to modify this exercise?", ButtonType.OK, ButtonType.CANCEL);
             Optional<ButtonType> result = alert.showAndWait();
             //If OK to modify
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 //modify exercise from server side
-                exerciseInterface.edit_XML(exercise);
+                String itemId = exerciseModify.getId().toString();
+                exerciseInterface.edit_XML(exerciseModify, itemId);
                 Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "Successfully modified", ButtonType.OK);
                 alert2.showAndWait();
                 tvExercise.refresh();
@@ -665,6 +676,12 @@ public class ExerciseController {
             new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.OK).showAndWait();
 
         }
+    }
+
+    public void setCurrentUnit(Unit unit) {
+        this.unit = unit;
+        String unitName = unit.toString();
+        cbUnitSearch.getSelectionModel().select(unitName);
     }
 
     /**

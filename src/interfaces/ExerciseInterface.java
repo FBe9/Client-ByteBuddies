@@ -14,7 +14,7 @@ public interface ExerciseInterface {
 
     public void create_XML(Object requestEntity) throws CreateErrorException;
 
-    public void edit_XML(Object requestEntity) throws UpdateErrorException;
+    public void edit_XML(Object requestEntity, String id) throws UpdateErrorException;
 
     public void remove(String id) throws DeleteErrorException;
 

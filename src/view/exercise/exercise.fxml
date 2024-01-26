@@ -4,8 +4,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -36,16 +34,6 @@
                 <Image url="@../../resources/AllWhiteStar.png" />
             </image>
         </ImageView>
-        <MenuBar layoutY="2.0" prefHeight="26.0" prefWidth="1406.0" style="-fx-background-color: #74B0E7;">
-            <menus>
-                <Menu mnemonicParsing="false" text="Subject" />
-                <Menu mnemonicParsing="false" text="Exam" />
-                <Menu mnemonicParsing="false" text="Unit" />
-                <Menu mnemonicParsing="false" text="Exercise" />
-                <Menu mnemonicParsing="false" text="Help" />
-                <Menu mnemonicParsing="false" text="Exit" />
-            </menus>
-        </MenuBar>
         <TableView fx:id="tvExercise" layoutX="214.0" layoutY="221.0" prefHeight="383.0" prefWidth="706.0" style="-fx-border-color: #74B0E7;">
             <columns>
                 <TableColumn fx:id="tcUnit" prefWidth="75.0" text="Unit" />
@@ -135,5 +123,6 @@
                 <Font name="Goudy Old Style" size="14.0" />
             </font>
         </Button>
+      <fx:include source="../MenuBar.fxml" />
     </children>
 </Pane>
