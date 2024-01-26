@@ -14,9 +14,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #ECF4FF;" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.unit.UnitWindowController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #ECF4FF;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.unit.UnitWindowController">
     <children>
-        <ImageView fitHeight="742.0" fitWidth="170.0" layoutY="26.0" pickOnBounds="true">
+        <ImageView fitHeight="768.0" fitWidth="170.0" pickOnBounds="true">
             <image>
                 <Image url="@../../resources/BlueWallpaper.jpg" />
             </image>
@@ -39,12 +39,12 @@
         </ImageView>
         <TableView fx:id="tbvUnit" layoutX="212.0" layoutY="233.0" prefHeight="416.0" prefWidth="1109.0" style="-fx-border-color: #74B0E7;">
             <columns>
-                <TableColumn fx:id="tbcName" prefWidth="214.39996337890625" text="Name" />
-                <TableColumn fx:id="tbcSubject" prefWidth="183.99990844726562" text="Subject" />
-                <TableColumn fx:id="tbcDescription" prefWidth="196.0" text="Description" />
-                <TableColumn fx:id="tbcDateInit" prefWidth="152.0" text="Date Init" />
+                <TableColumn fx:id="tbcName" onEditCommit="#onEditCommitColumnName" prefWidth="214.39996337890625" text="Name" />
+                <TableColumn fx:id="tbcSubject" onEditCommit="#onEditCommitColumnSubject" prefWidth="183.99990844726562" text="Subject" />
+                <TableColumn fx:id="tbcDescription" onEditCommit="#onEditCommitColumnDescription" prefWidth="196.0" text="Description" />
+                <TableColumn fx:id="tbcDateInit" onEditCommit="#onEditCommitColumnDate" prefWidth="152.0" text="Date Init" />
                 <TableColumn fx:id="tbcDateEnd" prefWidth="137.60003662109375" text="Date End" />
-                <TableColumn fx:id="tbcHours" prefWidth="82.4000244140625" text="Hours" />
+                <TableColumn fx:id="tbcHours" onEditCommit="#onEditCommitColumnHours" prefWidth="82.4000244140625" text="Hours" />
                 <TableColumn fx:id="tbcExercises" prefWidth="148.0" text="Exercises" />
             </columns>
          <contextMenu>

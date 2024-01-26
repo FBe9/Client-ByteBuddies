@@ -1,8 +1,6 @@
 package view.unit;
 
-import exceptions.CreateErrorException;
-import exceptions.DeleteErrorException;
-import exceptions.FindErrorException;
+import exceptions.*;
 import factories.*;
 import interfaces.SubjectManager;
 import interfaces.UnitInterface;
@@ -31,8 +29,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -42,7 +38,6 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import models.Subject;
@@ -200,6 +195,8 @@ public class UnitWindowController {
                             subjectsNames.add(subjectName);
                         }
                         cbSubjects.getItems().addAll(subjectsNames);
+                        cbSubjects.getItems().add(0, "All subjects units");
+                        cbSubjects.getSelectionModel().selectFirst();
                     }
                 } catch (FindErrorException e) {
                     LOGGER.log(Level.SEVERE, "Error searching for teacher subjects");
@@ -219,6 +216,8 @@ public class UnitWindowController {
                             subjectsNames.add(subjectName);
                         }
                         cbSubjects.getItems().addAll(subjectsNames);
+                        cbSubjects.getItems().add(0, "All subjects units");
+                        cbSubjects.getSelectionModel().selectFirst();
                     }
                 } catch (FindErrorException e) {
                     LOGGER.log(Level.SEVERE, "Error searching for student subjects");
@@ -257,15 +256,19 @@ public class UnitWindowController {
                     = (TableColumn<Unit, String> param) -> new HyperlinkUnitEditingCell(this.loggedUser, stage);
             tbcExercises.setCellFactory(hyperlinkExercisesCell);
             //Las columnas de fechas las mostrará con un patrón formateado de acuerdo a la configuración del sistema.
-
+            //OnEditCommits
+            tbcName.setOnEditCommit(this::onEditCommitColumnName);
+            tbcSubject.setOnEditCommit(this::onEditCommitColumnSubject);
+            tbcDescription.setOnEditCommit(this::onEditCommitColumnDescription);
+            tbcDateInit.setOnEditCommit(this::onEditCommitColumnDate);
+            tbcDateEnd.setOnEditCommit(this::onEditCommitColumnDate);
+            tbcHours.setOnEditCommit(this::onEditCommitColumnHours);
             //Se carga la tabla en base de la conbobox de Subjects.
             actualizarTabla();
-
             cbSubjects.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSubjects);
             cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSearchType);
             stage.setOnCloseRequest(this::handleOnActionExit);
             tfSearch.textProperty().addListener(this::textPropertyChange);
-            //dpSearch.ValueProperty().addListener(this::textPropertyChange);
             tbvUnit.getSelectionModel().selectedItemProperty().addListener(this::handleUnitTableSelectionChanged);
             stage.show();
         } catch (Exception e) {
@@ -285,7 +288,7 @@ public class UnitWindowController {
         try {
             //Comprobar qué valor está seleccionado:
             String selectedValue = (String) cbSubjects.getSelectionModel().getSelectedItem();
-            if (selectedValue.isEmpty()) {
+            if (selectedValue.equalsIgnoreCase("All subjects units")) {
                 //Si no hay nada seleccionado: Se carga la tabla con valor de todas las unidades de todas las asignaturas en las que esté registrado el usuario conectado a la aplicación. El usuario puede ser de dos tipos:
                 if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
                     //Si el usuario es de tipo “Teacher”: Se usará el método “findUnitsFromTeacherSubjects” para rellenar la tabla pasandole el id del usuario conectado a la aplicación. 
@@ -353,6 +356,7 @@ public class UnitWindowController {
             if (tfSearch.getText().equalsIgnoreCase("")) {
                 //En el caso de que no lo esté, deshabilitar el botón Search.
                 btnSearch.setDisable(true);
+                actualizarTabla();
             } else {
                 //En el caso de que esté informado, habilitar el botón Search.
                 btnSearch.setDisable(false);
@@ -362,6 +366,7 @@ public class UnitWindowController {
             if (dpSearch.getValue() == null) {
                 //En el caso de que no lo esté, deshabilitar el botón Search.
                 btnSearch.setDisable(true);
+                actualizarTabla();
             } else {
                 //En el caso de que esté informado, habilitar el botón Search.
                 btnSearch.setDisable(false);
@@ -370,7 +375,7 @@ public class UnitWindowController {
         //El límite de caracteres de los campos será de 300 caracteres. Si el usuario excede este límite no le permitirá escribir más.
         if (tfSearch.getText().trim().length() > 300) {
             tfSearch.setText(tfSearch.getText().substring(0, 300));
-            new Alert(Alert.AlertType.ERROR, "The maximum lenght for the login is 25 characters.", ButtonType.OK).showAndWait();
+            new Alert(Alert.AlertType.ERROR, "The maximum lenght for the search field is 300 characters.", ButtonType.OK).showAndWait();
         }
     }
 
@@ -401,7 +406,7 @@ public class UnitWindowController {
         try {
             //Comprobar el valor del combobox “cbSubjects”:
             subjectValue = (String) cbSubjects.getSelectionModel().getSelectedItem();
-            if (cbSubjects.getSelectionModel().isEmpty()) {
+            if (subjectValue.equalsIgnoreCase("All subjects units")) {
                 //Ningún valor seleccionado: Avisar al usuario mediante una alerta de que seleccione una asignatura para hacer las búsquedas.
                 new Alert(Alert.AlertType.ERROR, "Please select a subject in the combobox to continue searching", ButtonType.OK).showAndWait();
             } else {
@@ -491,7 +496,7 @@ public class UnitWindowController {
             newUnit.setDescription("");
 
             String subjectUnit = (String) cbSubjects.getSelectionModel().getSelectedItem();
-            if (!cbSubjects.getSelectionModel().isEmpty()) {
+            if (!subjectUnit.equalsIgnoreCase("All subjects units")) {
                 //La columna Subject en caso de que una subject esté seleccionada en el combobox “cbSubjects”, se selecciona esta en este campo.
                 clientsDataS = FXCollections.observableArrayList(clientS.findAllSubjects());
                 for (int i = 0; i < clientsDataS.size(); i++) {
@@ -503,10 +508,10 @@ public class UnitWindowController {
             } else {
                 //Si no es el caso, será la posición 1 del combobox “cbSubjects” la que se seleccione.
                 List<String> list = cbSubjects.getItems();
-                list.get(1);
                 clientsDataS = FXCollections.observableArrayList(clientS.findAllSubjects());
                 for (int i = 0; i < clientsDataS.size(); i++) {
-                    if (clientsDataS.get(i).getName().equalsIgnoreCase((String) list.get(0))) {
+                    subjectUnit = (String) list.get(1);
+                    if (clientsDataS.get(i).getName().equalsIgnoreCase(subjectUnit)) {
                         newUnit.setSubject(clientsDataS.get(i));
                         i = clientsDataS.size();
                     }
@@ -518,23 +523,36 @@ public class UnitWindowController {
 
             //La columna de Hours estará a 0.
             newUnit.setHours("0");
-            //La columna de Exercises tendrá el valor “View Exercises”.
+            //Comprobar si posible crear poque no habran dos units the una subject con el mismo nombre.
             Boolean create = true;
-            List<Unit> units = clientU.findSubjectUnits(subjectUnit);
-            for (int i = 0; i < units.size(); i++) {
-                if (units.get(i).getName().equalsIgnoreCase("")) {
-                    create = false;
-                    i = units.size();
+            if (!subjectUnit.equalsIgnoreCase("All subjects units")) {
+                List<Unit> units = clientU.findSubjectUnits(subjectUnit);
+                for (int i = 0; i < units.size(); i++) {
+                    if (units.get(i).getName().equalsIgnoreCase("")) {
+                        create = false;
+                        i = units.size();
+                    }
+                }
+            } else {
+                List<String> list = cbSubjects.getItems();
+                subjectUnit = list.get(1);
+                List<Unit> units = clientU.findSubjectUnits(subjectUnit);
+                for (int i = 0; i < units.size(); i++) {
+                    if (units.get(i).getName().equalsIgnoreCase("")) {
+                        create = false;
+                        i = units.size();
+                    }
                 }
             }
+
             if (create) {
                 //Se usará el método “createUnit” para crear una Unit con los valores por defecto que hemos estipulado pasandoselos en un objeto de tipo Unit.
                 clientU.createUnit(newUnit);
                 //Si la operación se lleva a cabo sin errores, la fila recién creada se mostrará en la tabla.
-                new Alert(Alert.AlertType.INFORMATION, "Unit added successfully", ButtonType.OK).showAndWait();
+                new Alert(Alert.AlertType.INFORMATION, "Unit added successfully at " + subjectUnit + " subject", ButtonType.OK).showAndWait();
                 actualizarTabla();
             } else {
-                new Alert(Alert.AlertType.INFORMATION, "There is a unit at this subject without name, please change it before creating a new one", ButtonType.OK).showAndWait();
+                new Alert(Alert.AlertType.INFORMATION, "There is already a unit at " + subjectUnit + " subject without name, please change it before creating a new one on " + subjectUnit + " subject.", ButtonType.OK).showAndWait();
             }
 
             //Si se produce algún error, se le mostrará al usuario una alerta con el error y se cancelará la creación de la asignatura.
@@ -596,25 +614,10 @@ public class UnitWindowController {
         }
     }
 
-    private void superRefresh() {
-        try {
-            stage.close();
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("UnitWindow.fxml"));
-            Parent root = (Parent) loader.load();
-            // Obtain the Sign In window controller
-            UnitWindowController controller = (UnitWindowController) loader.getController();
-            controller.setStage(stage);
-            controller.initStage(root, loggedUser);
-
-        } catch (IOException ex) {
-            Logger.getLogger(MenuBarController.class
-                    .getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     private void actualizarTabla() {
         try {
-            if (cbSubjects.getSelectionModel().isEmpty()) {
+            String comboValue = (String) cbSubjects.getSelectionModel().getSelectedItem();
+            if (comboValue.equalsIgnoreCase("All subjects units")) {
                 //Si no hay nada seleccionado: Se carga la tabla con valor de todas las unidades de todas las asignaturas en las que esté registrado el usuario conectado a la aplicación. El usuario puede ser de dos tipos:
                 if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
 
@@ -631,7 +634,7 @@ public class UnitWindowController {
                 }
             } else {
                 //Si hay un valor: Se usará el método “findSubjectUnits” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox. 
-                clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits((String) cbSubjects.getSelectionModel().getSelectedItem()));
+                clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits(comboValue));
                 tbvUnit.setItems((ObservableList) clientsDataU);
                 tbvUnit.refresh();
 
@@ -653,5 +656,104 @@ public class UnitWindowController {
         this.subject = subject;
         String subjectName = subject.toString();
         cbSubjects.getSelectionModel().select(subjectName);
+    }
+
+    /**
+     *
+     * @param event
+     */
+    private void onEditCommitColumnName(TableColumn.CellEditEvent<Unit, String> event) {
+        Unit unit = tbvUnit.getSelectionModel().getSelectedItem();
+        //Si se pasa del límite: no le permitirá seguir escribiendo.
+        String name = event.getNewValue();
+        String subjectUnit = unit.getSubject().toString();
+        try {
+            //Si se presiona la tecla ENTER: Se verificará que el nombre ingresado en la celda no esté ya registrado como nombre de la subject the la unit editada ni se pase de 100 caracteres:
+            clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits(subjectUnit));
+            Boolean modify = true;
+            for (int i = 0; i < clientsDataU.size(); i++) {
+                if (clientsDataU.get(i).getName().equalsIgnoreCase(name)) {
+                    //Si el nombre ya existe: se lanzará la excepción “UnitNameExistException” y se notificará al usuario a través de una alerta pidiéndole que cambie el nombre porque ese ya existe como nombre de otra unidad.
+                    modify = false;
+                    i = clientsDataU.size();
+                    tbvUnit.refresh();
+                    throw new UnitNameExistException();
+                }
+            }
+            //Si se pasa del límite: le saldra una alerta al usuario con el limite de caracteres
+            if (name.length() > 100) {
+                modify = false;
+                new Alert(Alert.AlertType.ERROR, "Unit name length must be lower than 100 characters, please change it", ButtonType.OK).showAndWait();
+            }
+
+            if (modify) {
+                //Si los dos criterios se cumplen: Se usará el método “updateUnit” para guardar la edición en la base de datos, pasandole la unit seleccionada en un objeto de tipo unit.
+                unit.setName(name);
+                clientU.updateUnit(unit);
+            }
+            //Si no se produce ningún error, se refrescará la tabla.
+            actualizarTabla();
+            //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la edición.
+            //Si se realiza doble clic en la celda: Se ingresará al modo de edición y si se presiona la tecla ESC o se hace clic en cualquier lugar fuera de la celda, se cancelará la edición.
+
+        } catch (UnitNameExistException ex) {
+            new Alert(Alert.AlertType.ERROR, "Unit name already exists in " + subjectUnit + " subject.", ButtonType.OK).showAndWait();
+
+        } catch (FindErrorException | UpdateErrorException ex) {
+            Logger.getLogger(UnitWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    private void onEditCommitColumnSubject(TableColumn.CellEditEvent<Unit, Subject> event) {
+        //Si se realiza doble clic en la celda: Se ingresará al modo de edición y si se presiona la tecla ESC o se hace clic en cualquier lugar fuera de la celda, se cancelará la edición.
+        //Se mostrará un combobox con las opciones del combobox “cbSubjects”.
+        //Si se presiona la tecla ENTER: Se verificará que haya algún valor seleccionado y que ese valor sea diferente del existente.
+        //Si se cumple: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “updateUnit” para guardar la edición en la base de datos, pasandole la unit seleccionada con el cambio en un objeto de tipo unit.
+        //Si no se produce ningún error, se refrescará la tabla.
+        //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la edición.
+        //Si deja el campo vacío: le avisará al usuario de que ese campo es obligatorio de rellenar.
+        //Si es el mismo valor: no se requerirá ninguna acción ya que no habrá edición alguna.
+    }
+
+    @FXML
+    private void onEditCommitColumnDescription(TableColumn.CellEditEvent<Unit, String> event) {
+        //Si se realiza doble clic en la celda: Se ingresará al modo de edición y si se presiona la tecla ESC o se hace clic en cualquier lugar fuera de la celda, se cancelará la edición.
+        //Si se presiona la tecla ENTER: Se verificará que el texto ingresado en la celda no se pase de 100 caracteres:
+        //Si se pasa del límite: no le permitirá seguir escribiendo.
+        //Si se cumplen: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “updateUnit” para guardar la edición en la base de datos, pasandole la unit seleccionada en un objeto de tipo unit.
+        //Si no se produce ningún error, se refrescará la tabla.
+        //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la edición.
+
+    }
+
+    @FXML
+    private void onEditCommitColumnDate(TableColumn.CellEditEvent<Unit, Date> event) {
+        //Si se realiza doble clic en la celda: Se ingresará al modo de edición y si se presiona la tecla ESC o se hace clic en cualquier lugar fuera de la celda, se cancelará la edición.
+        //Se mostrará un datepicker para seleccionar la nueva fecha.
+        //Al introducir el Date End se validará que sea posterior a él Date Init. En caso contrario, se lanzará la excepción “WrongDateException” y se notificará al usuario a través de una alerta con el siguiente mensaje de error: "Invalid Input, start date must be before end date."
+        //Se validará que ambas fechas estén comprendidas dentro de un período de tiempo. El periodo de tiempo válido será definido en un archivo de configuración y podrá ser modificado.
+        //Si las fechas no se encuentran dentro de ese periodo, se lanzará la excepción “WrongDateException” y se notificará al usuario mediante una alerta con el siguiente mensaje de error: "Our application only stores information from year X to year Y. Please enter a date between these two years". X e Y serán reemplazados por las fechas del archivo de configuración.
+        //Si se introduce Date End se validará que se haya introducido anteriormente el Date Init. En caso contrario, se lanzará la excepción “WrongDateException” y se notificará al usuario a través de una alerta con el siguiente mensaje de error: "Please enter the start date before the end date."
+        //Si se presiona la tecla ENTER: Se verificará que haya algún valor seleccionado y que ese valor sea diferente del existente. 
+        //Si lo cumple: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “updateUnit” para guardar la edición en la base de datos, pasandole la unit seleccionada  con el cambio en un objeto de tipo unit.
+        //Si no se produce ningún error, se refrescará la tabla.
+        //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la edición.
+        //Si deja el campo vacío: 	
+        //Date Init: No debería de importar por que no es obligatorio. A no ser que quieras meter el Date End, en ese caso se volvería obligatorio.
+        //Date End: No pasará nada porque el campo no es obligatorio y el Date Init no depende de él.
+        //Si es el mismo valor: no se requerirá ninguna acción ya que no habrá edición alguna.
+
+    }
+
+    @FXML
+    private void onEditCommitColumnHours(TableColumn.CellEditEvent<Unit, String> event) {
+        //Si se realiza doble clic en la celda: Se ingresará al modo de edición y si se presiona la tecla ESC o se hace clic en cualquier lugar fuera de la celda, se cancelará la edición.
+        //Si se presiona la tecla ENTER: Se verificará que la información ingresada en la celda consista únicamente de números enteros. 
+        //En caso de que no se cumpla: Se lanzará la excepción “WrongNumberFormatException” y se notificará al usuario a través de una alerta con el siguiente mensaje de error: “Invalid hours column value, please enter only integer numbers.”
+        //En caso de que se cumpla: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “updateUnit” para guardar la edición en la base de datos, pasandole la unit seleccionada  con el cambio en un objeto de tipo unit.
+        //Si no se produce ningún error, se refrescará la tabla.
+        //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la edición.
+
     }
 }
