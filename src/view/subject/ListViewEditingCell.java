@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
@@ -69,15 +71,26 @@ public class ListViewEditingCell extends TableCell<Subject, ObservableSet<Teache
             //Añadir evento para que al pulsar enter se accione
             listViewTeacher.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
                 if (keyEvent.getCode() == KeyCode.ENTER) {
-                    // Obtener la lista de los profesores seleccionados
-                    ObservableList<Teacher> selectedTeachersList = listViewTeacher.getSelectionModel().getSelectedItems();
+                    if (currentSubject.getName() != null) {
+                        // Obtener la lista de los profesores seleccionados
+                        ObservableList<Teacher> selectedTeachersList = listViewTeacher.getSelectionModel().getSelectedItems();
 
-                    // Pasar la list a Set para poder hacer el commit
-                    ObservableSet<Teacher> selectedTeachersSet = FXCollections.observableSet();
-                    selectedTeachersSet.addAll(selectedTeachersList);
+                        // Pasar la list a Set para poder hacer el commit
+                        ObservableSet<Teacher> selectedTeachersSet = FXCollections.observableSet();
+                        selectedTeachersSet.addAll(selectedTeachersList);
 
-                    // Commit los profesores seleccionados
-                    commitEdit(selectedTeachersSet);
+                        // Commit los profesores seleccionados
+                        commitEdit(selectedTeachersSet);
+                    } else {
+                        // Limpiar selección y salir del modo edición
+                        listViewTeacher.getSelectionModel().clearSelection();
+                        cancelEdit();  // Método que deberías tener para salir del modo de edición
+
+                        // Mostrar un mensaje de error
+                        showErrorAlert("To assign a teacher to a subject, the subject must have a name.");
+
+                    }
+
                 }
             });
             setText(null);
@@ -133,5 +146,11 @@ public class ListViewEditingCell extends TableCell<Subject, ObservableSet<Teache
     public void cancelEdit() {
         setGraphic(null);
         super.cancelEdit();
+    }
+
+    public void showErrorAlert(String errorMsg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.OK);
+        alert.showAndWait();
+
     }
 }

@@ -254,18 +254,14 @@ public class SignInWindowController {
 
             user = userInterface.login(user);
 
-            // Cargar menubar.fxml
-            FXMLLoader menuLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/Menubar.fxml"));
-            Parent menuRoot = (Parent) menuLoader.load();
-            MenuBarController menubarController = (MenuBarController) menuLoader.getController();
-            menubarController.initStage(user);
-
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/Subject.fxml"));
             Parent root = (Parent) loader.load();
             SubjectController controller = (SubjectController) loader.getController();
-            Stage primaryStage = new Stage();
-            controller.setStage(primaryStage);
+
+            controller.setStage(stage);
             controller.initStage(root, user);
+            MenuBarController.setStage(stage);
+            MenuBarController.setUser(user);
 
         } /**
          * Si el metodo signIn no produce excepciones, se cerrará la ventana y
