@@ -42,8 +42,8 @@
                 <TableColumn fx:id="tbcName" onEditCommit="#onEditCommitColumnName" prefWidth="214.39996337890625" text="Name" />
                 <TableColumn fx:id="tbcSubject" onEditCommit="#onEditCommitColumnSubject" prefWidth="183.99990844726562" text="Subject" />
                 <TableColumn fx:id="tbcDescription" onEditCommit="#onEditCommitColumnDescription" prefWidth="196.0" text="Description" />
-                <TableColumn fx:id="tbcDateInit" onEditCommit="#onEditCommitColumnDate" prefWidth="152.0" text="Date Init" />
-                <TableColumn fx:id="tbcDateEnd" prefWidth="137.60003662109375" text="Date End" />
+                <TableColumn fx:id="tbcDateInit" onEditCommit="#onEditCommitColumnDateInit" prefWidth="152.0" text="Date Init" />
+                <TableColumn fx:id="tbcDateEnd" onEditCommit="#onEditCommitColumnDateEnd" prefWidth="137.60003662109375" text="Date End" />
                 <TableColumn fx:id="tbcHours" onEditCommit="#onEditCommitColumnHours" prefWidth="82.4000244140625" text="Hours" />
                 <TableColumn fx:id="tbcExercises" prefWidth="148.0" text="Exercises" />
             </columns>
@@ -52,7 +52,7 @@
               <items>
                 <MenuItem fx:id="cmiCreateUnit" mnemonicParsing="false" onAction="#handelCreateButtonAction" text="Create new Unit" />
                   <MenuItem fx:id="cmiDeleteUnit" mnemonicParsing="false" onAction="#handelDeleteButtonAction" text="Delete Unit" />
-                  <MenuItem fx:id="cmiPrintReport" mnemonicParsing="false" onAction="#handelPrinteButtonAction" text="Create a report" />
+                  <MenuItem fx:id="cmiPrintReport" mnemonicParsing="false" onAction="#handelPrintButtonAction" text="Create a report" />
               </items>
             </ContextMenu>
          </contextMenu>
@@ -84,7 +84,7 @@
                 <Font name="Calibri Italic" size="12.0" />
             </font>
         </Button>
-        <Button fx:id="btnPrint" layoutX="1251.0" layoutY="664.0" mnemonicParsing="false" onAction="#handelPrinteButtonAction" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Print">
+        <Button fx:id="btnPrint" layoutX="1251.0" layoutY="664.0" mnemonicParsing="false" onAction="#handelPrintButtonAction" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Print">
             <font>
                 <Font name="Calibri Italic" size="12.0" />
             </font>
