@@ -39,7 +39,7 @@ public class Subject implements Serializable {
     private final SimpleObjectProperty<Date> dateInit;
     private final SimpleObjectProperty<Date> dateEnd;
     private final SimpleIntegerProperty studentsCount;
-    private final SetProperty<Teacher> teachersSet;
+    private final SetProperty<Teacher> teachers;
     private final SetProperty<Enrolled> enrollments;
     private final SimpleBooleanProperty status;
 
@@ -51,7 +51,7 @@ public class Subject implements Serializable {
         this.languageType = new SimpleObjectProperty<>();
         this.dateInit = new SimpleObjectProperty<>();
         this.dateEnd = new SimpleObjectProperty<>();
-        this.teachersSet = new SimpleSetProperty<>(FXCollections.observableSet());
+        this.teachers = new SimpleSetProperty<>(FXCollections.observableSet());
         this.enrollments = new SimpleSetProperty<>(FXCollections.observableSet());
         this.status = new SimpleBooleanProperty();
         this.studentsCount = new SimpleIntegerProperty();
@@ -78,7 +78,7 @@ public class Subject implements Serializable {
         this.languageType = new SimpleObjectProperty(languageType);
         this.dateInit = new SimpleObjectProperty(dateInit);
         this.dateEnd = new SimpleObjectProperty(dateEnd);
-        this.teachersSet = new SimpleSetProperty(teachers);
+        this.teachers = new SimpleSetProperty(teachers);
         this.enrollments = new SimpleSetProperty(enrollments);
         this.status = new SimpleBooleanProperty(status);
         this.studentsCount = new SimpleIntegerProperty(studentsCount);
@@ -214,11 +214,11 @@ public class Subject implements Serializable {
     @XmlElementWrapper(name = "teachers")
     @XmlElement(name = "teacher")
     public ObservableSet<Teacher> getTeachers() {
-        return FXCollections.observableSet(teachersSet);
+        return FXCollections.observableSet(teachers);
     }
 
     public void setTeachers(ObservableSet<Teacher> teachers) {
-        this.teachersSet.addAll(teachers);
+        this.teachers.addAll(teachers);
     }
 
     public ObservableSet<Enrolled> getEnrollments() {

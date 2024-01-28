@@ -1,25 +1,27 @@
 package view.unit;
 
+import exceptions.CreateErrorException;
+import exceptions.DeleteErrorException;
 import exceptions.FindErrorException;
 import factories.*;
 import interfaces.SubjectManager;
 import interfaces.UnitInterface;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Observable;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -29,6 +31,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -38,11 +41,12 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javax.ws.rs.core.GenericType;
+import javafx.util.Callback;
 import models.Subject;
 import models.Teacher;
 import models.Unit;
 import models.User;
+import view.MenuBarController;
 
 /**
  * FXML Controller class
@@ -52,7 +56,7 @@ import models.User;
 public class UnitWindowController {
 
     @FXML
-    private TableView tbvUnit;
+    private TableView<Unit> tbvUnit;
     @FXML
     private TableColumn<Unit, String> tbcName;
     @FXML
@@ -66,7 +70,7 @@ public class UnitWindowController {
     @FXML
     private TableColumn<Unit, String> tbcHours;
     @FXML
-    private TableColumn<Unit, Hyperlink> tbcExercises;
+    private TableColumn<Unit, String> tbcExercises;
     @FXML
     private TextField tfSearch;
     @FXML
@@ -90,7 +94,7 @@ public class UnitWindowController {
     private static final Logger LOGGER = Logger.getLogger("package view.Unit");
     private ObservableList<Unit> clientsDataU;
     private ObservableList<Subject> clientsDataS;
-    private List<String> Subjects;
+    private Subject subject;
     private User loggedUser;
     private UnitInterface clientU;
     private SubjectManager clientS;
@@ -191,46 +195,82 @@ public class UnitWindowController {
             btnSearch.setDisable(true);
             btnDeleteUnit.setDisable(true);
             //La tabla mostrará los atributos: Name(tbcName), Subject(tbcSubject), Description(tbcDescription), Date Init(tbcDateInit), Date End(tbcDateEnd), Hours(tbcHours) and Exercises(tbcExercises).
-            tbcName.setCellValueFactory(
-                    new PropertyValueFactory<>("name"));
+            tbcName.setCellValueFactory(new PropertyValueFactory<>("name"));
             tbcName.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
-            tbcSubject.setCellValueFactory(
-                    new PropertyValueFactory<>("subject"));
+            tbcSubject.setCellValueFactory(new PropertyValueFactory<>("subject"));
             tbcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(cbSubjects.getItems()));
-            tbcDescription.setCellValueFactory(
-                    new PropertyValueFactory<>("description"));
+            tbcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
             tbcDescription.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
-            tbcDateInit.setCellValueFactory(
-                    new PropertyValueFactory<>("dateInit"));
-            //tbcDateInit.setCellFactory(DateUnitEditingCell);
-            tbcDateEnd.setCellValueFactory(
-                    new PropertyValueFactory<>("dateEnd"));
-            //CellFacttoy Date
-            tbcHours.setCellValueFactory(
-                    new PropertyValueFactory<>("hours"));
+            tbcDateInit.setCellValueFactory(new PropertyValueFactory<>("dateInit"));
+            final Callback<TableColumn<Unit, Date>, TableCell<Unit, Date>> dateCell
+                    = (TableColumn<Unit, Date> param) -> new DateUnitEditingCell();
+            tbcDateInit.setCellFactory(dateCell);
+            tbcDateEnd.setCellValueFactory(new PropertyValueFactory<>("dateEnd"));
+            tbcDateEnd.setCellFactory(dateCell);
+            tbcHours.setCellValueFactory(new PropertyValueFactory<>("hours"));
             tbcHours.setCellFactory(TextFieldTableCell.<Unit>forTableColumn());
-            tbcExercises.setCellValueFactory(
-                    new PropertyValueFactory<>("exercises"));
-            //CellFactory Hyperlink
+            tbcExercises.setCellValueFactory(new PropertyValueFactory<>("exercises"));
+            final Callback<TableColumn<Unit, String>, TableCell<Unit, String>> hyperlinkExercisesCell
+                    = (TableColumn<Unit, String> param) -> new HyperlinkUnitEditingCell(this.loggedUser, stage);
+            tbcExercises.setCellFactory(hyperlinkExercisesCell);
 
             //Charge tables data
-            if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
-                clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
-                tbvUnit.setItems((ObservableList) clientsDataU);
-            } else {
-                clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromStudentSubjects(loggedUser.getId().toString()));
-                tbvUnit.setItems((ObservableList) clientsDataU);
-            }
+            actualizarTabla();
 
+            cbSubjects.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSubjects);
             cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSearchType);
             stage.setOnCloseRequest(this::handleOnActionExit);
             tfSearch.textProperty().addListener(this::textPropertyChange);
             //dpSearch.ValueProperty().addListener(this::textPropertyChange);
+            tbvUnit.getSelectionModel().selectedItemProperty().addListener(this::handleUnitTableSelectionChanged);
             stage.show();
-        } catch (FindErrorException e) {
+        } catch (Exception e) {
             LOGGER.info(e.getMessage());
         }
 
+    }
+
+    /**
+     *
+     * @param observable
+     * @param oldValue
+     * @param newValue
+     */
+    public void handleOnSelectSubjects(ObservableValue<Object> observable,
+            Object oldValue, Object newValue) {
+        try {
+            //Comprobar qué valor está seleccionado:
+            String selectedValue = (String) cbSubjects.getSelectionModel().getSelectedItem();
+            if (selectedValue.isEmpty()) {
+                //Si no hay nada seleccionado: Se carga la tabla con valor de todas las unidades de todas las asignaturas en las que esté registrado el usuario conectado a la aplicación. El usuario puede ser de dos tipos:
+                if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
+                    //Si el usuario es de tipo “Teacher”: Se usará el método “findUnitsFromTeacherSubjects” para rellenar la tabla pasandole el id del usuario conectado a la aplicación. 
+                    clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
+                    tbvUnit.setItems((ObservableList) clientsDataU);
+                    tbvUnit.refresh();
+                } else {
+                    //Si el usuario es de tipo “Student”: Se usará el método “findUnitsFromStudentSubjects” para rellenar la tabla pasandole el id del usuario conectado a la aplicación. 
+                    clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromStudentSubjects(loggedUser.getId().toString()));
+                    tbvUnit.setItems((ObservableList) clientsDataU);
+                    tbvUnit.refresh();
+                }
+            } else if (selectedValue.equalsIgnoreCase("No Subjects found")) {
+                //Si está seleccionado ”No Subjects found”: el combobox de search type(cbSearchType), el textfield(tfSearch), el datepicker(dpSearch) y los botones de search(btnSearch), create(btnCreateUnit) y delete(btnDeleteUnit) se desactivan.
+                cbSearchType.setDisable(true);
+                tfSearch.setDisable(true);
+                dpSearch.setDisable(true);
+                btnSearch.setDisable(true);
+                btnCreateUnit.setDisable(true);
+                btnDeleteUnit.setDisable(true);
+            } else {
+                //Si hay un valor: Se usará el método “findSubjectUnits” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox. 
+                clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits(selectedValue));
+                tbvUnit.setItems((ObservableList) clientsDataU);
+                tbvUnit.refresh();
+            }
+        } catch (FindErrorException e) {
+            LOGGER.severe(e.getMessage());
+        }
     }
 
     /**
@@ -251,6 +291,9 @@ public class UnitWindowController {
             tfSearch.setVisible(false);
             dpSearch.setVisible(true);
         }
+        tfSearch.setText("");
+        dpSearch.setValue(null);
+        actualizarTabla();
     }
 
     /**
@@ -289,6 +332,21 @@ public class UnitWindowController {
 
     /**
      *
+     * @param observable
+     * @param oldValue
+     * @param newValue
+     */
+    private void handleUnitTableSelectionChanged(ObservableValue observable, Object oldValue, Object newValue) {
+        Unit unit = (Unit) newValue;
+        if (newValue != null) {
+            btnDeleteUnit.setDisable(false);
+        } else {
+            btnDeleteUnit.setDisable(true);
+        }
+    }
+
+    /**
+     *
      * @param event
      */
     public void handelSearchButtonAction(Event event) {
@@ -297,40 +355,75 @@ public class UnitWindowController {
         String searchValue = null;
         try {
             //Comprobar el valor del combobox “cbSubjects”:
-            subjectValue = cbSubjects.getSelectionModel().getSelectedItem().toString();
-            if (subjectValue.isEmpty()) {
+            subjectValue = (String) cbSubjects.getSelectionModel().getSelectedItem();
+            if (cbSubjects.getSelectionModel().isEmpty()) {
                 //Ningún valor seleccionado: Avisar al usuario mediante una alerta de que seleccione una asignatura para hacer las búsquedas.
                 new Alert(Alert.AlertType.ERROR, "Please select a subject in the combobox to continue searching", ButtonType.OK).showAndWait();
             } else {
                 //Si el valor es cualquier otro: Comprobar el valor del combobox “cbSearchType”:
-                searchValue = cbSearchType.getSelectionModel().getSelectedItem().toString();
+                searchValue = (String) cbSearchType.getSelectionModel().getSelectedItem();
                 if (searchValue.equalsIgnoreCase("Name")) {
                     //Si el valor es Name: Se rellena la tabla con el método “findSubjectUnitsByName” pasandole el nombre de la subject seleccionada en la combobox y el nombre de la unidad escrita en el textfield. 
                     clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnitsByName(tfSearch.getText(), subjectValue));
-                    tbvUnit.setItems((ObservableList) clientsDataU);
+                    tbvUnit.setItems(clientsDataU);
+                    tbvUnit.refresh();
+
                 } else if (searchValue.equalsIgnoreCase("Date Init")) {
                     //Si el valor es Date Init: Se rellena la tabla con el método “findSubjectUnitsByDateInit” pasandole el nombre de la subject seleccionada en la combobox y la fecha de la unidad escrita en el datePicker. 
                     LocalDate datePicker = dpSearch.getValue();
                     Date date = Date.from(datePicker.atStartOfDay(ZoneId.systemDefault()).toInstant());
                     clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnitsByDateInit(date, subjectValue));
                     tbvUnit.setItems((ObservableList) clientsDataU);
+                    tbvUnit.refresh();
                 } else if (searchValue.equalsIgnoreCase("Date End")) {
-                    //Si el valor es Date End: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “findSubjectUnitsByDateEnd” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox y la fecha de la unidad escrita en el datePicker. 
+                    //Si el valor es Date End: Se usará el método “findSubjectUnitsByDateEnd” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox y la fecha de la unidad escrita en el datePicker. 
                     LocalDate datePicker = dpSearch.getValue();
                     Date date = Date.from(datePicker.atStartOfDay(ZoneId.systemDefault()).toInstant());
                     clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnitsByDateEnd(date, subjectValue));
                     tbvUnit.setItems((ObservableList) clientsDataU);
+                    tbvUnit.refresh();
                 } else if (searchValue.equalsIgnoreCase("Hours")) {
-                    //Si el valor es Hours: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “findSubjectUnitsByHours” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox y el numero de horas escrita en el textfield. 
+                    //Si el valor es Hours: Se usará el método “findSubjectUnitsByHours” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox y el numero de horas escrita en el textfield. 
                     clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnitsByHours(tfSearch.getText(), subjectValue));
                     tbvUnit.setItems((ObservableList) clientsDataU);
+                    tbvUnit.refresh();
                 }
+
             }
             if (clientsDataU.isEmpty()) {
                 new Alert(Alert.AlertType.INFORMATION, "There is no Unit with that " + searchValue, ButtonType.OK).showAndWait();
             }
         } catch (FindErrorException e) {
             new Alert(Alert.AlertType.INFORMATION, "There is no Unit with that " + searchValue, ButtonType.OK).showAndWait();
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.INFORMATION, "Error:" + e.getMessage(), ButtonType.OK).showAndWait();
+        }
+    }
+   
+    /**
+     *
+     * @param event
+     */
+    public void handelDeleteButtonAction(Event event) {
+        try {
+            //Pedir confirmación al usuario para eliminar la unit seleccionada:
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                    "¿Are you sure you want to delete this unit?",
+                    ButtonType.OK, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                //Si el usuario confirma: Se usará el método “removeUnit” para eliminar la unit pasandole la unit seleccionada en un objeto de tipo Unit. 
+                Unit unit = (Unit) tbvUnit.getSelectionModel().getSelectedItem();
+                clientU.removeUnit(unit);
+            } else {
+                //Si no confirma: mantenerse en la ventana.
+                event.consume();
+            }
+            //Si no se ha producido ningún error, la tabla se actualizará.
+            actualizarTabla();
+            //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la eliminación de la unit.
+        } catch (DeleteErrorException e) {
+            new Alert(Alert.AlertType.INFORMATION, "Error while deleting the Unit", ButtonType.OK).showAndWait();
         }
     }
 
@@ -338,29 +431,59 @@ public class UnitWindowController {
      *
      * @param event
      */
-    public void handelDeleteButtonAction(Event event) {
-        //Pedir confirmación al usuario para eliminar la unit seleccionada:
-        //Si no confirma: mantenerse en la ventana.
-        //Si el usuario confirma: Se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “removeUnit” para eliminar la unit pasandole la unit seleccionada en un objeto de tipo Unit. 
-        //Si no se ha producido ningún error, la tabla se actualizará.
-        //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la eliminación de la unit.
-    }
-
-    /**
-     *
-     * @param event
-     */
     public void handelCreateButtonAction(Event event) {
-        //Se creará una nueva fila en la tabla con valores por defecto:
-        //Las columnas Name y Description estarán vacías.
-        //La columna Subject en caso de que una subject esté seleccionada en el combobox “cbSubjects”, se selecciona esta en este campo.
-        //Si no es el caso, será la posición 1 del combobox “cbSubjects” la que se seleccione.
-        //Las columnas de Date Init y Date  End estarán cargadas con la fecha de hoy (Init) y la de mañana (End).
-        //La columna de Hours estará a 0.
-        //La columna de Exercises tendrá el valor “View Exercises”.
-        //Después se llamará a la factoría “UnitFactory” para llamar a la implementación de la interfaz “UnitInterface” y se usará el método “createUnit” para crear una Unit con los valores por defecto que hemos estipulado pasandoselos en un objeto de tipo Unit.
-        //Si la operación se lleva a cabo sin errores, la fila recién creada se mostrará en la tabla.
-        //Si se produce algún error, se le mostrará al usuario una alerta con el error y se cancelará la creación de la asignatura.
+        try {
+            //Se creará una nueva fila en la tabla con valores por defecto:
+            Unit newUnit = new Unit();
+            //Las columnas Name y Description estarán vacías.
+            newUnit.setName(null);
+            newUnit.setDescription(null);
+
+            String subjectUnit = (String) cbSubjects.getSelectionModel().getSelectedItem();
+            if (!cbSubjects.getSelectionModel().isEmpty()) {
+                //La columna Subject en caso de que una subject esté seleccionada en el combobox “cbSubjects”, se selecciona esta en este campo.
+                clientsDataS = FXCollections.observableArrayList(clientS.findAllSubjects());
+                for (int i = 0; i < clientsDataS.size(); i++) {
+                    if (clientsDataS.get(i).getName().equalsIgnoreCase(subjectUnit)) {
+                        newUnit.setSubject(clientsDataS.get(i));
+                        i = clientsDataS.size();
+                    }
+                }
+            } else {
+                //Si no es el caso, será la posición 1 del combobox “cbSubjects” la que se seleccione.
+                List<String> list = cbSubjects.getItems();
+                list.get(1);
+                clientsDataS = FXCollections.observableArrayList(clientS.findAllSubjects());
+                for (int i = 0; i < clientsDataS.size(); i++) {
+                    if (clientsDataS.get(i).getName().equalsIgnoreCase((String) list.get(0))) {
+                        newUnit.setSubject(clientsDataS.get(i));
+                        i = clientsDataS.size();
+                    }
+                }
+            }
+            //Las columnas de Date Init y Date  End estarán cargadas con la fecha de hoy (Init) y la de mañana (End).
+            newUnit.setDateInit(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            newUnit.setDateEnd(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+            //La columna de Hours estará a 0.
+            newUnit.setHours("0");
+            //La columna de Exercises tendrá el valor “View Exercises”.
+            //Se usará el método “createUnit” para crear una Unit con los valores por defecto que hemos estipulado pasandoselos en un objeto de tipo Unit.
+            clientU.createUnit(newUnit);
+            //Si la operación se lleva a cabo sin errores, la fila recién creada se mostrará en la tabla.
+            new Alert(Alert.AlertType.INFORMATION, "Unit added successfully", ButtonType.OK).showAndWait();
+            actualizarTabla();
+            //Si se produce algún error, se le mostrará al usuario una alerta con el error y se cancelará la creación de la asignatura.
+        } catch (FindErrorException | CreateErrorException ex) {
+            Logger.getLogger(UnitWindowController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            new Alert(Alert.AlertType.INFORMATION, "There was a problem while creating the unit", ButtonType.OK).showAndWait();
+
+        } catch (Exception ex) {
+            Logger.getLogger(UnitWindowController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+            new Alert(Alert.AlertType.INFORMATION, ex.getMessage(), ButtonType.OK).showAndWait();
+        }
     }
 
     /**
@@ -399,11 +522,60 @@ public class UnitWindowController {
         }
     }
 
-    /**
+    private void superRefresh() {
+        try {
+            stage.close();
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("UnitWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            // Obtain the Sign In window controller
+            UnitWindowController controller = (UnitWindowController) loader.getController();
+            controller.setStage(stage);
+            controller.initStage(root, loggedUser);
+
+        } catch (IOException ex) {
+            Logger.getLogger(MenuBarController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void actualizarTabla() {
+        try {
+            if (cbSubjects.getSelectionModel().isEmpty()) {
+                //Si no hay nada seleccionado: Se carga la tabla con valor de todas las unidades de todas las asignaturas en las que esté registrado el usuario conectado a la aplicación. El usuario puede ser de dos tipos:
+                if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
+
+                    //Si el usuario es de tipo “Teacher”: Se usará el método “findUnitsFromTeacherSubjects” para rellenar la tabla pasandole el id del usuario conectado a la aplicación.
+                    clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
+
+                    tbvUnit.setItems((ObservableList) clientsDataU);
+                    tbvUnit.refresh();
+                } else {
+                    //Si el usuario es de tipo “Student”: Se usará el método “findUnitsFromStudentSubjects” para rellenar la tabla pasandole el id del usuario conectado a la aplicación. 
+                    clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromStudentSubjects(loggedUser.getId().toString()));
+                    tbvUnit.setItems((ObservableList) clientsDataU);
+                    tbvUnit.refresh();
+                }
+            } else {
+                //Si hay un valor: Se usará el método “findSubjectUnits” para rellenar la tabla pasandole el nombre de la subject seleccionada en la combobox. 
+                clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits((String) cbSubjects.getSelectionModel().getSelectedItem()));
+                tbvUnit.setItems((ObservableList) clientsDataU);
+                tbvUnit.refresh();
+
+            }
+        } catch (FindErrorException ex) {
+            Logger.getLogger(UnitWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+       /**
      *
      * @param stage
      */
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+    public void setCurrentSubject(Subject subject) {
+        this.subject = subject;
+        String subjectName = subject.toString();
+        cbSubjects.getSelectionModel().select(subjectName);
     }
 }
