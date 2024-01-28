@@ -56,7 +56,6 @@
             </font>
         </TextField>
         <ComboBox fx:id="cbSearchSubject" layoutX="186.0" layoutY="178.0" prefHeight="28.0" prefWidth="299.0" />
-        <Button fx:id="btnSearchSubject" layoutX="782.0" layoutY="178.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" />
         <Button fx:id="btnCreateSubject" layoutX="189.0" layoutY="593.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Create">
             <font>
                 <Font name="Calibri Italic" size="12.0" />
@@ -67,11 +66,15 @@
                 <Font name="Calibri Italic" size="12.0" />
             </font>
         </Button>
-        <ImageView fx:id="btnSearchSubjectima" fitHeight="16.0" fitWidth="21.0" layoutX="809.0" layoutY="185.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../resources/searchIcon.png" />
-            </image>
-        </ImageView>
+        <Button fx:id="btnSearchSubject" layoutX="816.0" layoutY="175.0" mnemonicParsing="false" onAction="#handleSearchButtonAction" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;">
+            <graphic>
+                <ImageView fitHeight="16.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../resources/searchIcon.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
         <Button fx:id="btnPrintSubject" layoutX="1213.0" layoutY="593.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Print">
             <font>
                 <Font name="Calibri Italic" size="12.0" />

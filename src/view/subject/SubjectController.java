@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
@@ -40,6 +41,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -54,6 +56,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import models.Enrolled;
@@ -116,6 +119,8 @@ public class SubjectController {
     private TableColumn<Subject, String> tbColUnits;
     @FXML
     private TableColumn<Subject, String> tbColExams;
+    @FXML
+    private ImageView btnSearchSubjectima;
 
     private static final Logger LOGGER = Logger.getLogger("package view.subject");
 
@@ -214,6 +219,20 @@ public class SubjectController {
         } catch (FindErrorException ex) {
             showErrorAlert(ex.getMessage());
         }
+        if (!subjects.isEmpty()) {
+            //Recoge el número de estudiantes
+            for (Subject subject : subjects) {
+                int matriculatedCount = 0;
+                for (Enrolled enrollment : subject.getEnrollments()) {
+
+                    if (enrollment.getIsMatriculate()) {
+                        matriculatedCount++;
+                    }
+                }
+                subject.setStudentsCount(matriculatedCount);
+            }
+        }
+
         //// Comprobar si hay asignaturas a medio editar (sin nombre) y borrarlas si es necesario
         List<Subject> subjectsToRemove = new ArrayList<>();
         for (Subject subject : subjects) {
@@ -269,7 +288,6 @@ public class SubjectController {
                             ((Subject) t.getTableView().getItems()
                                     .get(t.getTablePosition().getRow()))
                                     .setName(t.getNewValue());
-                           
 
                             // Obtener toda la información de las asignaturas llamando al método findAllSubject de la interfaz SubjectManager.
                             subjects = FXCollections.observableArrayList(subjectManager.findAllSubjects());
@@ -466,7 +484,7 @@ public class SubjectController {
                         try {
                             ((Subject) t.getTableView().getItems()
                                     .get(t.getTablePosition().getRow()))
-                                    .setDateInit(t.getNewValue());
+                                    .setDateEnd(t.getNewValue());
                             //Tras la validación y confirmación de que la información es correcta, se llamará a la factoria SubjectFactory para obtener una implematación de la interfaz SubjectManager 
                             //y llamar al método updateSubject, pasando como parámetro un objeto Subject con la información.
                             subjectManager.updateSubject(tbSubjects.getSelectionModel().getSelectedItem());
@@ -554,8 +572,7 @@ public class SubjectController {
 
         cbSearchSubject.valueProperty()
                 .addListener(this::textChanged);
-        dpDateSearchSubject.valueProperty()
-                .addListener(this::textChangedDtPicker);
+        dpDateSearchSubject.getEditor().textProperty().addListener(this::textChangedDtPicker);
         btnCreateSubject.setOnAction(
                 this::handleCreateButtonAction);
         btnDeleteSubject.setOnAction(
@@ -641,6 +658,11 @@ public class SubjectController {
         } else {
             btnSearchSubject.setDisable(true);
         }
+        if (newValue != null && !newValue.equals("")) {
+            btnSearchSubject.setDisable(false);
+        } else {
+            btnSearchSubject.setDisable(true);
+        }
     }
 
     public void handleSearchButtonAction(ActionEvent event) {
@@ -650,36 +672,46 @@ public class SubjectController {
             if (selectedOption.equalsIgnoreCase("name")) {
 
                 try {
-                    subjects = FXCollections.observableArrayList(subjectManager.findSubjectsByName(tfSearchSubject.getText()));
-
+                    if (tfSearchSubject.getText() != null) {
+                        subjects = FXCollections.observableArrayList(subjectManager.findSubjectsByName(tfSearchSubject.getText()));
+                    }
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
 
             } else if (selectedOption.equalsIgnoreCase("teacher name")) {
                 try {
-                    subjects = FXCollections.observableArrayList(subjectManager.findSubjectsByTeacher(tfSearchSubject.getText()));
+                    if (tfSearchSubject.getText() != null) {
+                        subjects = FXCollections.observableArrayList(subjectManager.findSubjectsByTeacher(tfSearchSubject.getText()));
+                    }
+
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
 
             } else if (selectedOption.equalsIgnoreCase("start date")) {
                 try {
-                    subjects = FXCollections.observableArrayList(subjectManager.findSubjectByInitDate(dpDateSearchSubject.getValue().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+                    if (dpDateSearchSubject.getValue() != null) {
+                        subjects = FXCollections.observableArrayList(subjectManager.findSubjectByInitDate(dpDateSearchSubject.getValue().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+                    }
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
 
             } else if (selectedOption.equalsIgnoreCase("end date")) {
                 try {
-                    subjects = FXCollections.observableArrayList(subjectManager.findSubjectByEndDate(dpDateSearchSubject.getValue().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+                    if (dpDateSearchSubject.getValue() != null) {
+                        subjects = FXCollections.observableArrayList(subjectManager.findSubjectByEndDate(dpDateSearchSubject.getValue().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+                    }
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
 
             } else if (selectedOption.equalsIgnoreCase("with at least _ number of units")) {
                 try {
-                    subjects = FXCollections.observableArrayList(subjectManager.findSubjectsWithXUnits(tfSearchSubject.getText()));
+                    if (tfSearchSubject.getText() != null) {
+                        subjects = FXCollections.observableArrayList(subjectManager.findSubjectsWithXUnits(tfSearchSubject.getText()));
+                    }
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
@@ -712,7 +744,9 @@ public class SubjectController {
 
             } else if (selectedOption.equalsIgnoreCase("with at least _ number of students")) {
                 try {
-                    subjects = FXCollections.observableArrayList(subjectManager.findSubjectsWithEnrolledStudentsCount(tfSearchSubject.getText()));
+                    if (tfSearchSubject.getText() != null) {
+                        subjects = FXCollections.observableArrayList(subjectManager.findSubjectsWithEnrolledStudentsCount(tfSearchSubject.getText()));
+                    }
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
@@ -721,6 +755,7 @@ public class SubjectController {
             showErrorAlert("Error trying to get the information");
             new Alert(Alert.AlertType.ERROR, "Error trying to get the information", ButtonType.OK).showAndWait();
         }
+
         if (!subjects.isEmpty()) {
             //Recoge el número de estudiantes
             for (Subject subject : subjects) {
@@ -733,9 +768,18 @@ public class SubjectController {
                 }
                 subject.setStudentsCount(matriculatedCount);
             }
+        } else {
+            // Display a message for no results
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("No Results");
+            alert.setHeaderText(null);
+            alert.setContentText("No results found for the search criteria.");
+
+            alert.showAndWait();
         }
         tbSubjects.setItems((ObservableList) subjects);
         tfSearchSubject.clear();
+        dpDateSearchSubject.setValue(null);
 
     }
 
@@ -762,36 +806,57 @@ public class SubjectController {
         } catch (FindErrorException ex) {
             showErrorAlert(ex.getMessage());
         }
-        //
-        for (Subject subject : subjects) {
-            int matriculatedCount = 0;
-            for (Enrolled enrollment : subject.getEnrollments()) {
-                if (user.getId() == enrollment.getId().getStudentId() && enrollment.getIsMatriculate()) {
-                    subject.setStatus(true);
+        if (!subjects.isEmpty()) {
+            //Recoge el número de estudiantes
+            for (Subject subject : subjects) {
+                int matriculatedCount = 0;
+                for (Enrolled enrollment : subject.getEnrollments()) {
+
+                    if (enrollment.getIsMatriculate()) {
+                        matriculatedCount++;
+                    }
                 }
-                if (enrollment.getIsMatriculate()) {
-                    matriculatedCount++;
-                }
+                subject.setStudentsCount(matriculatedCount);
             }
-            subject.setStudentsCount(matriculatedCount);
+        }if (!subjects.isEmpty()) {
+            //Recoge el número de estudiantes
+            for (Subject subject : subjects) {
+                int matriculatedCount = 0;
+                for (Enrolled enrollment : subject.getEnrollments()) {
+
+                    if (enrollment.getIsMatriculate()) {
+                        matriculatedCount++;
+                    }
+                }
+                subject.setStudentsCount(matriculatedCount);
+            }
+        }
+        if (!subjects.isEmpty()) {
+            //Recoge el número de estudiantes
+            for (Subject subject : subjects) {
+                int matriculatedCount = 0;
+                for (Enrolled enrollment : subject.getEnrollments()) {
+
+                    if (enrollment.getIsMatriculate()) {
+                        matriculatedCount++;
+                    }
+                }
+                subject.setStudentsCount(matriculatedCount);
+            }
         }
         tbSubjects.setItems(subjects);
+        tbSubjects.refresh();
     }
 
     public void createSubject() {
         ObservableList<Subject> newSubjects = null;
         Boolean noEmptyName = false;
-        try {
-            newSubjects = FXCollections.observableArrayList(subjectManager.findAllSubjects());
-        } catch (FindErrorException ex) {
-            showErrorAlert(ex.getMessage());
-        }
-        for (Subject subject : newSubjects) {
+        /* for (Subject subject : newSubjects) {
             if (subject.getName() == null) {
                 noEmptyName = true;
                 showErrorAlert("It looks like you've started creating a subject, but you forgot to give it a name. Please complete that one before creating another.");
             }
-        }
+        } */
         if (!noEmptyName) {
             Subject defaultSubject = new Subject();
             defaultSubject.setName(null);
@@ -807,12 +872,25 @@ public class SubjectController {
             } catch (CreateErrorException ex) {
                 showErrorAlert(ex.getMessage());
             }
-            //Si la operación se lleva a cabo sin errores, la fila recién creada se mostrará en la tabla.
-            if (newSubjects != null) {
-                newSubjects.add(defaultSubject);
-                tbSubjects.setItems(newSubjects);
-            }
             loadData();
+            
+            //Poner siempre las asignaturas nuevas al final de la tabla
+            for (int i = 0; i < subjects.size(); i++) {
+                if (subjects.get(i).getName() == null) {
+                    Subject nullNameSubject = subjects.remove(i);
+                    subjects.add(nullNameSubject);
+                }
+            }
+            // Mover todas las asignaturas con name igual a null al final de la lista
+            List<Subject> nullNameSubjects = subjects.stream()
+                    .filter(subject -> subject.getName() == null)
+                    .collect(Collectors.toList());
+
+            subjects.removeAll(nullNameSubjects);
+            subjects.addAll(nullNameSubjects);
+
+            tbSubjects.setItems(subjects);
+            tbSubjects.refresh();
         }
 
     }
@@ -823,7 +901,7 @@ public class SubjectController {
         if (subjectDelete != null) {
             //Se mostrará un mensaje de confirmación.
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                    "Are you you want to delete the subject ?",
+                    "Do you want to delete the subject " + subjectDelete.getName() + " ?",
                     ButtonType.YES, ButtonType.NO);
             Optional<ButtonType> result = alert.showAndWait();
 
@@ -922,7 +1000,7 @@ public class SubjectController {
                                             showErrorAlert(ex.getMessage());
                                         }
                                     }
-                                }else{
+                                } else {
                                     loadData();
                                     checkBoxMatriculated();
                                 }
@@ -955,7 +1033,7 @@ public class SubjectController {
                                         }
 
                                     });
-                                }else{
+                                } else {
                                     loadData();
                                     checkBoxMatriculated();
                                 }
