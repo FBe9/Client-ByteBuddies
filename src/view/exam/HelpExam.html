@@ -5,24 +5,94 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-            body {
-                font: 16px arial, sans-serif;
+            h1, h2, h3, li, p {
+                font-family: arial, sans-serif;
             }            
+            h1 {
+                font-size: 1.5rem;
+                font-weight: 800;
+            }            
+            h2 {
+                font-size: 1.25rem;
+                font-weight: 700;
+            }
             h3 {
-                font: 20px arial, sans-serif;
-                text-decoration: underline;
-                font-weight: bold;
-            }            
-            h4 {
-                font: 18px arial, sans-serif;
-                text-decoration: underline;
-                font-weight: bold;
-            }            
+                font-weight: 600;
+            }
+            p{
+                font-size: 1rem;
+                font-weight: 300
+            }
+            .gif-1{
+                max-width: 355px;
+            }
+            .gif-2{
+                max-width: 700px;
+            }
+            img{max-width: 100%}
         </style>  
     </head>
     <body>
         <div>
             <h1>Exam Management: Help</h1>
+            <img src="../../resources/ExamHelp/ExamWindow.png" alt="Exam Window">
+            <h2>Descripción</h2>
+            <p>Esta ventana permite visualizar los exámenes asignados a cada usuario. Además de ello también se podrán
+                descargar los enunciados de cada examen y un informe preparado para imprimir con todos los datos sobre
+                todos los exámenes disponibles. La tabla incluye el nombre del examen, la asignatura a la que pertenece,
+                su duración y fecha y el botón de descarga del enunciado. Se podrán hacer búsquedas de dos tipos:
+                búsquedas por asignatura (el usuario Student o alumno debe estar matriculado en ella, mientras que el
+                profesor deberá ser profesor de esa asignatura) y por el nombre del examen. Los usuarios de tipo Teacher
+                o profesores podrán, además de todo lo anterior, crear, modificar y eliminar exámenes.</p>
         </div>
+        <div>
+            <h2>Operaciones para profesores</h2>
+            <h3>Crear un exámen</h3>
+            <p>Cuando un profesor tenga asignada al menos una asignatura, podrá crear exámenes a través del botón
+                <b>Create</b>. Al pulsar el botón se añadirá una nueva fila a la tabla donde el profesor podrá rellenar los datos
+                del nuevo examen. Para guardar la información, pulsará el botón <b>Save</b> que comprobará que los datos sean válidos.
+                Si desea cancelar la creación de un nuevo examen, se realizará mediante el botón <b>Cancel</b>.</p>
+            <img src="../../resources/ExamHelp/CreateExam.gif" alt="Creating an exam" class="gif-1">
+            <p><b>Modificar exámenes</b></p>
+            <p>Para modificar un examen, el profesor podrá hacer doble clic sobre la celda que quiera editar. Al hacer esto, podrá
+                cambiar información ya existente o añadir más. Tenga en cuenta que para guardar o cancelar debe usar los botones
+                <b>Save</b> y <b>Cancel</b> respectivamente.</p>
+            <img src="../../resources/ExamHelp/EditExam.gif" alt="Editing an exam" class="gif-2">
+            <p><b>Borrar un exámen</b></p>
+            <p>Para borrar un exámen bastará ocn seleccionar la fila del examen y pulsar el botón <b>Delete</b>. Fíjese en como se habilita
+                dicho botón al hacer clic sobre la fila. Tendrá que aceptar la eliminación de dicho examen en una ventana emergente.</p>
+            <img src="../../resources/ExamHelp/DeleteExam.gif" alt="Deleting an exam" class="gif-2">
+        </div>
+        <!--<div>
+            <h3>Operaciones para alumnos</h3>
+            <img src="../../resources/ExamHelp/" alt="">
+            <p><b></b></p>
+            <p></p>
+        </div>-->
+        <div>
+            <h3>Operaciones para profesores y alumnos</h3>
+            <p><b>Busqueda de exámenes</b></p>
+            <p>Hay 3 métodos en por los que mostrar los exámenes: mostrar todos, mostrarlos por asignatura y realizar una búsqueda
+                del nombre del examen.</p>
+            <p>Opciones del cuadro combinado "Select criteria":</p>
+            <ul>
+                <li><b>Mostrar todos</b>: se realiza a través de la opción de la lista de cuadro combinado <b>All exams</b>.</li>
+                <li><b>Mostrarlos por asignatura</b>: al elegir la opción <b>Exams by subject</b> se habilita el cuadro combinado
+                    a su derecha, denominado "Exams by subject". Ahí podrá elegir el nombre de la asignatura al que pertenece el examen a
+                    buscar.</li>
+                <li><b>Búsuqeda por nombre</b>: se realiza eligiendo la opción <b>Search an exam</b>. Se habilitará el campo bajo el
+                    nombre "Search an exam" donde podrá escribir el nombre del examen que desea buscar. Para realizar la búsqueda deberá
+                    hacer clic sobre el botón a la derecha del campo de texto que tiene una imagen de lupa. Fíjese como el botón sólo estará
+                    habilitado cuando el campo de texto esté relleno.</li>
+            </ul>
+            <p><b>Imprimir un informe</b></p>
+            <p>Haciendo clic sobre el botón <b>Print</b> se abrirá una nueva ventana de previsualización que mostrará el documento
+                del informe de datos de la tabla. Para guardar, pulse sobre el icono de guardar (con símbolo de disquete, arriba a la
+                izquierda) y elija el directorio donde quiera almacenarlo.</p>
+        </div>
+        <!--<div>
+            <h3>Menús contextuales</h3>
+            <p></p>
+        </div>-->
     </body>
 </html>
