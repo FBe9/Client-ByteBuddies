@@ -72,5 +72,7 @@ public interface UserInterface {
      * @throws FindErrorException If an error occurs during user authentication.
      */
     public User login(User user) throws FindErrorException;
+    
+    public void resetPassword(String email);
 
 }

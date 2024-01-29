@@ -5,10 +5,17 @@
  */
 package view.exam;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import models.Exam;
 import models.Student;
 import models.Teacher;
@@ -22,10 +29,12 @@ public class ButtonEditingCell extends TableCell<Exam, String> {
 
     private final Button btn;
     private final User applicationUser;
+    private final Stage stage;
 
-    public ButtonEditingCell(User currentUser) {
+    public ButtonEditingCell(User currentUser, Stage stage) {
         btn = new Button();
         applicationUser = currentUser;
+        this.stage = stage;
     }
 
     public TableCell call(final TableColumn<Exam, String> param) {
@@ -53,8 +62,13 @@ public class ButtonEditingCell extends TableCell<Exam, String> {
             setText(null);
         } else {
             Exam exam = getTableView().getItems().get(getIndex());
-            //exam.setFilePath("");
-            if (!exam.getFilePath().equals("")) {
+            if (exam.getDescription().equals("") || exam.getSubject().getName().equals("") || exam.getDuration().equals("") || exam.getDateInit().toString().equals("")) {
+                btn.setDisable(true);
+            } else {
+                btn.setDisable(false);
+            }
+            if (exam.getFilePath() != null) {
+
                 btn.setText("Download");
                 btn.setDisable(false);
                 btn.setOnAction(event -> {
@@ -65,8 +79,19 @@ public class ButtonEditingCell extends TableCell<Exam, String> {
                 if (applicationUser instanceof Teacher) {
                     btn.setText("Add file");
                     btn.setOnAction(event -> {
-                        // CALL SENDFILE INTERFACE
-                        // SEND METHOD
+                        FileChooser fileChooser = new FileChooser();
+                        fileChooser.setTitle("Choose a file.");
+                        File file = fileChooser.showOpenDialog(stage);
+                        if (file != null) {
+                            try {
+                                Desktop.getDesktop().open(file);
+                                // CALL SENDFILE INTERFACE
+                                // SEND METHOD
+                            } catch (IOException ex) {
+                                Logger.getLogger(ButtonEditingCell.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+
                     });
 
                 } else if (applicationUser instanceof Student) {
