@@ -678,4 +678,12 @@ public class ExamWindowController {
         // Se observará que no se esté editando la tabla o que no haya datos sin guardar.
 
     }
+    
+    public void setCurrentSubject(Subject subject) {
+        //this.subject = subject;
+        //Se guarda en modo de texto la subject obtenida.
+        String subjectName = subject.toString();
+        //Se selecciona en la combobox cbSubjects.
+        cbBySubject.getSelectionModel().select(subjectName);
+    }
 }
