@@ -54,6 +54,7 @@ public class HyperLinkEditingCellExam extends TableCell<Subject, String> {
                     controller.setStage(stage);
                     controller.initStage(root);
                     controller.setUser(user);
+                    controller.setCurrentSubject(currentSubject);
                 }else{
                      showErrorAlert("Please insert a name before showing units");
                 }

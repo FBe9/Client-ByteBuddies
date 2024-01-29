@@ -56,6 +56,7 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -154,7 +155,8 @@ public class SubjectController {
 
         // Configura el título de la ventana
         stage.setTitle("Subjects");
-
+        //Añadir a la ventana un icono de una estrella.
+        stage.getIcons().add(new Image("resources/Logo.jpg"));
         // La ventana no es redimensionable
         stage.setResizable(false);
         //Establecer como botón por defecto
@@ -232,24 +234,21 @@ public class SubjectController {
                 subject.setStudentsCount(matriculatedCount);
             }
         }
-
-        //// Comprobar si hay asignaturas a medio editar (sin nombre) y borrarlas si es necesario
-        List<Subject> subjectsToRemove = new ArrayList<>();
-        for (Subject subject : subjects) {
-            if (subject.getName() == null) {
-                try {
-                    subjectManager.deleteSubject(subject.getId().toString());
-
+        //Si el usuario es un estudiante no se le muestran las que estan nuelas
+        if (user.getUser_type().equals("Student")) {
+            List<Subject> subjectsToRemove = new ArrayList<>();
+            for (Subject subject : subjects) {
+                if (subject.getName() == null) {
                     // Agregar la asignatura a la lista de asignaturas a eliminar
                     subjectsToRemove.add(subject);
-                } catch (DeleteErrorException ex) {
-                    Logger.getLogger(SubjectController.class.getName()).log(Level.SEVERE, null, ex);
+
                 }
             }
-        }
-        if (subjectsToRemove.size() > 0) {
-            // Eliminar las asignaturas de la colección original fuera del bucle
-            subjects.removeAll(subjectsToRemove);
+            if (subjectsToRemove.size() > 0) {
+                // Eliminar las asignaturas de la colección original fuera del bucle
+                subjects.removeAll(subjectsToRemove);
+            }
+
         }
 
         //Agrega la lista a la tabla
@@ -568,11 +567,12 @@ public class SubjectController {
         tfSearchSubject.textProperty()
                 .addListener(this::textChanged);
 
-        btnPrintSubject.setOnAction(this::handleImprimirAction);
+        btnPrintSubject.setOnAction(this::handlePrintAction);
 
         cbSearchSubject.valueProperty()
                 .addListener(this::textChanged);
         dpDateSearchSubject.getEditor().textProperty().addListener(this::textChangedDtPicker);
+
         btnCreateSubject.setOnAction(
                 this::handleCreateButtonAction);
         btnDeleteSubject.setOnAction(
@@ -622,13 +622,16 @@ public class SubjectController {
             tbSubjects.setPrefWidth(994);
             btnPrintSubject.setLayoutX(1110);
         }
-
+        //Si el valor seleccionado es algunos de los siguientes: "name", "teacher Name", "with at Least _ number of units", " with at Least _ number of enrolled students", validar si 
+        //“tfSearchSubject” está visible; si no lo está, establecerlo como visible. Luego, validar si “dpDateSearchSubject” no está visible; si no lo está, ponerlo en no visible.
         if (selectedOption.equalsIgnoreCase("name") || selectedOption.equalsIgnoreCase("teacher name") || selectedOption.equalsIgnoreCase("with at least _ number of units") || selectedOption.equalsIgnoreCase("with at least _ number of students")) {
             if (!tfSearchSubject.isVisible()) {
                 tfSearchSubject.setVisible(true);
                 dpDateSearchSubject.setVisible(false);
 
             }
+            //Si el valor seleccionado es alguno de los siguientes: “start date” o “ end date”. Primero, verificar si el elemento “tfSearchSubject” 
+            //está visible; en caso afirmativo, lo oculta. Posteriormente, comprueba si “dpDateSearchSubject” no está visible y, en ese caso, lo hace visible
         } else if (selectedOption.equalsIgnoreCase("start date") || selectedOption.equalsIgnoreCase("end date")) {
             if (!dpDateSearchSubject.isVisible()) {
                 dpDateSearchSubject.setVisible(true);
@@ -639,12 +642,14 @@ public class SubjectController {
             dpDateSearchSubject.setVisible(false);
         }
 
+        //Si el campo de busqueda esta vacio desabilitar el boton, si no, habilitarlo.
         if (!tfSearchSubject.getText().trim().isEmpty()) {
             btnSearchSubject.setDisable(false);
         } else {
             btnSearchSubject.setDisable(true);
         }
-
+        // //Si el valor seleccionado es alguno de los siguientes: 'your subjects' o 'all subjects', y el botón 'btnSearchSubject' no está habilitado, 
+        //se habilitará. Tambien se ocultarán los campos “tfSearchSubject” y “dpDateSearchSubject”.
         if (selectedOption.equalsIgnoreCase("your subjects") || selectedOption.equalsIgnoreCase("all subjects")) {
             if (btnSearchSubject.isDisable()) {
                 btnSearchSubject.setDisable(false);
@@ -653,11 +658,13 @@ public class SubjectController {
     }
 
     public void textChangedDtPicker(ObservableValue observable, Object oldValue, Object newValue) {
+        //Si el datePicker esta vacio des habilitar el botón de búsqueda, si no, habilitar el botón de búsqueda.
         if (dpDateSearchSubject.getValue() != null) {
             btnSearchSubject.setDisable(false);
         } else {
             btnSearchSubject.setDisable(true);
         }
+        //Si el nuevo valor esta vacio desabilitar el botón
         if (newValue != null && !newValue.equals("")) {
             btnSearchSubject.setDisable(false);
         } else {
@@ -669,18 +676,23 @@ public class SubjectController {
         String selectedOption = (String) cbSearchSubject.getSelectionModel().getSelectedItem();
 
         try {
+            //La búsqueda 'name' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager y llamar al método  
+            //findSubjectsByName como parámetro contenido del textfield "tfSearchSubject". 
             if (selectedOption.equalsIgnoreCase("name")) {
 
                 try {
+                    //Validar que el texto no sea nulo
                     if (tfSearchSubject.getText() != null) {
                         subjects = FXCollections.observableArrayList(subjectManager.findSubjectsByName(tfSearchSubject.getText()));
                     }
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
-
+                //La búsqueda 'teacher name' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager 
+                //y llamar al método findSubjectsByTeacher pasando como parámetro contenido del textfield "tfSearchSubject"
             } else if (selectedOption.equalsIgnoreCase("teacher name")) {
                 try {
+                    //Validar que el texto no sea nulo
                     if (tfSearchSubject.getText() != null) {
                         subjects = FXCollections.observableArrayList(subjectManager.findSubjectsByTeacher(tfSearchSubject.getText()));
                     }
@@ -688,7 +700,8 @@ public class SubjectController {
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
-
+                //La búsqueda 'start date' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager y 
+                //llamar al método findSubjectByInitDate pasando como parámetro contenido del DatePicker "dpDateSearchSubject".
             } else if (selectedOption.equalsIgnoreCase("start date")) {
                 try {
                     if (dpDateSearchSubject.getValue() != null) {
@@ -697,7 +710,8 @@ public class SubjectController {
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
-
+                //La búsqueda 'end date' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager y 
+                //llamar al método findSubjectByEndDate pasando como parámetro contenido del DatePicker "dpDateSearchSubject".
             } else if (selectedOption.equalsIgnoreCase("end date")) {
                 try {
                     if (dpDateSearchSubject.getValue() != null) {
@@ -706,7 +720,8 @@ public class SubjectController {
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
-
+                //La búsqueda 'with at least _ number of units' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager y 
+                //llamar al método findSubjectsWithXUnits pasando como parámetro contenido del textfield "tfSearchSubject". 
             } else if (selectedOption.equalsIgnoreCase("with at least _ number of units")) {
                 try {
                     if (tfSearchSubject.getText() != null) {
@@ -717,31 +732,40 @@ public class SubjectController {
                 }
             } else if (selectedOption.equalsIgnoreCase("your subjects") && user.getUser_type().equals("Teacher")) {
                 try {
+                    //Si el usuario es un profesor, llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager y 
+                    //llamar al método  findSubjectsByTeacherId pasando como parámetro el id del usuario.
                     subjects = FXCollections.observableArrayList(subjectManager.findSubjectsByTeacherId(user.getId().toString()));
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
+
             } else if (selectedOption.equalsIgnoreCase("your subjects") && user.getUser_type().equals("Student")) {
                 try {
+
+                    //Si el usuario es un alumno, lamará a la factoría SubjectFactoy para obtener la implementación de la interfaz 
+                    //SubjectManager y llamar al método  findByEnrollments pasando como parámetro el id del usuario.
                     subjects = FXCollections.observableArrayList(subjectManager.findByEnrollments(user.getId().toString()));
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
-
             } else if (selectedOption.equalsIgnoreCase("all subjects")) {
+                //Si eres estudiante se modifica para que se vea la columna de matriculado siempre que estes en all subjects
                 if (user.getUser_type().equals("Student")) {
                     tbColMatriculated.setVisible(true);
-                    tbSubjects.setPrefWidth(1096);
+                    tbSubjects.setPrefWidth(1100);
                     btnPrintSubject.setLayoutX(1213);
                 }
                 try {
+                    //La búsqueda 'all subjects ' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz 
+                    //SubjectManager y llamar al método findAllSubjects".
                     subjects = FXCollections.observableArrayList(subjectManager.findAllSubjects());
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
 
                 checkBoxMatriculated();
-
+                //La búsqueda 'with at Least _ number of enrolled students' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager y 
+                //llamar al método findSubjectsWithEnrolledStudentsCount pasando como parámetro contenido del textfield "tfSearchSubject"
             } else if (selectedOption.equalsIgnoreCase("with at least _ number of students")) {
                 try {
                     if (tfSearchSubject.getText() != null) {
@@ -756,6 +780,7 @@ public class SubjectController {
             new Alert(Alert.AlertType.ERROR, "Error trying to get the information", ButtonType.OK).showAndWait();
         }
 
+        //Para las nuevas busquedas que haga la cuenta otra vez de enrollments
         if (!subjects.isEmpty()) {
             //Recoge el número de estudiantes
             for (Subject subject : subjects) {
@@ -768,8 +793,25 @@ public class SubjectController {
                 }
                 subject.setStudentsCount(matriculatedCount);
             }
+            //Si el usuario es un estudiante no se le muestran las que estan nuelas
+            if (user.getUser_type().equals("Student")) {
+                List<Subject> subjectsToRemove = new ArrayList<>();
+                for (Subject subject : subjects) {
+                    if (subject.getName() == null) {
+                        // Agregar la asignatura a la lista de asignaturas a eliminar
+                        subjectsToRemove.add(subject);
+
+                    }
+                }
+                if (subjectsToRemove.size() > 0) {
+                    // Eliminar las asignaturas de la colección original fuera del bucle
+                    subjects.removeAll(subjectsToRemove);
+                }
+
+            }
+
         } else {
-            // Display a message for no results
+            ///Muestra un mensaje de error si no se encuentra búsqueda
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("No Results");
             alert.setHeaderText(null);
@@ -777,8 +819,11 @@ public class SubjectController {
 
             alert.showAndWait();
         }
-        tbSubjects.setItems((ObservableList) subjects);
+        //Añadir los subjects
+        tbSubjects.setItems(subjects);
+        //Después de cada búsqueda limpiar el textfield
         tfSearchSubject.clear();
+        //Después de cada búsqueda ponerle null
         dpDateSearchSubject.setValue(null);
 
     }
@@ -818,19 +863,8 @@ public class SubjectController {
                 }
                 subject.setStudentsCount(matriculatedCount);
             }
-        }if (!subjects.isEmpty()) {
-            //Recoge el número de estudiantes
-            for (Subject subject : subjects) {
-                int matriculatedCount = 0;
-                for (Enrolled enrollment : subject.getEnrollments()) {
-
-                    if (enrollment.getIsMatriculate()) {
-                        matriculatedCount++;
-                    }
-                }
-                subject.setStudentsCount(matriculatedCount);
-            }
         }
+        //Contar los estudiantes matriculados para la búsqueda
         if (!subjects.isEmpty()) {
             //Recoge el número de estudiantes
             for (Subject subject : subjects) {
@@ -844,58 +878,74 @@ public class SubjectController {
                 subject.setStudentsCount(matriculatedCount);
             }
         }
+        //Si el usuario es un estudiante no se le muestran las que estan nuelas
+        if (user.getUser_type().equals("Student")) {
+            List<Subject> subjectsToRemove = new ArrayList<>();
+            for (Subject subject : subjects) {
+                if (subject.getName() == null) {
+                    // Agregar la asignatura a la lista de asignaturas a eliminar
+                    subjectsToRemove.add(subject);
+
+                }
+            }
+            if (subjectsToRemove.size() > 0) {
+                // Eliminar las asignaturas de la colección original fuera del bucle
+                subjects.removeAll(subjectsToRemove);
+            }
+
+        }
+        //Asigna los items a la tabla
         tbSubjects.setItems(subjects);
+        //Refresca la tabla
         tbSubjects.refresh();
     }
 
+    /**
+     * Method to create a subject
+     */
     public void createSubject() {
-        ObservableList<Subject> newSubjects = null;
-        Boolean noEmptyName = false;
-        /* for (Subject subject : newSubjects) {
-            if (subject.getName() == null) {
-                noEmptyName = true;
-                showErrorAlert("It looks like you've started creating a subject, but you forgot to give it a name. Please complete that one before creating another.");
-            }
-        } */
-        if (!noEmptyName) {
-            Subject defaultSubject = new Subject();
-            defaultSubject.setName(null);
-            defaultSubject.setHours(null);
-            defaultSubject.setLevelType(LevelType.BEGGINER);
-            defaultSubject.setLanguageType(LanguageType.SPANISH);
-            defaultSubject.setDateInit(new Date());
-            defaultSubject.setDateEnd(new Date());
-            try {
-                //Después, se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager 
-                //y se invocará al método createSubject, pasando como parámetro un objeto Subject.
-                subjectManager.createSubject(defaultSubject);
-            } catch (CreateErrorException ex) {
-                showErrorAlert(ex.getMessage());
-            }
-            loadData();
-            
-            //Poner siempre las asignaturas nuevas al final de la tabla
-            for (int i = 0; i < subjects.size(); i++) {
-                if (subjects.get(i).getName() == null) {
-                    Subject nullNameSubject = subjects.remove(i);
-                    subjects.add(nullNameSubject);
-                }
-            }
-            // Mover todas las asignaturas con name igual a null al final de la lista
-            List<Subject> nullNameSubjects = subjects.stream()
-                    .filter(subject -> subject.getName() == null)
-                    .collect(Collectors.toList());
-
-            subjects.removeAll(nullNameSubjects);
-            subjects.addAll(nullNameSubjects);
-
-            tbSubjects.setItems(subjects);
-            tbSubjects.refresh();
+        //Crear la subject por defecto
+        Subject defaultSubject = new Subject();
+        defaultSubject.setName(null);
+        defaultSubject.setHours(null);
+        defaultSubject.setLevelType(LevelType.BEGGINER);
+        defaultSubject.setLanguageType(LanguageType.SPANISH);
+        defaultSubject.setDateInit(new Date());
+        defaultSubject.setDateEnd(new Date());
+        try {
+            //Después, se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager 
+            //y se invocará al método createSubject, pasando como parámetro un objeto Subject.
+            subjectManager.createSubject(defaultSubject);
+        } catch (CreateErrorException ex) {
+            showErrorAlert(ex.getMessage());
         }
+        loadData();
 
+        //Poner siempre las asignaturas nuevas al final de la tabla
+        for (int i = 0; i < subjects.size(); i++) {
+            if (subjects.get(i).getName() == null) {
+                Subject nullNameSubject = subjects.remove(i);
+                subjects.add(nullNameSubject);
+            }
+        }
+        // Mover todas las asignaturas con name igual a null al final de la lista
+        List<Subject> nullNameSubjects = subjects.stream()
+                .filter(subject -> subject.getName() == null)
+                .collect(Collectors.toList());
+
+        subjects.removeAll(nullNameSubjects);
+        subjects.addAll(nullNameSubjects);
+        //Asignar las asignaturas
+        tbSubjects.setItems(subjects);
+        //Refresh la tabla
+        tbSubjects.refresh();
     }
 
+    /**
+     * Method to delete the subject
+     */
     public void deleteSubject() {
+
         Subject subjectDelete;
         subjectDelete = tbSubjects.getSelectionModel().getSelectedItem();
         if (subjectDelete != null) {
@@ -909,13 +959,14 @@ public class SubjectController {
                 try {
                     // Se verificará si existen matriculaciones para dicha asignatura; en caso afirmativo, se llamará a la factoría EnrolledFactory para obtener una implementación de la interfaz EnrolledManager 
                     //y se invocará al método deleteEnrolled, pasando como parámetro un objeto Enrolled. 
-                    //se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager y 
-                    //se invocará al método deleteSubject, pasando como parámetro un objeto Subject.
+
                     if (subjectDelete.getEnrollments().size() > 0) {
                         for (Enrolled enrollment : subjectDelete.getEnrollments()) {
                             enrolledInterface.deleteEnrolled(enrollment.getId().getStudentId().toString(), enrollment.getId().getSubjectId().toString());
                         }
                     }
+                    //Se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager y 
+                    //se invocará al método deleteSubject, pasando como parámetro un objeto Subject.
                     subjectManager.deleteSubject(subjectDelete.getId().toString());
                     loadData();
 
@@ -943,146 +994,149 @@ public class SubjectController {
             subject.setStudentsCount(matriculatedCount);
         }
         final boolean[] studentFound = {false};
-        subjects.forEach(
-                subject -> subject.statusProperty()
-                        .addListener((observable, oldValue, newValue) -> {
+        subjects.forEach(subject -> subject.statusProperty().addListener((observable, oldValue, newValue) -> {
+            //Se valida si el valor es falso o no para poner un mensaje en la alerta u otro.
+            if (oldValue == false) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Do you want to enroll in the subject " + subject.getName() + " ?",
+                        ButtonType.YES, ButtonType.NO);
+                Optional<ButtonType> result = alert.showAndWait();
 
-                            //Se valida si el valor es falso o no para poner un mensaje en la alerta u otro.
-                            if (oldValue == false) {
-                                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                                        "Do you want to enroll in the subject " + subject.getName() + " ?",
-                                        ButtonType.YES, ButtonType.NO);
-                                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.YES) {
+                    //Si no hay entradas en enrollments
+                    if (subject.getEnrollments().size() > 0) {
+                        for (Enrolled enrolled : subject.getEnrollments()) {
+                            //Se verifica que ya haya estado matriculado el alumno.
+                            if (user.getId() == enrolled.getId().getStudentId()) {
+                                try {
+                                    enrolled.setIsMatriculate(newValue);
+                                    subject.setStatus(newValue);
+                                    //Se llama al update de enrollment con el nuevo valor
+                                    enrolledInterface.updateEnrolled(enrolled);
+                                    //Se cambia el recuento de estudiante
+                                    subject.setStudentsCount(subject.getStudentsCount() + 1);
+                                    //Se refresca la tabla.
+                                    tbSubjects.refresh();
 
-                                if (result.isPresent() && result.get() == ButtonType.YES) {
-                                    //Si no hay entradas en enrollments
-
-                                    if (subject.getEnrollments().size() > 0) {
-                                        subject.getEnrollments().forEach(enrollment -> {
-                                            //Se verifica que ya haya estado matriculado el alumno.
-                                            if (user.getId() == enrollment.getId().getStudentId()) {
-                                                try {
-                                                    enrollment.setIsMatriculate(newValue);
-                                                    subject.setStatus(newValue);
-                                                    //Se llama al update de enrollment con el nuevo valor
-                                                    enrolledInterface.updateEnrolled(enrollment);
-                                                    //Se cambia el recuento de estudiante
-                                                    subject.setStudentsCount(subject.getStudentsCount() + 1);
-                                                    //Se refresca la tabla.
-                                                    tbSubjects.refresh();
-
-                                                    // Marca que se encontró al estudiante
-                                                    studentFound[0] = true;
-
-                                                } catch (UpdateErrorException ex) {
-                                                    showErrorAlert(ex.getMessage());
-                                                }
-                                            }
-                                        });
-
-                                    }
-                                    if (!studentFound[0] || subject.getEnrollments().isEmpty()) {
-                                        Enrolled enrollmentNew = new Enrolled();
-                                        EnrolledId enrolledId = new EnrolledId();
-                                        enrolledId.setStudentId(user.getId());
-                                        enrolledId.setSubjectId(subject.getId());
-                                        enrollmentNew.setId(enrolledId);
-                                        enrollmentNew.setIsMatriculate(newValue);
-                                        subject.setStatus(newValue);
-                                        try {
-                                            //Crea la entrada
-                                            enrolledInterface.createEnrolled(enrollmentNew);
-                                            //Cambia la suma de estudiantes
-                                            subject.setStudentsCount(subject.getStudentsCount() + 1);
-                                            //Refresca la tabla
-                                            tbSubjects.refresh();
-                                        } catch (CreateErrorException ex) {
-                                            showErrorAlert(ex.getMessage());
-                                        }
-                                    }
-                                } else {
-                                    loadData();
-                                    checkBoxMatriculated();
+                                    // Marca que se encontró al estudiante
+                                    studentFound[0] = true;
+                                } catch (UpdateErrorException ex) {
+                                    showErrorAlert(ex.getMessage());
                                 }
-
-                            } else {
-                                //Si se quiere desmatricular
-                                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                                        "Are you sure you want to unenroll from this subject " + subject.getName() + " ?",
-                                        ButtonType.YES, ButtonType.NO);
-                                Optional<ButtonType> result = alert.showAndWait();
-
-                                if (result.isPresent() && result.get() == ButtonType.YES) {
-                                    subject.getEnrollments().forEach(enrollment -> {
-                                        //Se encuentra al estudiante y se cambia el valor
-                                        if (user.getId() == enrollment.getId().getStudentId()) {
-                                            try {
-                                                //Cambia el valor para el enrollment
-                                                enrollment.setIsMatriculate(newValue);
-                                                //Cambiar el valor
-                                                subject.setStatus(newValue);
-                                                //Cambiar el valor de enrolled
-                                                enrolledInterface.updateEnrolled(enrollment);
-                                                //Se cambia el número de estudiantes
-                                                subject.setStudentsCount(subject.getStudentsCount() - 1);
-                                                //Se refresca la tabla.
-                                                tbSubjects.refresh();
-                                            } catch (UpdateErrorException ex) {
-                                                showErrorAlert(ex.getMessage());
-                                            }
-                                        }
-
-                                    });
-                                } else {
-                                    loadData();
-                                    checkBoxMatriculated();
-                                }
-
                             }
-
                         }
-                        )
-        );
+                        if (!studentFound[0] || subject.getEnrollments().isEmpty()) {
+                            Enrolled enrollmentNew = new Enrolled();
+                            EnrolledId enrolledId = new EnrolledId();
+                            enrolledId.setStudentId(user.getId());
+                            enrolledId.setSubjectId(subject.getId());
+                            enrollmentNew.setId(enrolledId);
+                            enrollmentNew.setIsMatriculate(newValue);
+                            subject.setStatus(newValue);
+                            try {
+                                //Crea la entrada
+                                enrolledInterface.createEnrolled(enrollmentNew);
+                                //Cambia la suma de estudiantes
+                                subject.setStudentsCount(subject.getStudentsCount() + 1);
+                                //Refresca la tabla
+                                tbSubjects.refresh();
+                            } catch (CreateErrorException ex) {
+                                showErrorAlert(ex.getMessage());
+                            }
+                        }
+                    }
+                } else {
+                    loadData();
+                    checkBoxMatriculated();
+                }
+            } else {
+                //Si se quiere desmatricular
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Are you sure you want to unenroll from this subject " + subject.getName() + " ?",
+                        ButtonType.YES, ButtonType.NO);
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.YES) {
+                    for (Enrolled enrolled : subject.getEnrollments()) {
+                        if (user.getId() == enrolled.getId().getStudentId()) {
+                            try {
+                                //Cambia el valor para el enrollment
+                                enrolled.setIsMatriculate(newValue);
+                                //Cambiar el valor
+                                subject.setStatus(newValue);
+                                //Cambiar el valor de enrolled
+                                enrolledInterface.updateEnrolled(enrolled);
+                                //Se cambia el número de estudiantes
+                                subject.setStudentsCount(subject.getStudentsCount() - 1);
+                                //Se refresca la tabla.
+                                tbSubjects.refresh();
+                            } catch (UpdateErrorException ex) {
+                                showErrorAlert(ex.getMessage());
+                            }
+                        }
+                    }
+                } else {
+                    loadData();
+                    checkBoxMatriculated();
+                }
+            }
+        }));
     }
 
+    /**
+     * Method to print a report
+     */
     public void printAReport() {
         try {
             LOGGER.info("Beginning printing action...");
-            JasperReport report
-                    = JasperCompileManager.compileReport(getClass()
-                            .getResourceAsStream("/reports/SubjectReport.jrxml"));
-            //Data for the report: a collection of UserBean passed as a JRDataSource 
-            //implementation 
+            JasperReport report;
+            if (user.getUser_type().equals("Teacher")) {
+                report = JasperCompileManager.compileReport(getClass()
+                        .getResourceAsStream("/reports/SubjectReportTeacher.jrxml"));
+            } else {
+                report
+                        = JasperCompileManager.compileReport(getClass()
+                                .getResourceAsStream("/reports/SubjectReportStudent.jrxml"));
+            }
+
+            //Get teh subject Collect
             JRBeanCollectionDataSource dataItems
                     = new JRBeanCollectionDataSource((Collection<Subject>) this.tbSubjects.getItems());
-            //Map of parameter to be passed to the report
+            //Get the parametters
             Map<String, Object> parameters = new HashMap<>();
-            //Fill report with data
+            //Fill the report with the data
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
-            //Create and show the report window. The second parameter false value makes 
-            //report window not to close app.
+            //Create and show the report window.
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
-            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         } catch (JRException ex) {
-            //If there is an error show message and
-            //log it.
-            showErrorAlert("Error al imprimir:\n"
-                    + ex.getMessage());
-            LOGGER.log(Level.SEVERE,
-                    "UI GestionUsuariosController: Error printing report: {0}",
-                    ex.getMessage());
+            showErrorAlert("Error printing the report");
         }
     }
 
-    private void handleImprimirAction(ActionEvent event) {
+    /**
+     * Handles the action triggered by an "Imprimir" (Print) event.
+     *
+     * @param event The ActionEvent associated with the print action.
+     */
+    private void handlePrintAction(ActionEvent event) {
         printAReport();
     }
 
+    /**
+     * Handles the action triggered by a "Create" button event.
+     *
+     * @param event The ActionEvent associated with the create button action.
+     */
     public void handleCreateButtonAction(ActionEvent event) {
         createSubject();
     }
 
+    /**
+     * Handles the action triggered by a "Delete" button event.
+     *
+     * @param event The ActionEvent associated with the delete button action.
+     */
     public void handleDeleteButtonAction(ActionEvent event) {
         deleteSubject();
     }

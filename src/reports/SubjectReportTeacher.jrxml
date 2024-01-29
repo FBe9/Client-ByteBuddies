@@ -30,31 +30,31 @@
 	<columnHeader>
 		<band height="44" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="11" width="32" height="16" uuid="32dfbdb5-28b3-414f-84e0-562f612c1135"/>
+				<reportElement x="0" y="0" width="50" height="16" uuid="32dfbdb5-28b3-414f-84e0-562f612c1135"/>
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="275" y="11" width="50" height="16" uuid="3ce62bdf-99f4-4591-bd62-5419c13f371e"/>
+				<reportElement x="230" y="0" width="50" height="16" uuid="3ce62bdf-99f4-4591-bd62-5419c13f371e"/>
 				<text><![CDATA[Start Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="348" y="11" width="50" height="16" uuid="b9500a20-c026-41cf-89bf-880f67961f2f"/>
+				<reportElement x="317" y="0" width="50" height="16" uuid="b9500a20-c026-41cf-89bf-880f67961f2f"/>
 				<text><![CDATA[End Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="92" y="11" width="50" height="16" uuid="529758b3-c4a8-4ad7-ac25-bb82be6e43c1"/>
+				<reportElement x="60" y="0" width="50" height="16" uuid="529758b3-c4a8-4ad7-ac25-bb82be6e43c1"/>
 				<text><![CDATA[Level ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="200" y="11" width="50" height="16" uuid="d9743870-12fc-49c9-98b9-56f51e3c2bbc"/>
+				<reportElement x="120" y="0" width="50" height="16" uuid="d9743870-12fc-49c9-98b9-56f51e3c2bbc"/>
 				<text><![CDATA[Language]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="415" y="11" width="50" height="16" uuid="c5516e0d-925d-4d7e-a13f-fb8e8a818b49"/>
+				<reportElement x="402" y="0" width="50" height="16" uuid="c5516e0d-925d-4d7e-a13f-fb8e8a818b49"/>
 				<text><![CDATA[Hours]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="486" y="11" width="50" height="16" uuid="a01d99c4-18cb-4f4c-a8d9-188e6f46c543"/>
+				<reportElement x="474" y="0" width="50" height="16" uuid="a01d99c4-18cb-4f4c-a8d9-188e6f46c543"/>
 				<text><![CDATA[Students]]></text>
 			</staticText>
 		</band>
@@ -62,31 +62,31 @@
 	<detail>
 		<band height="45" splitType="Stretch">
 			<textField>
-				<reportElement x="-5" y="12" width="52" height="20" uuid="0f705b1d-2b64-404b-af5f-24bb749e75be"/>
+				<reportElement x="0" y="0" width="96" height="16" uuid="0f705b1d-2b64-404b-af5f-24bb749e75be"/>
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="89" y="12" width="71" height="20" uuid="e3d2a790-9977-4856-9404-80aeabfb16e4"/>
+				<reportElement x="43" y="0" width="96" height="16" uuid="e3d2a790-9977-4856-9404-80aeabfb16e4"/>
 				<textFieldExpression><![CDATA[$F{levelType}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="181" y="12" width="96" height="20" uuid="500d6789-5357-4bb0-ad1d-96cfcbea87bb"/>
+				<reportElement x="120" y="0" width="96" height="16" uuid="500d6789-5357-4bb0-ad1d-96cfcbea87bb"/>
 				<textFieldExpression><![CDATA[$F{languageType}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="281" y="12" width="75" height="20" uuid="044ad3be-916c-442a-896d-50c96a40213f"/>
-				<textFieldExpression><![CDATA[$F{dateInit}]]></textFieldExpression>
+				<reportElement x="228" y="0" width="55" height="16" uuid="044ad3be-916c-442a-896d-50c96a40213f"/>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dateInit})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="360" y="12" width="65" height="20" uuid="773a8676-ce22-4e60-b2dc-60a63f90e996"/>
-				<textFieldExpression><![CDATA[$F{dateEnd}]]></textFieldExpression>
+				<reportElement x="313" y="0" width="58" height="16" uuid="773a8676-ce22-4e60-b2dc-60a63f90e996"/>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dateEnd})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="425" y="12" width="65" height="20" uuid="ca5ef7f9-3f85-46ef-bb82-59d5ca494bc9"/>
+				<reportElement x="404" y="0" width="46" height="16" uuid="ca5ef7f9-3f85-46ef-bb82-59d5ca494bc9"/>
 				<textFieldExpression><![CDATA[$F{hours}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="490" y="12" width="87" height="20" uuid="515bd2fb-2897-4415-8c1d-e53eb3e7e499"/>
+				<reportElement x="486" y="0" width="26" height="16" uuid="515bd2fb-2897-4415-8c1d-e53eb3e7e499"/>
 				<textFieldExpression><![CDATA[$F{studentsCount}]]></textFieldExpression>
 			</textField>
 		</band>
@@ -98,6 +98,11 @@
 		<band height="54" splitType="Stretch"/>
 	</pageFooter>
 	<summary>
-		<band height="42" splitType="Stretch"/>
+		<band height="42" splitType="Stretch">
+			<textField>
+				<reportElement x="226" y="22" width="100" height="20" uuid="75fae653-6d1d-4d5d-96a6-2783efd0d457"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
 	</summary>
 </jasperReport>

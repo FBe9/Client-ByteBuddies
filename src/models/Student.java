@@ -1,34 +1,37 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package models;
 
-import java.util.Date;
-import java.util.Set;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.ObservableSet;
 import javax.xml.bind.annotation.XmlRootElement;
+
 /**
+ * Represents a student in the system.
  *
  * @author irati
  */
-
 @XmlRootElement
 public class Student extends User {
+
     private final SimpleObjectProperty<LevelType> levelType;
     private final SimpleSetProperty<Enrolled> enrollments;
-    
-    
+
+    /**
+     * Default constructor for creating a Student object with default values.
+     */
     public Student() {
         super();
         this.levelType = new SimpleObjectProperty();
         this.enrollments = new SimpleSetProperty();
-        
     }
 
+    /**
+     * Parameterized constructor for creating a Student object with specific
+     * attributes.
+     *
+     * @param levelType The level type of the student.
+     * @param enrollments The set of enrollments associated with the student.
+     */
     public Student(LevelType levelType, ObservableSet<Subject> enrollments) {
         super();
         this.levelType = new SimpleObjectProperty(levelType);
@@ -53,7 +56,6 @@ public class Student extends User {
         this.levelType.set(levelType);
     }
 
-
     /**
      * Gets the set of enrollments associated with the student.
      *
@@ -72,6 +74,4 @@ public class Student extends User {
     public void setEnrollments(ObservableSet<Enrolled> enrollments) {
         this.enrollments.set(enrollments);
     }
-    
-    
 }

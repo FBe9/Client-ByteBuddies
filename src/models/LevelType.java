@@ -5,7 +5,18 @@ package models;
  * @author Nerea
  */
 public enum LevelType {
+     /**
+     * Represents the beginner level.
+     */
     BEGGINER,
+
+    /**
+     * Represents the medium level.
+     */
     MEDIUM,
+
+    /**
+     * Represents the experienced level.
+     */
     EXPERIENCED
 }

@@ -3,6 +3,7 @@ package encrypt;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,11 +42,9 @@ public class AsimetricaClient {
     public static byte[] encryptedData(String password) {
         byte[] encryptedData = null;
         try {
-            keyGenerator();
 
             // Load ECC Public Key
-            Path workingDirectory = Paths.get(System.getProperty("user.home") + "/ByteBuddies/security/asymmetric/publickey.der");
-            FileInputStream fis = new FileInputStream(workingDirectory.toFile());
+            InputStream fis = AsimetricaClient.class.getResourceAsStream("publicKey.der");
             byte[] publicKeyBytes = new byte[fis.available()];
             fis.read(publicKeyBytes);
             fis.close();
@@ -80,54 +79,6 @@ public class AsimetricaClient {
             buf.append(hexDigit[encryptedText[j] & 0x0f]);
         }
         return buf.toString();
-    }
-
-    /**
-     * Generates an ECC key pair and saves the public and private keys in the
-     * specified directory. If keys already exist, the method does not
-     * regenerate them.
-     */
-    public static void keyGenerator() {
-        try {
-            // Creates the directory if not exists
-            Path workingDirectory = Files.createDirectories(Paths.get(System.getProperty("user.home") + "/ByteBuddies/security/asymmetric"));
-
-            // Thats the paths of public key and private key
-            Path publicKeyFind = workingDirectory.resolve("publickey.der");
-            Path privateKeyFind = workingDirectory.resolve("privatekey.der");
-            // Verifies that the key doesn't exist and creates it.
-            if (!Files.exists(publicKeyFind) && !Files.exists(privateKeyFind)) {
-                try {
-                    // Specify the ECC algorithm for key pair generation
-                    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
-                    // Specify the elliptic curve parameters.
-                    ECGenParameterSpec ecGenSpec = new ECGenParameterSpec("secp256r1");
-                    keyPairGenerator.initialize(ecGenSpec);
-                    // Generate the ECC key pair
-                    KeyPair keyPair = keyPairGenerator.generateKeyPair();
-
-                    PublicKey publicKeyAndMore = keyPair.getPublic();
-                    byte[] publicKeyBytes = publicKeyAndMore.getEncoded();
-
-                    Path publicKeyPath = workingDirectory.resolve("publickey.der");
-                    Path privateKeyPath = workingDirectory.resolve("privatekey.der");
-                    try (FileOutputStream publicKeyFile = new FileOutputStream(publicKeyPath.toFile())) {
-                        publicKeyFile.write(publicKeyBytes);
-                    }
-
-                    PrivateKey privateKey = keyPair.getPrivate();
-                    byte[] privateKeyBytes = privateKey.getEncoded();
-                    try (FileOutputStream privateKeyFile = new FileOutputStream(privateKeyPath.toFile())) {
-                        privateKeyFile.write(privateKeyBytes);
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 
 }

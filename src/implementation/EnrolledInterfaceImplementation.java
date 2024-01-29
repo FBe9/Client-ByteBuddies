@@ -72,19 +72,5 @@ public class EnrolledInterfaceImplementation implements EnrolledInterface {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Collection<Enrolled> findAll() throws FindErrorException {
-        Set<Enrolled> enrollments;
-        try {
-            LOGGER.info("Finding all enrollments");
-            enrollments = webClient.findAll_JSON(new GenericType<Set<Enrolled>>() {
-            });
-                           
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "StudentInterface: Error finding all students - " + e.getMessage());
-            throw new FindErrorException("Error finding all enrollments");
-        }
-        return enrollments;
-    }
 
 }

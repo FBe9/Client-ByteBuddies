@@ -11,19 +11,10 @@ import models.Teacher;
 import models.User;
 
 /**
- *
+ * Interface for teacher model
  * @author irati
  */
 public interface TeacherInterface {
-
-    /**
-     * Retrieves a collection of teachers.
-     *
-     * @param teacher
-     * @return A collection of teachers.
-     * @throws FindErrorException If an error occurs during teacher retrieval.
-     */
-    public User find(User teacher) throws FindErrorException;
 
     /**
      * Retrieves an teacher .

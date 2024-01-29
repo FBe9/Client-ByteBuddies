@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package factories;
 
 import implementation.StudentInterfaceImplementation;
 import interfaces.StudentInterface;
 
 /**
- *
+ *  Factory class to obtain the implementation of a Student.
  * @author irati
  */
 public class StudentFactory {

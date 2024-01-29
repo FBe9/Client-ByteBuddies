@@ -152,7 +152,7 @@ public class SignUpWindowController {
 
         //El icono del ToggleButton será el del ojo abierto. 
         tgbEyeSignUp.setGraphic(new ImageView(openEye));
-        stage.getIcons().add(new Image("resources/blackStar.png"));
+        stage.getIcons().add(new Image("resources/Logo.jpg"));
 
         //El botón signUp es el botón por defecto.
         btnSignUp.setDefaultButton(true);
