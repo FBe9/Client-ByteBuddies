@@ -124,8 +124,8 @@ public class MenuBarController {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/HelpSubject.fxml"));
             Parent root = (Parent) loader.load();
             // Obtain the Sign In window controller
-            //HelpExamController controller = (HelpExamController) loader.getController();
-            //controller.initialize(root);
+            HelpSubjectController controller = (HelpSubjectController) loader.getController();
+            controller.initialize(root);
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -136,8 +136,8 @@ public class MenuBarController {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/unit/HelpUnit.fxml"));
             Parent root = (Parent) loader.load();
             // Obtain the Sign In window controller
-            //HelpUnitController controller = (HelpUnitController) loader.getController();
-            //controller.initStage(root);
+            HelpUnitController controller = (HelpUnitController) loader.getController();
+            controller.initStage(root);
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -160,8 +160,8 @@ public class MenuBarController {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exercise/HelpExercise.fxml"));
             Parent root = (Parent) loader.load();
             // Obtain the Sign In window controller
-            //HelpExerciseController controller = (HelpExerciseController) loader.getController();
-            //controller.initialize(root);
+            HelpExerciseController controller = (HelpExerciseController) loader.getController();
+            controller.initialize(root);
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
         }
