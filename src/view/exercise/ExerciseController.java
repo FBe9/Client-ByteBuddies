@@ -70,7 +70,7 @@ public class ExerciseController {
     private ObservableList<Unit> unitData;
     private ExerciseInterface exerciseInterface;
     private UnitInterface unitInterface;
-    private static final String NUMBERS_REGEX = "^\\d+$";
+    private static final String NUMBERS_REGEX = "^[0-9]*$";
     private List<Exercise> byUnit = new ArrayList<>();
 
     @FXML
@@ -90,7 +90,7 @@ public class ExerciseController {
     @FXML
     private Button btmSearch, btmDelete, btmModify, btmCreate, btmPrint, btmFile, btmFileSolution;
     @FXML
-    private Label lblErrorCreateModify;
+    private Label lblErrorCreateModify, lblErrorSearch;
 
     /**
      * Method for initializing Exercise Stage.
@@ -113,16 +113,18 @@ public class ExerciseController {
         //-----
         //Ventana no redimensionable.
         stage.setResizable(false);
+        
+        //tfSearch.requestFocus();
 
-        //Se incluirá el MenuBar.fxml.
-        //-----
         //Los botones “btmModify”, “btmCreate”,
         //“btmSearch” y “btmDelete” estarán deshabilitados, y el botón
         //”btmPrint” estará habilitado.
         this.btmModify.setDisable(true);
         this.btmCreate.setDisable(true);
-        this.btmSearch.setDisable(true);
         this.btmDelete.setDisable(true);
+        btmFile.setDisable(true);
+        btmFileSolution.setDisable(true);
+        tfSearch.setDisable(true);
 
         //Si el usuario que ha entrado a la aplicación es de tipo Student, 
         //los campos “tfSearch”, “tfNumber”, “tfDescription”,
@@ -150,7 +152,6 @@ public class ExerciseController {
                 if (unitData.isEmpty()) {
                     //Si el método no devuelve nada se rellena con el texto ”No Subjects found” y lo selecciona.
                     this.cbUnitCreate.getItems().add("No unit found");
-                    cbUnitCreate.getSelectionModel().selectFirst();
                 } else {
                     List<String> unitNames = new ArrayList<>();
                     for (int i = 0; i < unitData.size(); i++) {
@@ -158,6 +159,7 @@ public class ExerciseController {
                         unitNames.add(unitName);
                     }
                     this.cbUnitCreate.getItems().addAll(unitNames);
+                    cbUnitCreate.getSelectionModel().selectFirst();
                 }
             } catch (FindErrorException e) {
                 LOGGER.log(Level.SEVERE, "Error searching for teacher unit");
@@ -173,6 +175,7 @@ public class ExerciseController {
         //Se rellenará el combobox “cbLevelTypeCreate” con una lista de los 
         //tres tipos de nivel.
         this.cbLevelTypeCreate.getItems().addAll(LevelType.values());
+        cbLevelTypeCreate.getSelectionModel().selectFirst();
         //this.cbLevelTypeCreate.setValue(LevelType.BEGGINER);
 
         //Se rellenará el combobox “cbUnitSearch” con una lista de unidades de 
@@ -297,36 +300,30 @@ public class ExerciseController {
         this.tfHours.textProperty().addListener(this::handleFieldsTextChange);
         this.tfDescription.textProperty().addListener(this::handleFieldsTextChange);
 
-        btmFile.setOnAction(event -> {
-
-        });
-
-        this.tfSearch.textProperty().addListener(this::handleFieldsTextChangeSearch);
+        //this.tfSearch.textProperty().addListener(this::handleFieldsTextChangeSearch);
+        this.tfSearch.textProperty().addListener((event) -> this.textChangeSearch(KeyEvent.KEY_TYPED));
+        cbSearchType.getSelectionModel().selectedItemProperty().addListener((event) -> this.textChangeSearch(KeyEvent.KEY_TYPED));
         stage.setOnCloseRequest(this::handleOnActionExit);
 
-        //
-        //this.tfNumber.textProperty().addListener((event) -> this.textOnlyNumbers(KeyEvent.KEY_TYPED));
-        //this.tfHours.textProperty().addListener((event) -> this.textOnlyNumbers(KeyEvent.KEY_TYPED));
+        this.tfNumber.textProperty().addListener((event) -> this.textOnlyNumbers(KeyEvent.KEY_TYPED));
+        this.tfHours.textProperty().addListener((event) -> this.textOnlyNumbers(KeyEvent.KEY_TYPED));
+
         this.tfNumber.textProperty().addListener((event) -> this.textChangeCreate(KeyEvent.KEY_TYPED));
         this.tfHours.textProperty().addListener((event) -> this.textChangeCreate(KeyEvent.KEY_TYPED));
         this.tfDescription.textProperty().addListener((event) -> this.textChangeCreate(KeyEvent.KEY_TYPED));
 
-        //
-        //this.tfNumber.textProperty().addListener((event) -> this.textChangeModify(KeyEvent.KEY_TYPED));
-        //this.tfHours.textProperty().addListener((event) -> this.textChangeModify(KeyEvent.KEY_TYPED));
-        //this.tfDescription.textProperty().addListener((event) -> this.textChangeModify(KeyEvent.KEY_TYPED));
         stage.setScene(scene);
         //Mostrar la ventana. 
         stage.show();
     }
 
-    private void handleFieldsTextChangeSearch(ObservableValue observable,
-            Object oldValue,
-            Object newValue) {
-        String searchValue = cbUnitSearch.getSelectionModel().getSelectedItem().toString();
+    private void textChangeSearch(int KEY_TYPED){
+        String searchValue = cbSearchType.getSelectionModel().getSelectedItem().toString();
         if (searchValue.equalsIgnoreCase("All")) {
-            this.btmSearch.setDisable(true);
-        } else {
+            tfSearch.setDisable(true);
+            this.btmSearch.setDisable(false);
+        } else if(!searchValue.equalsIgnoreCase("All")) {
+            tfSearch.setDisable(false);
             if (!this.tfSearch.getText().trim().isEmpty()) {
                 this.btmSearch.setDisable(false);
             }
@@ -360,6 +357,8 @@ public class ExerciseController {
                 tfDescription.setText(exerciseModify.getDescription());
                 this.btmModify.setDisable(false);
                 this.btmDelete.setDisable(false);
+                this.btmFile.setDisable(false);
+                this.btmFileSolution.setDisable(false);
 
             } else {
                 //If there is not a row selected, clean window fields 
@@ -372,6 +371,8 @@ public class ExerciseController {
                 tfDescription.setText("");
                 this.btmModify.setDisable(true);
                 this.btmDelete.setDisable(true);
+                this.btmFile.setDisable(true);
+                this.btmFileSolution.setDisable(true);
             }
         } catch (Exception ex) {
             showErrorAlert("Error selection");
@@ -384,23 +385,30 @@ public class ExerciseController {
      * @param KEY_TYPED
      */
     private void textChangeCreate(int KEY_TYPED) {
-        if (!this.cbUnitCreate.getSelectionModel().isEmpty() && !this.tfNumber.getText().trim().isEmpty() && !this.tfHours.getText().trim().isEmpty() && !this.cbLevelTypeCreate.getSelectionModel().isEmpty() && !this.tfDescription.getText().trim().isEmpty()) {
+        if (!this.tfNumber.getText().trim().isEmpty() && !this.tfHours.getText().trim().isEmpty() && !this.tfDescription.getText().trim().isEmpty()) {
             this.btmCreate.setDisable(false);
         }
-        if (this.cbUnitCreate.getSelectionModel().isEmpty() || this.tfNumber.getText().trim().isEmpty() || this.tfHours.getText().trim().isEmpty() || this.cbLevelTypeCreate.getSelectionModel().isEmpty() || this.tfDescription.getText().trim().isEmpty()) {
+        if (!this.tfNumber.getText().matches(NUMBERS_REGEX) || !this.tfHours.getText().matches(NUMBERS_REGEX) || this.tfNumber.getText().trim().isEmpty() || this.tfHours.getText().trim().isEmpty() || this.tfDescription.getText().trim().isEmpty()) {
             this.btmCreate.setDisable(true);
         }
     }
 
     /**
+     * Handle Action event on Continue button
      *
-     * @param KEY_TYPED
+     * @param event The action event object
      */
-    /*private void textChangeModify(int KEY_TYPED) {
-        if (!exercise.getNumber().equals(this.tfNumber.toString()) || !exercise.getHours().equals(this.tfHours.toString()) || !exercise.getDescription().equals(this.tfDescription.toString())) {
-            this.btmModify.setDisable(false);
+    private void textOnlyNumbers(int KEY_TYPED) {
+        if (!this.tfNumber.getText().matches(NUMBERS_REGEX) || !this.tfHours.getText().matches(NUMBERS_REGEX)) {
+            this.lblErrorCreateModify.setText("🛈 Only numbers are allowed on the number and the hours fields.");
+            btmCreate.setDisable(true);
+            btmModify.setDisable(true);
+        } else {
+            this.lblErrorCreateModify.setText(" ");
+            btmModify.setDisable(false);
         }
-    }*/
+    }
+
     /**
      * Text change event handler for search, number, hours and description
      * fields.
@@ -431,27 +439,8 @@ public class ExerciseController {
         if (this.tfDescription.getText().length() > 600) {
             tfDescription.setText(tfDescription.getText().substring(0, 600));
         }
-
     }
 
-    /**
-     * Handle Action event on Continue button
-     *
-     * @param event The action event object
-     */
-    /*private void textOnlyNumbers(int KEY_TYPED) {
-        /**
-         * En el campo Number y Hours solo se permitirán caracteres numéricos.
-         * Si en el campo hay caracteres no númericos se le comunicará en una
-         * label un mensaje de color rojo: “Only numbers are allowed.”.
-     */
- /* if (!this.tfNumber.getText().matches(NUMBERS_REGEX)) {
-            this.lblErrorCreateModify.setText("🛈 Only numbers are allowed on the number field.");
-        }
-        if (!this.tfHours.getText().matches(NUMBERS_REGEX)) {
-            this.lblErrorCreateModify.setText("🛈 Only numbers are allowed on the hours field.");
-        }
-    }*/
     /**
      *
      * @param event
@@ -482,6 +471,13 @@ public class ExerciseController {
             newExercise.setDeadline(date);
             newExercise.setLevelType((LevelType) this.cbLevelTypeCreate.getSelectionModel().getSelectedItem());
             newExercise.setDescription(this.tfDescription.getText().trim());
+
+            if (!this.tfNumber.getText().matches(NUMBERS_REGEX)) {
+                this.lblErrorCreateModify.setText("🛈 Only numbers are allowed on the number fields.");
+            }
+            if (!this.tfHours.getText().matches(NUMBERS_REGEX)) {
+                this.lblErrorCreateModify.setText("🛈 Only numbers are allowed on the hours fields.");
+            }
             try {
                 exerciseInterface.create_XML(newExercise);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Created successfully", ButtonType.OK);
@@ -552,7 +548,8 @@ public class ExerciseController {
     }
 
     @FXML
-    private void handleSearchButtonAction(ActionEvent event) {
+    private void handleSearchButtonAction(ActionEvent event
+    ) {
         LOGGER.info("Searching...");
         String unitValue;
         String searchValue = null;
@@ -590,7 +587,8 @@ public class ExerciseController {
     }
 
     @FXML
-    private void handlePrintButtonAction(ActionEvent event) {
+    private void handlePrintButtonAction(ActionEvent event
+    ) {
         try {
             LOGGER.info("Beginning printing action...");
             JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/ExerciseReport.jrxml"));
