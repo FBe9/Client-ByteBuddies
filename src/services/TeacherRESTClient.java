@@ -32,6 +32,7 @@ public class TeacherRESTClient {
     /**
      * Uri of the server
      */
+
     private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
 
     /**

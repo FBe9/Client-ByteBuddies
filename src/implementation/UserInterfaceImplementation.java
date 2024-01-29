@@ -54,4 +54,10 @@ public class UserInterfaceImplementation implements UserInterface {
         }
         return userSearch;
     }
+
+    @Override
+    public void resetPassword(String email) {
+        LOGGER.info("Sending password reset request for " + email);
+        webClient.resetPassword(email);
+    }
 }

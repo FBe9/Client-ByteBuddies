@@ -7,6 +7,7 @@ package implementation;
 
 import exceptions.*;
 import interfaces.UnitInterface;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,11 +25,13 @@ public class UnitManagerImplementation implements UnitInterface {
 
     private final UnitRESTClient webClient;
     private static final Logger LOGGER = Logger.getLogger("package implementation");
+    
+    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     public UnitManagerImplementation() {
         webClient = new UnitRESTClient();
     }
-    
+
     /**
      * This method creates a new Unit in the data base.
      *
@@ -47,8 +50,8 @@ public class UnitManagerImplementation implements UnitInterface {
             throw new CreateErrorException("Error creating a unit" + e.getMessage());
         }
     }
-    
-     /**
+
+    /**
      * This method updates a movement data in the data store.
      *
      * @param unit The Unit entity object containing modified Unit data.
@@ -84,7 +87,7 @@ public class UnitManagerImplementation implements UnitInterface {
             throw new DeleteErrorException(e.getMessage());
         }
     }
-    
+
     /**
      * The method finds a unit which id is equals the id the User introduced.
      *
@@ -104,7 +107,7 @@ public class UnitManagerImplementation implements UnitInterface {
         }
         return unit;
     }
-    
+
     /**
      * The method finds all the units.
      *
@@ -149,7 +152,7 @@ public class UnitManagerImplementation implements UnitInterface {
         return units;
     }
 
-     /**
+    /**
      * This method finds all the units that the name contains the words the user
      * introduced and the subject name is the one the user introduced.
      *
@@ -163,9 +166,8 @@ public class UnitManagerImplementation implements UnitInterface {
     public List<Unit> findSubjectUnitsByName(String name, String subject) throws FindErrorException {
         List<Unit> units = null;
         try {
-            units = webClient.findAllUnits_XML(new GenericType<List<Unit>>() {
-            });
-
+            units = webClient.findSubjectUnitsByName_XML(new GenericType<List<Unit>>() {
+            }, name, subject);
         } catch (ClientErrorException e) {
             LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByName(String name, String subject) {0}", e.getMessage());
             throw new FindErrorException("Error finding unit" + e.getMessage());
@@ -212,8 +214,9 @@ public class UnitManagerImplementation implements UnitInterface {
     public List<Unit> findSubjectUnitsByDateInit(Date dateInit, String subject) throws FindErrorException {
         List<Unit> units = null;
         try {
+            String dateText = format.format(dateInit);
             units = webClient.findSubjectUnitsByDateInit_XML(new GenericType<List<Unit>>() {
-            }, subject, subject);
+            }, dateText, subject);
 
         } catch (ClientErrorException e) {
             LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByDateInit(Date dateInit, String subject) {0}", e.getMessage());
@@ -237,8 +240,9 @@ public class UnitManagerImplementation implements UnitInterface {
     public List<Unit> findSubjectUnitsByDateEnd(Date dateEnd, String subject) throws FindErrorException {
         List<Unit> units = null;
         try {
+            String dateText = format.format(dateEnd);
             units = webClient.findSubjectUnitsByDateEnd_XML(new GenericType<List<Unit>>() {
-            }, subject, subject);
+            }, dateText, subject);
 
         } catch (ClientErrorException e) {
             LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByDateEnd(Date dateEnd, String subject) {0}", e.getMessage());
@@ -287,7 +291,8 @@ public class UnitManagerImplementation implements UnitInterface {
         List<Unit> units = null;
         try {
             LOGGER.info("Find all subjects units that a student has");
-            units = webClient.findUnitsFromTeacherSubjects_XML(new GenericType<List<Unit>>() {},
+            units = webClient.findUnitsFromTeacherSubjects_XML(new GenericType<List<Unit>>() {
+            },
                     userId);
 
         } catch (Exception e) {

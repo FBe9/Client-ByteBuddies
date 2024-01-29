@@ -28,6 +28,7 @@ public class UserRESTClient {
      * Represents a client for managing communication with a web resource.
      */
     private Client client;
+
     /**
      * Uri of the server
      */
@@ -41,7 +42,11 @@ public class UserRESTClient {
         webTarget = client.target(BASE_URI).path("entities.user");
     }
 
-    /**
+
+    public void resetPassword(String email) throws WebApplicationException {
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{email})).request().post(null);
+    }
+ /**
      * Makes a POST request to the "login" endpoint with the provided request
      * entity. The response is processed based on the specified response type.
      *
