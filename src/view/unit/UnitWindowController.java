@@ -97,7 +97,6 @@ public class UnitWindowController {
     private static final Logger LOGGER = Logger.getLogger("package view.Unit");
     private ObservableList<Unit> clientsDataU;
     private ObservableList<Subject> clientsDataS;
-    private Subject subject;
     private User loggedUser;
     private UnitInterface clientU;
     private SubjectManager clientS;
@@ -206,7 +205,7 @@ public class UnitWindowController {
             } else {
                 try {
                     //Si el usuario es de tipo “Student”: Usar el método “findByEnrollments” para rellenar el combobox pasandole el id del usuario conectado a la aplicación. 
-                    clientsDataS = FXCollections.observableArrayList(clientS.findByEnrollments(loggedUser.toString()));
+                    clientsDataS = FXCollections.observableArrayList(clientS.findByEnrollments(loggedUser.getId().toString()));
                     if (clientsDataS.isEmpty()) {
                         //Si el método no devuelve nada se rellena con el texto ”No Subjects found” y lo selecciona.
                         cbSubjects.getItems().add("No Subjects found");
@@ -279,7 +278,7 @@ public class UnitWindowController {
             btnPrint.setOnAction(this::handelPrintButtonAction);
             stage.show();
         } catch (Exception e) {
-            LOGGER.severe("Error while initializeing the window: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error while initializeing the window: {0}", e.getMessage());
         }
 
     }
@@ -584,10 +583,6 @@ public class UnitWindowController {
                     .getName()).log(Level.SEVERE, null, ex);
             new Alert(Alert.AlertType.INFORMATION, "There was a problem while creating the unit", ButtonType.OK).showAndWait();
 
-        } catch (Exception ex) {
-            Logger.getLogger(UnitWindowController.class
-                    .getName()).log(Level.SEVERE, null, ex);
-            new Alert(Alert.AlertType.INFORMATION, ex.getMessage(), ButtonType.OK).showAndWait();
         }
     }
 
@@ -980,7 +975,6 @@ public class UnitWindowController {
      * @param subject La subject de la que se quieren ver unidades.
      */
     public void setCurrentSubject(Subject subject) {
-        this.subject = subject;
         //Se guarda en modo de texto la subject obtenida.
         String subjectName = subject.toString();
         //Se selecciona en la combobox cbSubjects.

@@ -124,7 +124,7 @@ public class MenuBarController {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/HelpSubject.fxml"));
             Parent root = (Parent) loader.load();
             // Obtain the Sign In window controller
-            HelpExamController controller = (HelpExamController) loader.getController();
+            HelpSubjectController controller = (HelpSubjectController) loader.getController();
             controller.initialize(root);
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
