@@ -33,7 +33,6 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -81,8 +80,6 @@ public class SignInWindowController {
     //Hyperlink
     @FXML
     private Hyperlink httpSignUp;
-    @FXML
-    private Hyperlink httpForgotPassword;
     //Pane
     @FXML
     private Pane signInPane;
@@ -138,8 +135,7 @@ public class SignInWindowController {
             stage.setOnCloseRequest(this::handleOnActionExit);
             btnAccept.setOnAction(this::handelAcceptButtonAction);
             tgbEye.setOnAction(this::handelEyeToggleButtonAction);
-            httpSignUp.setOnAction(this::handlerHyperlink);
-            httpForgotPassword.setOnAction(this::handlerHyperlink);
+            httpSignUp.setOnAction(this::handelSignUpHyperlink);
             //Mostrar la ventana. 
             stage.show();
             studentInterface = StudentFactory.getModel();
@@ -258,18 +254,14 @@ public class SignInWindowController {
 
             user = userInterface.login(user);
 
-            // Cargar menubar.fxml
-            FXMLLoader menuLoader = new FXMLLoader(getClass().getClassLoader().getResource("view/Menubar.fxml"));
-            Parent menuRoot = (Parent) menuLoader.load();
-            MenuBarController menubarController = (MenuBarController) menuLoader.getController();
-            menubarController.initStage(user);
-
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/Subject.fxml"));
             Parent root = (Parent) loader.load();
             SubjectController controller = (SubjectController) loader.getController();
-            Stage primaryStage = new Stage();
-            controller.setStage(primaryStage);
+
+            controller.setStage(stage);
             controller.initStage(root, user);
+            MenuBarController.setStage(stage);
+            MenuBarController.setUser(user);
 
         } /**
          * Si el metodo signIn no produce excepciones, se cerrará la ventana y
@@ -304,28 +296,18 @@ public class SignInWindowController {
      * @param event The event for the hyperlink.
      */
     @FXML
-    public void handlerHyperlink(ActionEvent event) {
-        if (event.getSource() == httpSignUp) {
-            try {
-                //Se abrirá la ventana Sign Up de manera modal.
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/login/SignUpWindow.fxml"));
-                Parent root = (Parent) loader.load();
-                SignUpWindowController controller = (SignUpWindowController) loader.getController();
-                //Ventana modal.
-                Stage modalStage = new Stage();
-                controller.setStage(modalStage);
-                controller.initStage(root);
-            } catch (IOException ex) {
-                Logger.getLogger(SignInWindowController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        if (event.getSource() == httpForgotPassword) {
-            TextInputDialog tidResetPass = new TextInputDialog();
-            tidResetPass.setHeaderText("Enter your email.");
-            Optional<String> result = tidResetPass.showAndWait();
-            if(result.isPresent()){
-                userInterface.resetPassword(result.get());
-            }
+    public void handelSignUpHyperlink(ActionEvent event) {
+        try {
+            //Se abrirá la ventana Sign Up de manera modal.
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/login/SignUpWindow.fxml"));
+            Parent root = (Parent) loader.load();
+            SignUpWindowController controller = (SignUpWindowController) loader.getController();
+            //Ventana modal.
+            Stage modalStage = new Stage();
+            controller.setStage(modalStage);
+            controller.initStage(root);
+        } catch (IOException ex) {
+            Logger.getLogger(SignInWindowController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

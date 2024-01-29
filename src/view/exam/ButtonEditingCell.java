@@ -67,7 +67,7 @@ public class ButtonEditingCell extends TableCell<Exam, String> {
             } else {
                 btn.setDisable(false);
             }
-            if (!exam.getFilePath().equals("")) {
+            if (exam.getFilePath() != null) {
 
                 btn.setText("Download");
                 btn.setDisable(false);

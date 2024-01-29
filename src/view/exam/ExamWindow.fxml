@@ -14,7 +14,8 @@
 <?import javafx.scene.text.Font?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #ECF4FF;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.exam.ExamWindowController">
-   <children>
+    <children>
+        <fx:include fx:id="hBoxMenu" source="../MenuBar.fxml"/>
       <ImageView fitHeight="746.0" fitWidth="170.0" layoutY="25.0" pickOnBounds="true">
          <image>
             <Image url="@../../resources/BlueWallpaper.jpg" />
@@ -35,16 +36,6 @@
             <Image url="@../../resources/AllWhiteStar.png" />
          </image>
       </ImageView>
-      <MenuBar layoutY="-1.0" prefHeight="26.0" prefWidth="1366.0" style="-fx-background-color: #74B0E7;">
-         <menus>
-            <Menu mnemonicParsing="false" text="Subject" />
-            <Menu mnemonicParsing="false" text="Exam" />
-            <Menu mnemonicParsing="false" text="Unit" />
-            <Menu mnemonicParsing="false" text="Exercise" />
-            <Menu mnemonicParsing="false" text="Help" />
-            <Menu mnemonicParsing="false" text="Log Out" />
-         </menus>
-      </MenuBar>
       <TableView fx:id="tvExam" layoutX="192.0" layoutY="209.0" prefHeight="472.0" prefWidth="980.0" style="-fx-border-color: #74B0E7;">
          <columns>
             <TableColumn fx:id="tcDescription" minWidth="150.0" prefWidth="234.0" text="Description" />

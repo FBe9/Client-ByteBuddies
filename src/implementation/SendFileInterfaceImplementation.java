@@ -24,7 +24,7 @@ public class SendFileInterfaceImplementation implements SendFileInterface{
 
     @Override
     public File receiveFile(String path) {
-        
+        return new File(path);
     }
     
     
