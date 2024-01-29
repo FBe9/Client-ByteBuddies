@@ -1,22 +1,25 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package factories;
 
 import implementation.SendFileInterfaceImplementation;
 import interfaces.SendFileInterface;
 
 /**
+ * Factory class for obtaining an instance of SendFileInterface.
  *
  * @author Alex
  */
 public class SendFileFactory {
-    
+
+    /**
+     * The instance of SendFileInterface.
+     */
     public static SendFileInterface model;
-    
-    
+
+    /**
+     * When there isn't an instance of SendFileInterface, it creates a new one.
+     *
+     * @return The instance of ExamInterface.
+     */
     public static SendFileInterface getModel() {
         if (model == null) {
             model = new SendFileInterfaceImplementation();

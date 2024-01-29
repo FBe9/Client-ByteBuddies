@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.Locale;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Pos;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.util.StringConverter;

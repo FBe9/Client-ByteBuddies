@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view.exam;
 
 import java.awt.Desktop;
@@ -13,7 +8,6 @@ import java.util.logging.Logger;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import models.Exam;
