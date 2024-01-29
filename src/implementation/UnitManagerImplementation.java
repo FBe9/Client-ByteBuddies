@@ -7,6 +7,7 @@ package implementation;
 
 import exceptions.*;
 import interfaces.UnitInterface;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,6 +25,8 @@ public class UnitManagerImplementation implements UnitInterface {
 
     private final UnitRESTClient webClient;
     private static final Logger LOGGER = Logger.getLogger("package implementation");
+    
+    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     public UnitManagerImplementation() {
         webClient = new UnitRESTClient();
@@ -211,8 +214,9 @@ public class UnitManagerImplementation implements UnitInterface {
     public List<Unit> findSubjectUnitsByDateInit(Date dateInit, String subject) throws FindErrorException {
         List<Unit> units = null;
         try {
+            String dateText = format.format(dateInit);
             units = webClient.findSubjectUnitsByDateInit_XML(new GenericType<List<Unit>>() {
-            }, subject, subject);
+            }, dateText, subject);
 
         } catch (ClientErrorException e) {
             LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByDateInit(Date dateInit, String subject) {0}", e.getMessage());
@@ -236,8 +240,9 @@ public class UnitManagerImplementation implements UnitInterface {
     public List<Unit> findSubjectUnitsByDateEnd(Date dateEnd, String subject) throws FindErrorException {
         List<Unit> units = null;
         try {
+            String dateText = format.format(dateEnd);
             units = webClient.findSubjectUnitsByDateEnd_XML(new GenericType<List<Unit>>() {
-            }, subject, subject);
+            }, dateText, subject);
 
         } catch (ClientErrorException e) {
             LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByDateEnd(Date dateEnd, String subject) {0}", e.getMessage());

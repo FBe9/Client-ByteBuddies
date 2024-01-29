@@ -4,11 +4,8 @@ import exceptions.*;
 import factories.*;
 import interfaces.SubjectManager;
 import interfaces.UnitInterface;
-import static java.lang.String.format;
-import static java.text.MessageFormat.format;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,7 +57,7 @@ import net.sf.jasperreports.view.JasperViewer;
  * @author Nerea
  */
 public class UnitWindowController {
-    
+
     @FXML
     private TableView<Unit> tbvUnit;
     @FXML
@@ -168,7 +165,7 @@ public class UnitWindowController {
                  * el evento de pulsación del botón “btnPrint”.
                  */
                 cmiPrintReport.setOnAction(this::handelPrintButtonAction);
-                
+
             } else {
                 //En el caso del “Student”: Tendrá solo las consultas disponibles y el botón de create y delete se ocultaran y no le permitirá desplegar ni usar el menú de contexto.
                 btnCreateUnit.setVisible(false);
@@ -181,9 +178,8 @@ public class UnitWindowController {
             //Se vacían el text field  “tfSearch” y el datepicker “dpSearch”.
             tfSearch.setText("");
             dpSearch.setValue(null);
-            
-            
-            ComboBox comboEdit = new ComboBox();
+
+            ComboBox<Subject> comboEdit = new ComboBox();
             //Se rellena el combobox “cbSubjects” con una lista de asignaturas en las que esté registrado el usuario conectado a la aplicación. El usuario puede ser de dos tipos:
             if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
                 try {
@@ -200,7 +196,7 @@ public class UnitWindowController {
                             subjectsNames.add(subjectName);
                         }
                         cbSubjects.getItems().addAll(subjectsNames);
-                        comboEdit.getItems().addAll(subjectsNames);
+                        comboEdit.getItems().addAll(clientsDataS);
                         cbSubjects.getItems().add(0, "All subjects units");
                         cbSubjects.getSelectionModel().selectFirst();
                     }
@@ -222,7 +218,7 @@ public class UnitWindowController {
                             subjectsNames.add(subjectName);
                         }
                         cbSubjects.getItems().addAll(subjectsNames);
-                        comboEdit.getItems().addAll(subjectsNames);
+                        comboEdit.getItems().addAll(clientsDataS);
                         cbSubjects.getItems().add(0, "All subjects units");
                         cbSubjects.getSelectionModel().selectFirst();
                     }
@@ -253,6 +249,7 @@ public class UnitWindowController {
             //La columna “Subjects” será un combobox, cargado con los mismos valores que la combobox “cbSubjects” menos el valor "All subjects units". 
             tbcSubject.setCellFactory(ComboBoxTableCell.forTableColumn(comboEdit.getItems()));
             //Las columnas “Date Init” y “Date End” serán datepickers.
+            //Las columnas de fechas las mostrará con un patrón formateado de acuerdo a la configuración del sistema (en su factoría de celdas)
             final Callback<TableColumn<Unit, Date>, TableCell<Unit, Date>> dateCell
                     = (TableColumn<Unit, Date> param) -> new DateUnitEditingCell();
             tbcDateInit.setCellFactory(dateCell);
@@ -261,7 +258,6 @@ public class UnitWindowController {
             final Callback<TableColumn<Unit, String>, TableCell<Unit, String>> hyperlinkExercisesCell
                     = (TableColumn<Unit, String> param) -> new HyperlinkUnitEditingCell(this.loggedUser, stage);
             tbcExercises.setCellFactory(hyperlinkExercisesCell);
-            //Las columnas de fechas las mostrará con un patrón formateado de acuerdo a la configuración del sistema.
             //OnEditCommits
             tbcName.setOnEditCommit(this::onEditCommitColumnName);
             tbcSubject.setOnEditCommit(this::onEditCommitColumnSubject);
@@ -271,12 +267,13 @@ public class UnitWindowController {
             tbcHours.setOnEditCommit(this::onEditCommitColumnHours);
             //Se carga la tabla en base de la conbobox de Subjects.
             actualizarTabla();
-            
+
             tbvUnit.getSelectionModel().selectedItemProperty().addListener(this::handleUnitTableSelectionChanged);
             cbSubjects.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSubjects);
             cbSearchType.getSelectionModel().selectedItemProperty().addListener(this::handleOnSelectSearchType);
             stage.setOnCloseRequest(this::handleOnActionExit);
             tfSearch.textProperty().addListener(this::textPropertyChange);
+            dpSearch.getEditor().textProperty().addListener(this::textPropertyChange);
             btnCreateUnit.setOnAction(this::handelCreateButtonAction);
             btnDeleteUnit.setOnAction(this::handelDeleteButtonAction);
             btnPrint.setOnAction(this::handelPrintButtonAction);
@@ -284,7 +281,7 @@ public class UnitWindowController {
         } catch (Exception e) {
             LOGGER.severe("Error while initializeing the window: " + e.getMessage());
         }
-        
+
     }
 
     /**
@@ -406,7 +403,7 @@ public class UnitWindowController {
      */
     private void handleUnitTableSelectionChanged(ObservableValue observable, Object oldValue, Object newValue) {
         Unit unit = (Unit) newValue;
-        if (newValue != null) {
+        if (unit != null) {
             btnDeleteUnit.setDisable(false);
         } else {
             btnDeleteUnit.setDisable(true);
@@ -439,7 +436,7 @@ public class UnitWindowController {
                     clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnitsByName(tfSearch.getText(), subjectValue));
                     tbvUnit.setItems(clientsDataU);
                     tbvUnit.refresh();
-                    
+
                 } else if (searchValue.equalsIgnoreCase("Date Init")) {
                     //Si el valor es Date Init: Se rellena la tabla con el método “findSubjectUnitsByDateInit” pasandole el nombre de la subject seleccionada en la combobox y la fecha de la unidad escrita en el datePicker. 
                     Date date = Date.from(dpSearch.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -458,7 +455,7 @@ public class UnitWindowController {
                     tbvUnit.setItems((ObservableList) clientsDataU);
                     tbvUnit.refresh();
                 }
-                
+
             }
             if (clientsDataU.isEmpty()) {
                 new Alert(Alert.AlertType.INFORMATION, "There is no Unit with that " + searchValue, ButtonType.OK).showAndWait();
@@ -520,7 +517,7 @@ public class UnitWindowController {
             //Las columnas Name y Description estarán vacías.
             newUnit.setName("");
             newUnit.setDescription("");
-            
+
             String subjectUnit = (String) cbSubjects.getSelectionModel().getSelectedItem();
             if (!subjectUnit.equalsIgnoreCase("All subjects units")) {
                 //La columna Subject en caso de que una subject esté seleccionada en el combobox “cbSubjects”, se selecciona esta en este campo.
@@ -570,7 +567,7 @@ public class UnitWindowController {
                     }
                 }
             }
-            
+
             if (create) {
                 //Se usará el método “createUnit” para crear una Unit con los valores por defecto que hemos estipulado pasandoselos en un objeto de tipo Unit.
                 clientU.createUnit(newUnit);
@@ -586,7 +583,7 @@ public class UnitWindowController {
             Logger.getLogger(UnitWindowController.class
                     .getName()).log(Level.SEVERE, null, ex);
             new Alert(Alert.AlertType.INFORMATION, "There was a problem while creating the unit", ButtonType.OK).showAndWait();
-            
+
         } catch (Exception ex) {
             Logger.getLogger(UnitWindowController.class
                     .getName()).log(Level.SEVERE, null, ex);
@@ -657,7 +654,7 @@ public class UnitWindowController {
 
                     //Si el usuario es de tipo “Teacher”: Se usará el método “findUnitsFromTeacherSubjects” para rellenar la tabla pasandole el id del usuario conectado a la aplicación.
                     clientsDataU = FXCollections.observableArrayList(clientU.findUnitsFromTeacherSubjects(loggedUser.getId().toString()));
-                    
+
                     tbvUnit.setItems((ObservableList) clientsDataU);
                     tbvUnit.refresh();
                 } else {
@@ -671,7 +668,7 @@ public class UnitWindowController {
                 clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits(comboValue));
                 tbvUnit.setItems((ObservableList) clientsDataU);
                 tbvUnit.refresh();
-                
+
             }
         } catch (FindErrorException ex) {
             Logger.getLogger(UnitWindowController.class.getName()).log(Level.SEVERE, null, ex);
@@ -679,9 +676,9 @@ public class UnitWindowController {
     }
 
     /**
-     * Método del evento de edición de celda de la columna tbcName.
-     * Comprobar que el nueo nombre no se pasa del limite y que no existen dos unidades un una subject con el mismo nombre y luego
-     * actualiza el campo.
+     * Método del evento de edición de celda de la columna tbcName. Comprobar
+     * que el nueo nombre no se pasa del limite y que no existen dos unidades un
+     * una subject con el mismo nombre y luego actualiza el campo.
      *
      * @param event El evento de edición de la celda.
      */
@@ -709,7 +706,7 @@ public class UnitWindowController {
                 modify = false;
                 new Alert(Alert.AlertType.ERROR, "Unit name length must be lower than 100 characters, please change it", ButtonType.OK).showAndWait();
             }
-            
+
             if (modify) {
                 //Si los dos criterios se cumplen: Se usará el método “updateUnit” para guardar la edición en la base de datos, pasandole la unit seleccionada en un objeto de tipo unit.
                 unit.setName(name);
@@ -722,15 +719,16 @@ public class UnitWindowController {
 
         } catch (UnitNameExistException ex) {
             new Alert(Alert.AlertType.ERROR, "Unit name already exists in " + subjectUnit + " subject.", ButtonType.OK).showAndWait();
-            
+
         } catch (FindErrorException | UpdateErrorException ex) {
             Logger.getLogger(UnitWindowController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     /**
-     * Método del evento de edición de celda de la columna tbcSubject.
-     * Comprobar que en la subject seleccionada no existe una unidad con el nombre de la unidad a editar antes de editarla.
+     * Método del evento de edición de celda de la columna tbcSubject. Comprobar
+     * que en la subject seleccionada no existe una unidad con el nombre de la
+     * unidad a editar antes de editarla.
      *
      * @param event El evento de edición de la celda.
      */
@@ -740,16 +738,11 @@ public class UnitWindowController {
         //Si se realiza doble clic en la celda: Se ingresará al modo de edición y si se presiona la tecla ESC o se hace clic en cualquier lugar fuera de la celda, se cancelará la edición.
         //Se mostrará un combobox con las opciones del combobox “cbSubjects”.
         //Si se presiona la tecla ENTER: Se verificará que haya algún valor seleccionado y que ese valor sea diferente del existente.
-        Subject currentValue = event.getNewValue();
-        Subject oldValue = event.getOldValue();
         Unit unit = tbvUnit.getSelectionModel().getSelectedItem();
         String name = unit.getName();
-        String NewSubName = tbcSubject.getText();
-        String oldSubject = unit.getSubject().toString();
-        tfSearch.setText(NewSubName);
         try {
             //Se verificará que en la subject seleccionada no exista un mismo nombre de unidad
-            clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits(NewSubName));
+            clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits(event.getNewValue().toString()));
             Boolean modify = true;
             for (int i = 0; i < clientsDataU.size(); i++) {
                 if (clientsDataU.get(i).getName().equalsIgnoreCase(name)) {
@@ -760,11 +753,10 @@ public class UnitWindowController {
                     throw new UnitNameExistException();
                 }
             }
-            if (!currentValue.equals(oldValue)) {
+            if (!event.getNewValue().getName().equalsIgnoreCase(event.getOldValue().getName())) {
                 //Si se cumple: Se usará el método “updateUnit” para guardar la edición en la base de datos, pasandole la unit seleccionada con el cambio en un objeto de tipo unit.
                 if (modify) {
-                    cbSubjects.getSelectionModel().select(currentValue);
-                    unit.setSubject(currentValue);
+                    unit.setSubject(event.getNewValue());
                     clientU.updateUnit(unit);
                 }
                 //Si es el mismo valor: no se requerirá ninguna acción ya que no habrá edición alguna.
@@ -773,8 +765,8 @@ public class UnitWindowController {
             //Si no se produce ningún error, se refrescará la tabla.
             actualizarTabla();
         } catch (UnitNameExistException ex) {
-            new Alert(Alert.AlertType.ERROR, "Unit name already exists in " + currentValue.toString() + " subject.", ButtonType.OK).showAndWait();
-            
+            new Alert(Alert.AlertType.ERROR, "Unit name already exists in " + event.getNewValue().toString() + " subject.", ButtonType.OK).showAndWait();
+
         } catch (FindErrorException | UpdateErrorException ex) {
             Logger.getLogger(UnitWindowController.class.getName()).log(Level.SEVERE, null, ex);
             event.consume();
@@ -801,7 +793,7 @@ public class UnitWindowController {
                 modify = false;
                 new Alert(Alert.AlertType.ERROR, "Unit description length must be lower than 100 characters, please change it", ButtonType.OK).showAndWait();
             }
-            
+
             //Si se cumplen: Se usará el método “updateUnit” para guardar la edición en la base de datos, pasandole la unit seleccionada en un objeto de tipo unit.
             if (modify) {
                 unit.setDescription(desc);
@@ -854,7 +846,7 @@ public class UnitWindowController {
         } catch (WrongDateFormatException ex) {
             tbvUnit.refresh();
             new Alert(Alert.AlertType.INFORMATION, "Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear(), ButtonType.OK).showAndWait();
-            
+
         } catch (UpdateErrorException ex) {
             //Si se produce algún error, se le mostrará al usuario una alerta con el error.  
             Logger.getLogger(UnitWindowController.class.getName()).log(Level.SEVERE, null, ex);
@@ -896,7 +888,7 @@ public class UnitWindowController {
 
                 checkDate = false;
                 throw new WrongDateFormatException();
-                
+
             }
             //Se validará que la fecha de inicio sea anterior a la fecha fín, si no, 
             //se lanzará la excepción WrongDateFormatException con el siguiente mensaje: 'The end date must be later than the start date of the subject.
@@ -909,7 +901,7 @@ public class UnitWindowController {
                     new Alert(Alert.AlertType.INFORMATION, "The date end must be later than the date init of the subject.", ButtonType.OK).showAndWait();
                 }
             }
-            
+
             if (checkDate) {
                 unit.setDateEnd(event.getNewValue());
                 //Tras la validación y confirmación de que la información es correcta, se llamará a la factoria SubjectFactory para obtener una implematación de la interfaz SubjectManager 
@@ -925,9 +917,9 @@ public class UnitWindowController {
         } catch (WrongDateFormatException ex) {
             tbvUnit.refresh();
             new Alert(Alert.AlertType.INFORMATION, "Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear(), ButtonType.OK).showAndWait();
-            
+
         }
-        
+
     }
 
     /**
