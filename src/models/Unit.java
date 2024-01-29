@@ -182,7 +182,6 @@ public class Unit implements Serializable {
      * @param dateInit the dateInit of the unit.
      * @param dateEnd the dateEnd of the unit.
      * @param hours the hours of the unit. 
-     * @param exercises the exercises of the unit.
      * @param subject the subject of the unit.
      */
     public Unit(String id, String name, String description, Date dateInit, Date dateEnd, String hours, Subject subject) {
@@ -241,4 +240,9 @@ public class Unit implements Serializable {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return name.getValue();
+    } 
 }

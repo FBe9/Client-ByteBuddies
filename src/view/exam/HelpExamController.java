@@ -1,3 +1,4 @@
+
 package view.exam;
 
 import javafx.fxml.FXML;
@@ -31,5 +32,4 @@ public class HelpExamController {
         });
         stage.show();
     }
-
 }

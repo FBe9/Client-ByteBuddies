@@ -51,9 +51,7 @@ public class DateUnitEditingCell extends TableCell<Unit, Date> {
     protected void updateItem(Date date, boolean empty) {
         super.updateItem(date, empty);
         Locale locale = Locale.getDefault();
-        dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM
-                
-                , locale);
+        dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM,locale);
 
         if (empty) {
             setText(null);
