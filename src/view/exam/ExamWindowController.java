@@ -202,6 +202,11 @@ public class ExamWindowController {
     private Exam examEditing = new Exam();
     private Boolean flagNewRow = false;
 
+    /**
+     * Initialises the Exam Window view.
+     *
+     * @param root The parent window.
+     */
     public void initStage(Parent root) {
 
         LOGGER.info("Initialising Exam view.");
@@ -451,14 +456,43 @@ public class ExamWindowController {
         // stage.showAndWait();
     }
 
+    /**
+     * Sets the stage for the window.
+     *
+     * @param stage The stage to set.
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Sets the current logged user.
+     *
+     * @param user The logged user.
+     */
     public void setUser(User user) {
         this.currentUser = user;
     }
 
+    /**
+     * Overrides the current subject to show only exams of that subject, if it
+     * is assigned to the user.
+     */
+    public void setCurrentSubject(Subject subject) {
+        //this.subject = subject;
+        //Se guarda en modo de texto la subject obtenida.
+        String subjectName = subject.toString();
+        //Se selecciona en la combobox cbSubjects.
+        cbBySubject.getSelectionModel().select(subjectName);
+    }
+
+    /**
+     * FXML handler for all ComboBox events.
+     *
+     * @param observable The ComboBox being observed.
+     * @param oldValue The old value selected.
+     * @param newValue The new value selected.
+     */
     @FXML
     private void handlerComboBox(ObservableValue observable, Object oldValue, Object newValue) {
         if (observable == cbSearchCriteria.valueProperty()) {
@@ -531,6 +565,13 @@ public class ExamWindowController {
         }
     }
 
+    /**
+     * FXML handler for the TextProperty change event.
+     *
+     * @param observable The TextField being observed.
+     * @param oldValue The old value written.
+     * @param newValue The new value written.
+     */
     @FXML
     private void textPropertyChange(ObservableValue observable, String oldValue, String newValue) {
         if (observable == tfSearchExam.textProperty()) {
@@ -546,6 +587,11 @@ public class ExamWindowController {
         }
     }
 
+    /**
+     * FXML handler for all button actions.
+     *
+     * @param event The event to handle.
+     */
     @FXML
     private void handlerButton(ActionEvent event) {
         if (event.getSource() == btnSearchExam) {
@@ -739,21 +785,17 @@ public class ExamWindowController {
                 tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex());
                 flagNewRow = false;
             }
-
         }
     }
 
+    /**
+     * Handles the exit action event.
+     *
+     * @param event The exit event.
+     */
     private void handleOnActionExit(Event event) {
         LOGGER.info("Exit pressed.");
         // Se observará que no se esté editando la tabla o que no haya datos sin guardar.
 
-    }
-
-    public void setCurrentSubject(Subject subject) {
-        //this.subject = subject;
-        //Se guarda en modo de texto la subject obtenida.
-        String subjectName = subject.toString();
-        //Se selecciona en la combobox cbSubjects.
-        cbBySubject.getSelectionModel().select(subjectName);
     }
 }
