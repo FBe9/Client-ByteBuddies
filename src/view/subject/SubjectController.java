@@ -14,6 +14,7 @@ import factories.SubjectFactory;
 import interfaces.EnrolledInterface;
 
 import interfaces.SubjectManager;
+import java.text.DateFormat;
 
 import javafx.event.ActionEvent;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -56,6 +58,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import models.Enrolled;
 import models.EnrolledId;
 import models.LanguageType;
@@ -560,12 +563,13 @@ public class SubjectController {
                 this::handleCreateButtonAction);
         btnDeleteSubject.setOnAction(
                 this::handleDeleteButtonAction);
-
+ 
         //Menus de contexto
         final ContextMenu contextMenu = new ContextMenu();
         //Menu de contexto para el create
         MenuItem createNewSubjectMenuItem = new MenuItem("Create new Subject");
         createNewSubjectMenuItem.setOnAction((ActionEvent e) -> {
+            createSubject();
         });
         //Menu de contexto para el delete
         MenuItem deleteSubjectMenuItem = new MenuItem("Delete a subject");
@@ -595,6 +599,19 @@ public class SubjectController {
         stage.show();
 
     }
+
+
+    /**
+     * Este método se invoca cuando cambia el valor de un Observable
+     * (observable). Actualiza la visibilidad de los campos de búsqueda y la
+     * configuración del botón de búsqueda en función de la opción seleccionada
+     * en un ComboBox y el tipo de usuario.
+     *
+     * @param observable El objeto que está siendo observado (no se utiliza en
+     * esta implementación).
+     * @param oldValue El valor anterior (no se utiliza en esta implementación).
+     * @param newValue El nuevo valor del Observable.
+     */
 
     public void textChanged(ObservableValue observable, Object oldValue, Object newValue) {
         //Si el valor seleccionado es algunos de los siguientes: "name",  "teacher Name",   "with at Least _ number of units",  " with at least _ number of enrolled students", validar si “tfSearchSubject” está visible; si no lo está, establecerlo como visible. Luego, validar si “dpDateSearchSubject” no está visible; si no lo está, ponerlo en no visible.
