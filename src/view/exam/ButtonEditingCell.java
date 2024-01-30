@@ -11,8 +11,6 @@ import javafx.scene.control.TableColumn;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import models.Exam;
-import models.Student;
-import models.Teacher;
 import models.User;
 
 /**
@@ -104,7 +102,7 @@ public class ButtonEditingCell extends TableCell<Exam, String> {
                     // RECEIVE METHOD
                 });
             } else {
-                if (applicationUser instanceof Teacher) {
+                if (applicationUser.getUser_type().equals("Teacher")) {
                     btn.setText("Add file");
                     btn.setOnAction(event -> {
                         FileChooser fileChooser = new FileChooser();
@@ -121,7 +119,7 @@ public class ButtonEditingCell extends TableCell<Exam, String> {
                         }
 
                     });
-                } else if (applicationUser instanceof Student) {
+                } else if (applicationUser.getUser_type().equals("Student")) {
                     btn.setText("Not available");
                     btn.setDisable(true);
                 }

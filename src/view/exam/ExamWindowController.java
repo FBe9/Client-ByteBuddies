@@ -66,131 +66,131 @@ public class ExamWindowController {
      */
     public ExamWindowController() {
     }
-    
+
     // ComboBoxes
     /**
      * FXML element for search criteria ComboBox.
      */
     @FXML
     private ComboBox cbSearchCriteria;
-    
+
     /**
      * FXML element for searching by subject ComboBox.
      */
     @FXML
     private ComboBox cbBySubject;
-    
+
     // TextFields
     /**
      * FXML element for searching by exam name TextField.
      */
     @FXML
     private TextField tfSearchExam;
-    
+
     // Buttons
     /**
      * FXML element for search action Button.
      */
     @FXML
     private Button btnSearchExam;
-    
+
     /**
      * FXML element for exam creation action Button.
      */
     @FXML
     private Button btnCreateExam;
-    
+
     /**
      * FXML element for exam deletion action Button.
      */
     @FXML
     private Button btnDeleteExam;
-    
+
     /**
      * FXML element for printing exam action Button.
      */
     @FXML
     private Button btnPrintExam;
-    
+
     /**
      * FXML element to cancel edit action Button.
      */
     @FXML
     private Button btnCancelExam;
-    
+
     /**
      * FXML element for saving exam action Button.
      */
     @FXML
     private Button btnSaveExam;
-    
+
     // TableViews
     /**
      * FXML element TableView of exam objects.
      */
     @FXML
     private TableView<Exam> tvExam;
-    
+
     // Table Columns
     /**
      * FXML element for exam description TableColumn.
      */
     @FXML
     private TableColumn<Exam, String> tcDescription;
-    
+
     /**
      * FXML element for exam subject TableColumn.
      */
     @FXML
     private TableColumn<Exam, Subject> tcSubject;
-    
+
     /**
      * FXML element for exam duration TableColumn.
      */
     @FXML
     private TableColumn<Exam, String> tcDuration;
-    
+
     /**
      * FXMl element for exam date TableColumn.
      */
     @FXML
     private TableColumn<Exam, Date> tcDate;
-    
+
     /**
      * FXML element for exam file TableColumn.
      */
     @FXML
     private TableColumn<Exam, String> tcFile;
-    
+
     // Stage
     /**
      * The stage of the Exam Window.
      */
     private Stage stage;
-    
+
     // Application user
     /**
      * The current logged user.
      */
     private User currentUser;
-    
+
     // Interfaces
     /**
      * Exam interface instance.
      */
     private ExamInterface examInterface;
-    
+
     /**
      * Subject interface instance.
      */
     private SubjectManager subjectInterface;
-    
+
     // Loggers
     /**
      * Logger for the ExamWindowController class.
      */
     private static final Logger LOGGER = Logger.getLogger("ExamWindowController");
-    
+
     // Others
     private String allExams = "All exams";
     private String bySubject = "Exams by subject";
@@ -216,7 +216,7 @@ public class ExamWindowController {
         stage.setTitle("Exams");
 
         // Añadir a la ventana un icono de una estrella
-        stage.getIcons().add(new Image("resources/AllBlueStar.png"));
+        stage.getIcons().add(new Image("resources/Logo.jpg"));
 
         // Ventana no redimensionable
         stage.setResizable(false);
