@@ -8,14 +8,23 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 /**
- *
+ * Controller class for the Exam help window.
+ * 
  * @author Alex
  */
 public class HelpExamController {
 
+    /**
+     * The control used to show the page.
+     */
     @FXML
     WebView webView;
 
+    /**
+     * Initialises and shows the window .
+     * 
+     * @param root The root of the FXML hierarchy.
+     */
     public void initialize(Parent root) {
         Scene scene = new Scene(root);
         Stage stage = new Stage();
@@ -26,10 +35,8 @@ public class HelpExamController {
         stage.setMinHeight(600);
         stage.setOnShowing(event -> {
             WebEngine webEngine = webView.getEngine();
-            //Load help page.
             webEngine.load(getClass().getResource("/view/exam/HelpExam.html").toExternalForm());
         });
         stage.show();
     }
-
 }
