@@ -1,9 +1,5 @@
 package services;
 
-import exceptions.CreateErrorException;
-import exceptions.DeleteErrorException;
-import exceptions.ExerciseErrorException;
-import exceptions.UpdateErrorException;
 import interfaces.ExerciseInterface;
 import java.util.ResourceBundle;
 import javax.ws.rs.WebApplicationException;
@@ -24,14 +20,14 @@ import javax.ws.rs.core.GenericType;
  *
  * @author Leire
  */
-public class ExerciseFacadeREST implements ExerciseInterface {
+public class ExerciseRESTClient implements ExerciseInterface {
 
     private final WebTarget webTarget;
     private final Client client;
     private final ResourceBundle configFile = ResourceBundle.getBundle("config.config");
     private final String BASE_URI = configFile.getString("BASE_URI");
     
-    public ExerciseFacadeREST() {
+    public ExerciseRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.exercise");
     }
@@ -93,7 +89,7 @@ public class ExerciseFacadeREST implements ExerciseInterface {
     }
 
     @Override
-    public <T> T getExercisesByNumberAndUnitName_XML(Class<T> responseType, String number, String name) throws WebApplicationException {
+    public <T> T getExercisesByNumberAndUnitName_XML(GenericType<T> responseType, String number, String name) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("getByNumberAndUnitName/{0}/{1}", new Object[]{number, name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -107,7 +103,7 @@ public class ExerciseFacadeREST implements ExerciseInterface {
     }
 
     @Override
-    public <T> T getExercisesByLevelAndUnitName_XML(Class<T> responseType, String levelType, String name) throws WebApplicationException {
+    public <T> T getExercisesByLevelAndUnitName_XML(GenericType<T> responseType, String levelType, String name) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("getByLevelTypeAndUnitName/{0}/{1}", new Object[]{levelType, name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);

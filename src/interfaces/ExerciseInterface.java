@@ -30,9 +30,9 @@ public interface ExerciseInterface {
 
     public <T> T getExercisesByUnitName_XML(GenericType<T> responseType, String name) throws ExerciseErrorException;
 
-    public <T> T getExercisesByNumberAndUnitName_XML(Class<T> responseType, String number, String name) throws ExerciseErrorException;
+    public <T> T getExercisesByNumberAndUnitName_XML(GenericType<T> responseType, String number, String name) throws ExerciseErrorException;
 
     public <T> T getExercisesByDateAndUnitName_XML(Class<T> responseType, String date, String name) throws ExerciseErrorException;
 
-    public <T> T getExercisesByLevelAndUnitName_XML(Class<T> responseType, String levelType, String name) throws ExerciseErrorException;
+    public <T> T getExercisesByLevelAndUnitName_XML(GenericType<T> responseType, String levelType, String name) throws ExerciseErrorException;
 }
