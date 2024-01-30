@@ -4,12 +4,15 @@ import exceptions.*;
 import factories.*;
 import interfaces.SubjectManager;
 import interfaces.UnitInterface;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -39,6 +42,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import models.Subject;
 import models.Teacher;
 import models.Unit;
@@ -132,14 +136,13 @@ public class UnitWindowController {
             //Ventana no modal.
             this.loggedUser = loggedUser;
             //Comprobar que tipo de usuario está conectado a la aplicación:
-            if (loggedUser instanceof Teacher) {
+            if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
                 //En el caso del “Teacher”: Tendrá las opciones CRUD disponibles, así como el menú de contexto que aparecerá al hacer clic derecho en la tabla. 
                 btnCreateUnit.setVisible(true);
                 btnDeleteUnit.setVisible(true);
                 tbvUnit.setEditable(true);
                 //La columna “Exercises” será la única que no se podrá editar.
                 tbcExercises.setEditable(false);
-
                 /**
                  * Al hacer clic derecho en una fila de la tabla se mostrará un
                  * menú de contexto con las siguientes opciones: “Create new
@@ -177,7 +180,33 @@ public class UnitWindowController {
             //Se vacían el text field  “tfSearch” y el datepicker “dpSearch”.
             tfSearch.setText("");
             dpSearch.setValue(null);
-
+            //Se le añadira un convertidor al date picker para mostrar el mismo formato de fecha que tiene la tabla.
+            dpSearch.setConverter(new StringConverter<LocalDate>() {
+                Locale locale = Locale.getDefault();
+                // Formato de fecha para mostrar
+                private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+                // Convierte de LocalDate a String
+                @Override
+                public String toString(LocalDate localDate) {
+                    if (localDate != null) {
+                        return dateFormatter.format(java.sql.Date.valueOf(localDate));
+                    }
+                    return null;
+                }
+                // Convierte de String a LocalDate
+                @Override
+                public LocalDate fromString(String string) {
+                    if (string != null && !string.isEmpty()) {
+                        try {
+                            java.util.Date date = dateFormatter.parse(string);
+                            return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                        } catch (ParseException e) {
+                            LOGGER.severe("Error parsing the datePicker content " +e.getMessage());
+                        }
+                    }
+                    return null;
+                }
+            });
             ComboBox<Subject> comboEdit = new ComboBox();
             //Se rellena el combobox “cbSubjects” con una lista de asignaturas en las que esté registrado el usuario conectado a la aplicación. El usuario puede ser de dos tipos:
             if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {

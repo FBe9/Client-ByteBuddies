@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view;
 
 import exceptions.ExerciseErrorException;
@@ -65,7 +60,8 @@ public class MenuBarController {
     private static final Logger LOGGER = Logger.getLogger("package view");
 
     /**
-     * Initializes the controller class.
+     *
+     * @param event
      */
     public void handleSubjectMenuItemAction(Event event) {
         try {
@@ -80,6 +76,10 @@ public class MenuBarController {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleUnitMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/unit/UnitWindow.fxml"));
@@ -93,6 +93,10 @@ public class MenuBarController {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleExamMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exam/ExamWindow.fxml"));
@@ -108,6 +112,10 @@ public class MenuBarController {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleExerciseMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exercise/exercise.fxml"));
@@ -121,6 +129,10 @@ public class MenuBarController {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleSubjectHelpMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/HelpSubject.fxml"));
@@ -133,6 +145,10 @@ public class MenuBarController {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleUnitHelpMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/unit/HelpUnit.fxml"));
@@ -145,6 +161,10 @@ public class MenuBarController {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleExamHelpMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exam/HelpExam.fxml"));
@@ -157,6 +177,10 @@ public class MenuBarController {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleExerciseHelpMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exercise/HelpExercise.fxml"));
@@ -190,10 +214,14 @@ public class MenuBarController {
         }
     }
 
+    /**
+     *
+     * @param event
+     */
     public void handleLogOutMenuItemAction(Event event) {
         try {
             //Ask user for confirmation on exit
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, loggedUser.getName()+", are you sure that you want to log out?");
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, loggedUser.getName() + ", are you sure that you want to log out?");
             Optional<ButtonType> action = alert.showAndWait();
 
             //If OK to exit 
@@ -221,10 +249,18 @@ public class MenuBarController {
         }
     }
 
+    /**
+     *
+     * @param user
+     */
     public static void setUser(User user) {
         loggedUser = user;
     }
 
+    /**
+     *
+     * @param stage
+     */
     public static void setStage(Stage stage) {
         stageMenu = stage;
     }

@@ -22,7 +22,6 @@ public class DateUnitEditingCell extends TableCell<Unit, Date> {
 
     public DateUnitEditingCell() {
         this.dpUnitCell = new DatePicker();
-
         // Configurar un StringConverter para convertir entre Date y String
         dpUnitCell.setConverter(new StringConverter<LocalDate>() {
 
@@ -50,8 +49,8 @@ public class DateUnitEditingCell extends TableCell<Unit, Date> {
     @Override
     protected void updateItem(Date date, boolean empty) {
         super.updateItem(date, empty);
-        Locale locale = Locale.getDefault();
-        dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM,locale);
+        locale = Locale.getDefault();
+        dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 
         if (empty) {
             setText(null);
