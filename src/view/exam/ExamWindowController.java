@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -30,7 +31,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -443,6 +446,32 @@ public class ExamWindowController {
                     examEditing.setDateInit(t.getNewValue());
                 }
         );
+        //Menus de contexto
+        final ContextMenu contextMenu = new ContextMenu();
+        //Menu de contexto para el create
+        MenuItem createExamMenuItem = new MenuItem("Create exam");
+        createExamMenuItem.setOnAction((ActionEvent e) -> {
+            createNewRow();
+        });
+        //Menu de contexto para el delete
+        MenuItem deleteExamMenuItem = new MenuItem("Delete exam");
+        deleteExamMenuItem.setOnAction((ActionEvent e) -> {
+            deleteExam();
+        });
+        //Menu de contexto para el print
+        MenuItem printExamMenuItem = new MenuItem("Print report");
+        printExamMenuItem.setOnAction((ActionEvent e) -> {
+            printReport();
+        }
+        );
+        //Si el usuario es un profesor añadir esos menus de contexto
+        if (currentUser.getUser_type()
+                .equals("Teacher")) {
+            contextMenu.getItems().add(createExamMenuItem);
+            contextMenu.getItems().add(deleteExamMenuItem);
+            contextMenu.getItems().add(printExamMenuItem);
+            tvExam.setContextMenu(contextMenu);
+        }
 
         // El botón “btnPrintExam” [...] solo estará habilitado cuando la tabla “tvExam” tenga valores.
         if (tvExam.getItems().size() > 0) {
@@ -450,10 +479,10 @@ public class ExamWindowController {
         }
 
         btnDeleteExam.disableProperty().bind(Bindings.isEmpty(tvExam.getSelectionModel().getSelectedItems()));
+        deleteExamMenuItem.disableProperty().bind(Bindings.isEmpty(tvExam.getSelectionModel().getSelectedItems()));
 
         // Mostrar la ventana.
         stage.show();
-        // stage.showAndWait();
     }
 
     /**
@@ -479,7 +508,6 @@ public class ExamWindowController {
      * is assigned to the user.
      */
     public void setCurrentSubject(Subject subject) {
-        //this.subject = subject;
         //Se guarda en modo de texto la subject obtenida.
         String subjectName = subject.toString();
         //Se selecciona en la combobox cbSubjects.
@@ -621,84 +649,15 @@ public class ExamWindowController {
         }
         if (event.getSource() == btnCreateExam) {
             LOGGER.info("btnCreateExam pressed.");
-            // Se muestran los botones “btnCancelExam” y “btnSaveExam”, pero se mantienen deshabilitados.
-            btnCancelExam.setVisible(true);
-            btnSaveExam.setVisible(true);
-            btnCancelExam.setDisable(true);
-            btnSaveExam.setDisable(true);
-            // Todo el resto de botones, ComboBoxes y camps que no sean los mencionados o parte de la tabla se deshabilitarán
-            cbSearchCriteria.setDisable(true);
-            cbBySubject.setDisable(true);
-            tfSearchExam.setDisable(true);
-            btnSearchExam.setDisable(true);
-            btnCreateExam.setDisable(true);
-            btnPrintExam.setDisable(true);
-            // Se crea una nueva fila con valores por defecto, donde todos los campos están vacíos
-            ObservableList<Exam> visibleExams = tvExam.getItems();
-            visibleExams.add(new Exam("", null, "", "", null));
-            tvExam.setItems(visibleExams);
-            int newIndex = tvExam.getItems().size() - 1;
-            // Se asigna el foco a la columna “Description” de la nueva fila.
-            tvExam.requestFocus();
-            tvExam.getSelectionModel().select(newIndex);
-            tvExam.getFocusModel().focus(newIndex, tcDescription);
-            tvExam.edit(newIndex, tcDescription);
-            flagNewRow = true;
-            LOGGER.info("New row created.");
+            createNewRow();
         }
         if (event.getSource() == btnDeleteExam) {
             LOGGER.info("btnDeleteExam pressed.");
-            // Se muestra un mensaje de confirmación.
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                    "The exam you selected will be deleted. You won't be able to recover this information.\nAre you sure you want to proceed?",
-                    ButtonType.YES, ButtonType.CANCEL);
-            Optional<ButtonType> result = alert.showAndWait();
-
-            if (result.isPresent() && result.get() == ButtonType.YES) {
-                LOGGER.info("Response yes. Delete exam.");
-                try {
-                    int selectedExamIndex = tvExam.getSelectionModel().getSelectedIndex();
-                    Exam selectedDeleteExam = tvExam.getItems().get(selectedExamIndex);
-                    // Si elige “Yes” se llamará al método “deleteExam” de la Interfaz “ExamInterface”, pasando como parámetro el objeto Exam entero seleccionado en la tabla
-                    examInterface.deleteExam(selectedDeleteExam);
-                    // Si ha elegido “Yes” y no ha ocurrido ningún error, la información de la tabla se actualizará
-                    exams.remove(selectedExamIndex);
-                    tvExam.setItems(exams);
-                    tvExam.refresh();
-                    new Alert(Alert.AlertType.INFORMATION, "Exam deleted succesfully.").showAndWait();
-                } catch (DeleteErrorException ex) {
-                    LOGGER.log(Level.SEVERE, "Error deleting exam: {0}", ex.getMessage());
-                    new Alert(Alert.AlertType.ERROR, "Error deleting exam.").showAndWait();
-                }
-            }
-            // Si elige “No”, la acción se cancelará
-            // En cualquiera de todos los casos, el botón “btnDeleteExam” se deshabilitará
-            tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex()); // Esta linea causa que el boton btnDeleteExam se deshabilite
+            deleteExam();
         }
         if (event.getSource() == btnPrintExam) {
             LOGGER.info("btnPrintExam pressed.");
-            // Genera un informe con la información disponible de la tabla Exams
-            try {
-                JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/ExamReport.jrxml"));
-                //Data for the report: a collection of UserBean passed as a JRDataSource 
-                //implementation 
-                JRBeanCollectionDataSource dataItems
-                        = new JRBeanCollectionDataSource((Collection<Exam>) this.tvExam.getItems());
-                //Map of parameter to be passed to the report
-                Map<String, Object> parameters = new HashMap<>();
-                //Fill report with data
-                JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
-                //Create and show the report window. The second parameter false value makes 
-                //report window not to close app.
-                JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
-                jasperViewer.setVisible(true);
-                // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-            } catch (JRException ex) {
-                //If there is an error show message and
-                //log it.
-                new Alert(Alert.AlertType.ERROR, "Error al imprimir:\n" + ex.getMessage()).showAndWait();
-                LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
-            }
+            printReport();
         }
         if (event.getSource() == btnCancelExam) {
             LOGGER.info("btnCancelExam pressed.");
@@ -719,9 +678,6 @@ public class ExamWindowController {
                 // Se deshabilita el botón “btnDeleteExam” y se esconden los botones “btnCancelExam” y “btnSaveExam” y se vuelven a
                 // habilitar el resto de campos, ComboBoxes y botones que se han deshabilitado anteriormente.
                 cbSearchCriteria.setDisable(false);
-                //cbBySubject.setDisable(true);
-                //tfSearchExam.setDisable(true);
-                //btnSearchExam.setDisable(true);
                 btnCreateExam.setDisable(false);
                 btnPrintExam.setDisable(false);
                 btnCancelExam.setDisable(true);
@@ -775,9 +731,6 @@ public class ExamWindowController {
                 }
 
                 cbSearchCriteria.setDisable(false);
-                //cbBySubject.setDisable(true);
-                //tfSearchExam.setDisable(true);
-                //btnSearchExam.setDisable(true);
                 btnCreateExam.setDisable(false);
                 btnPrintExam.setDisable(false);
                 btnCancelExam.setDisable(true);
@@ -796,6 +749,115 @@ public class ExamWindowController {
     private void handleOnActionExit(Event event) {
         LOGGER.info("Exit pressed.");
         // Se observará que no se esté editando la tabla o que no haya datos sin guardar.
+        // TO FINISH
+        
+        
+        try {
+            //Ask user for confirmation on exit
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                    "Are you sure you want to exit the application?",
+                    ButtonType.OK, ButtonType.CANCEL);
+            Optional<ButtonType> result = alert.showAndWait();
+            //If OK to exit
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                //Borrar todas las asignaturas que se hayan creado pero que no se haya modificado el nombre
+                Platform.exit();
+            } else {
+                event.consume();
+            }
+        } catch (Exception e) {
+            String errorMsg = "Error exiting application:" + e.getMessage();
+            Alert alert = new Alert(Alert.AlertType.ERROR,
+                    errorMsg,
+                    ButtonType.OK);
+            alert.showAndWait();
+            LOGGER.log(Level.SEVERE, errorMsg);
+        }
+    }
 
+    /**
+     * Creates a new row on the table.
+     */
+    public void createNewRow() {
+        LOGGER.info("Creating a new empty row.");
+        // Se muestran los botones “btnCancelExam” y “btnSaveExam”, pero se mantienen deshabilitados.
+        btnCancelExam.setVisible(true);
+        btnSaveExam.setVisible(true);
+        btnCancelExam.setDisable(true);
+        btnSaveExam.setDisable(true);
+        // Todo el resto de botones, ComboBoxes y camps que no sean los mencionados o parte de la tabla se deshabilitarán
+        cbSearchCriteria.setDisable(true);
+        cbBySubject.setDisable(true);
+        tfSearchExam.setDisable(true);
+        btnSearchExam.setDisable(true);
+        btnCreateExam.setDisable(true);
+        btnPrintExam.setDisable(true);
+        // Se crea una nueva fila con valores por defecto, donde todos los campos están vacíos
+        ObservableList<Exam> visibleExams = tvExam.getItems();
+        visibleExams.add(new Exam("", null, "", "", null));
+        tvExam.setItems(visibleExams);
+        int newIndex = tvExam.getItems().size() - 1;
+        // Se asigna el foco a la columna “Description” de la nueva fila.
+        tvExam.requestFocus();
+        tvExam.getSelectionModel().select(newIndex);
+        tvExam.getFocusModel().focus(newIndex, tcDescription);
+        tvExam.edit(newIndex, tcDescription);
+        flagNewRow = true;
+        LOGGER.info("New row created.");
+    }
+
+    public void deleteExam() {
+        LOGGER.info("Deleting an exam.");
+        // Se muestra un mensaje de confirmación.
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "The exam you selected will be deleted. You won't be able to recover this information.\nAre you sure you want to proceed?",
+                ButtonType.YES, ButtonType.CANCEL);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.YES) {
+            LOGGER.info("Response yes. Delete exam.");
+            try {
+                int selectedExamIndex = tvExam.getSelectionModel().getSelectedIndex();
+                Exam selectedDeleteExam = tvExam.getItems().get(selectedExamIndex);
+                // Si elige “Yes” se llamará al método “deleteExam” de la Interfaz “ExamInterface”, pasando como parámetro el objeto Exam entero seleccionado en la tabla
+                examInterface.deleteExam(selectedDeleteExam);
+                // Si ha elegido “Yes” y no ha ocurrido ningún error, la información de la tabla se actualizará
+                exams.remove(selectedExamIndex);
+                tvExam.setItems(exams);
+                tvExam.refresh();
+                new Alert(Alert.AlertType.INFORMATION, "Exam deleted succesfully.").showAndWait();
+            } catch (DeleteErrorException ex) {
+                LOGGER.log(Level.SEVERE, "Error deleting exam: {0}", ex.getMessage());
+                new Alert(Alert.AlertType.ERROR, "Error deleting exam.").showAndWait();
+            }
+        }
+        // Si elige “No”, la acción se cancelará
+        // En cualquiera de todos los casos, el botón “btnDeleteExam” se deshabilitará
+        tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex()); // Esta linea causa que el boton btnDeleteExam se deshabilite
+    }
+
+    public void printReport() {
+        // Genera un informe con la información disponible de la tabla Exams
+        try {
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/ExamReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems
+                    = new JRBeanCollectionDataSource((Collection<Exam>) this.tvExam.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            new Alert(Alert.AlertType.ERROR, "Error al imprimir:\n" + ex.getMessage()).showAndWait();
+            LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
+        }
     }
 }
