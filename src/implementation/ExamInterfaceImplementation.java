@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package implementation;
 
 import exceptions.CreateErrorException;
@@ -21,7 +16,8 @@ import models.Exam;
 import services.ExamRESTClient;
 
 /**
- *
+ * Implementation of the ExamIterface.
+ * 
  * @author Alex
  */
 public class ExamInterfaceImplementation implements ExamInterface {
@@ -29,10 +25,19 @@ public class ExamInterfaceImplementation implements ExamInterface {
     private ExamRESTClient webClient;
     private static final Logger LOGGER = Logger.getLogger("ExamInterfaceImplementation");
     
+    /**
+     * Constructor to initialise the web client.
+     */
     public ExamInterfaceImplementation(){
         webClient = new ExamRESTClient();
     }
     
+    /**
+     * Create method to add a new exam.
+     * 
+     * @param exam The new exam to add.
+     * @throws CreateErrorException When a creation error occurs.
+     */
     @Override
     public void createExam(Exam exam) throws CreateErrorException {
         try{
@@ -44,6 +49,12 @@ public class ExamInterfaceImplementation implements ExamInterface {
         }
     }
 
+    /**
+     * Update method to change the information of a specific exam.
+     * 
+     * @param exam The exam to update.
+     * @throws UpdateErrorException When an update error occurs.
+     */
     @Override
     public void updateExam(Exam exam) throws UpdateErrorException {
         try{
@@ -55,6 +66,12 @@ public class ExamInterfaceImplementation implements ExamInterface {
         }
     }
 
+    /**
+     * Delete method to remove an exam from the database.
+     * 
+     * @param exam The exam to remove.
+     * @throws DeleteErrorException When a deletion error occurs.
+     */
     @Override
     public void deleteExam(Exam exam) throws DeleteErrorException {
         try{
@@ -66,6 +83,12 @@ public class ExamInterfaceImplementation implements ExamInterface {
         }
     }
 
+    /**
+     * Find method to search for all the exams.
+     * 
+     * @return A Collection object with all the found exams.
+     * @throws FindErrorException When a find error occurs.
+     */
     @Override
     public Collection<Exam> findAllExams() throws FindErrorException {
         List<Exam> exams = null;
@@ -79,6 +102,13 @@ public class ExamInterfaceImplementation implements ExamInterface {
         return exams;
     }
 
+    /**
+     * Find method to search for a specific exam with a given ID.
+     * 
+     * @param id The ID of the exam to look for.
+     * @return The found exam.
+     * @throws FindErrorException When a find error occurs.
+     */
     @Override
     public Exam findExamById(Integer id) throws FindErrorException {
         Exam exam = null;
@@ -92,6 +122,13 @@ public class ExamInterfaceImplementation implements ExamInterface {
         return exam;
     }
 
+    /**
+     * Find method to search for all exams containing the given string in their description.
+     * 
+     * @param description The string to search for.
+     * @return A Collection object with all the found exams.
+     * @throws FindErrorException When a find error occurs.
+     */
     @Override
     public Collection<Exam> findByDescription(String description) throws FindErrorException {
         Set<Exam> exams = null;
@@ -105,6 +142,13 @@ public class ExamInterfaceImplementation implements ExamInterface {
         return exams;
     }
 
+    /**
+     * Find method to search all exams belonging to a specific subject of the given ID.
+     * 
+     * @param subjectId The given subject ID to search for.
+     * @return A Collection object containing all found exams.
+     * @throws FindErrorException When a find error occurs.
+     */
     @Override
     public Collection<Exam> findBySubject(String subjectId) throws FindErrorException {
         Set<Exam> exams = null;
@@ -117,5 +161,4 @@ public class ExamInterfaceImplementation implements ExamInterface {
         }
         return exams;
     }
-    
 }

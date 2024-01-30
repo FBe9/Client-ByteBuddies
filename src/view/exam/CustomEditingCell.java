@@ -1,28 +1,32 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view.exam;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Cursor;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import models.Exam;
 
 /**
+ * Custom cell factory for the Table View containing Exams.
  *
  * @author Alex
  */
 public class CustomEditingCell extends TableCell<Exam, String> {
 
+    /**
+     * The text field to show in editing mode.
+     */
     private TextField textField;
 
+    /**
+     * Default empty constructor of the class.
+     */
     public CustomEditingCell() {
     }
 
+    /**
+     * Manages the beginning of the edit event of the cell.
+     */
     @Override
     public void startEdit() {
         super.startEdit();
@@ -42,9 +46,11 @@ public class CustomEditingCell extends TableCell<Exam, String> {
         setText(null);
         setGraphic(textField);
         textField.selectAll();
-        
     }
 
+    /**
+     * Manages the end of the edit event of the cell.
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();
@@ -53,6 +59,13 @@ public class CustomEditingCell extends TableCell<Exam, String> {
         setGraphic(null);
     }
 
+    /**
+     * Manages when and how to update the information within the cell, whether
+     * to show the text field or the plain text.
+     *
+     * @param item The item to observe.
+     * @param empty Whether it's empty or not.
+     */
     @Override
     public void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
@@ -74,6 +87,11 @@ public class CustomEditingCell extends TableCell<Exam, String> {
         }
     }
 
+    /**
+     * Default string representation of the item within the cell.
+     *
+     * @return The string representation of the item.
+     */
     private String getString() {
         return getItem() == null ? "" : getItem().toString();
     }

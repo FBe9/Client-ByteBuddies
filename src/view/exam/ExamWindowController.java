@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -25,7 +24,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -33,7 +31,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -41,9 +38,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import models.Exam;
@@ -60,67 +55,142 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 
 /**
+ * Controller for the Exam window.
  *
  * @author Alex
  */
 public class ExamWindowController {
 
+    /**
+     * Default constructor for the ExamWindowController class.
+     */
     public ExamWindowController() {
     }
+    
     // ComboBoxes
+    /**
+     * FXML element for search criteria ComboBox.
+     */
     @FXML
     private ComboBox cbSearchCriteria;
+    
+    /**
+     * FXML element for searching by subject ComboBox.
+     */
     @FXML
     private ComboBox cbBySubject;
+    
     // TextFields
+    /**
+     * FXML element for searching by exam name TextField.
+     */
     @FXML
     private TextField tfSearchExam;
+    
     // Buttons
+    /**
+     * FXML element for search action Button.
+     */
     @FXML
     private Button btnSearchExam;
+    
+    /**
+     * FXML element for exam creation action Button.
+     */
     @FXML
     private Button btnCreateExam;
+    
+    /**
+     * FXML element for exam deletion action Button.
+     */
     @FXML
     private Button btnDeleteExam;
+    
+    /**
+     * FXML element for printing exam action Button.
+     */
     @FXML
     private Button btnPrintExam;
+    
+    /**
+     * FXML element to cancel edit action Button.
+     */
     @FXML
     private Button btnCancelExam;
+    
+    /**
+     * FXML element for saving exam action Button.
+     */
     @FXML
     private Button btnSaveExam;
+    
     // TableViews
+    /**
+     * FXML element TableView of exam objects.
+     */
     @FXML
     private TableView<Exam> tvExam;
+    
     // Table Columns
+    /**
+     * FXML element for exam description TableColumn.
+     */
     @FXML
     private TableColumn<Exam, String> tcDescription;
+    
+    /**
+     * FXML element for exam subject TableColumn.
+     */
     @FXML
     private TableColumn<Exam, Subject> tcSubject;
+    
+    /**
+     * FXML element for exam duration TableColumn.
+     */
     @FXML
     private TableColumn<Exam, String> tcDuration;
+    
+    /**
+     * FXMl element for exam date TableColumn.
+     */
     @FXML
     private TableColumn<Exam, Date> tcDate;
+    
+    /**
+     * FXML element for exam file TableColumn.
+     */
     @FXML
     private TableColumn<Exam, String> tcFile;
-    /*@FXML
-    private TableColumn tcDescriptionEx;
-    @FXML
-    private TableColumn tcSubjectEx;
-    @FXML
-    private TableColumn tcDurationEx;
-    @FXML
-    private TableColumn tcDateEX;
-    @FXML
-    private TableColumn tcFileEX;*/
+    
     // Stage
+    /**
+     * The stage of the Exam Window.
+     */
     private Stage stage;
+    
     // Application user
+    /**
+     * The current logged user.
+     */
     private User currentUser;
+    
     // Interfaces
+    /**
+     * Exam interface instance.
+     */
     private ExamInterface examInterface;
+    
+    /**
+     * Subject interface instance.
+     */
     private SubjectManager subjectInterface;
+    
     // Loggers
+    /**
+     * Logger for the ExamWindowController class.
+     */
     private static final Logger LOGGER = Logger.getLogger("ExamWindowController");
+    
     // Others
     private String allExams = "All exams";
     private String bySubject = "Exams by subject";
@@ -175,14 +245,14 @@ public class ExamWindowController {
         btnCancelExam.setDisable(true);
         btnSaveExam.setDisable(true);
         // Para Student estarán escondidos.
-        if (currentUser instanceof Student) {
+        if (currentUser.getUser_type().equals("Student")) {
             btnDeleteExam.setVisible(false);
             btnCancelExam.setVisible(false);
             btnSaveExam.setVisible(false);
             // Si el usuario es de tipo Student, también se esconderá el botón “btnCreateExam”. Si es Teacher será visible y estará habilitado
             btnCreateExam.setVisible(false);
         }
-        if (currentUser instanceof Teacher) {
+        if (currentUser.getUser_type().equals("Teacher")) {
             // Si es Teacher será visible y estará habilitado
             btnCreateExam.setVisible(true);
             btnCreateExam.setDisable(false);
@@ -200,11 +270,11 @@ public class ExamWindowController {
         // Se rellena la ComboBox cbBySubject con los nombres de todas las asignaturas a las que pertenezca el usuario
         try {
             // Si el usuario es de tipo “Teacher” se usará el método “findSubjectsByTeacher” de la Interfaz “SubjectManager”
-            if (currentUser instanceof Teacher) {
-                userSubjects = FXCollections.observableArrayList(subjectInterface.findSubjectsByTeacher(currentUser.getName()));
+            if (currentUser.getUser_type().equals("Teacher")) {
+                userSubjects = FXCollections.observableArrayList(subjectInterface.findSubjectsByTeacherId(currentUser.getId().toString()));
             }
             // Si el usuario es de tipo “Student” se usará el método “findByEnrollments” de la Interfaz “SubjectManager”
-            if (currentUser instanceof Student) {
+            if (currentUser.getUser_type().equals("Student")) {
                 userSubjects = FXCollections.observableArrayList(subjectInterface.findByEnrollments(currentUser.getId().toString()));
             }
             userSubjects.forEach((s) -> {
@@ -219,11 +289,11 @@ public class ExamWindowController {
             cbBySubject.setValue(noSubjects);
 
             // Si el usuario es “Student”, aparecerá un mensaje en la tabla (Placeholder) indicando al usuario que debe matricularse para ver exámenes
-            if (currentUser instanceof Student) {
+            if (currentUser.getUser_type().equals("Student")) {
                 tvExam.setPlaceholder(new Label("No exams here. Make sure you are enrolled in at least one subject."));
             }
             // Si es “Teacher” el mensaje indicará que debe crear exámenes.
-            if (currentUser instanceof Teacher) {
+            if (currentUser.getUser_type().equals("Teacher")) {
                 tvExam.setPlaceholder(new Label("No exams here. Make sure to have at least one subject assigned to you."));
             }
             // También se deshabilitará el botón btnCreateExam
@@ -310,7 +380,7 @@ public class ExamWindowController {
 
         // La tabla “tvExam” será editable
         tvExam.setEditable(true);
-        if (currentUser instanceof Student) {
+        if (currentUser.getUser_type().equals("Student")) {
             tcDescription.setEditable(false);
             tcSubject.setEditable(false);
             tcDuration.setEditable(false);
@@ -678,7 +748,7 @@ public class ExamWindowController {
         // Se observará que no se esté editando la tabla o que no haya datos sin guardar.
 
     }
-    
+
     public void setCurrentSubject(Subject subject) {
         //this.subject = subject;
         //Se guarda en modo de texto la subject obtenida.
