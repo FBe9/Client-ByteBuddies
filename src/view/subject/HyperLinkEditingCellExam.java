@@ -5,6 +5,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TableCell;
 import javafx.stage.Stage;
@@ -44,13 +46,19 @@ public class HyperLinkEditingCellExam extends TableCell<Subject, String> {
         link.setOnAction(evt -> {
             try {
                 Subject currentSubject = getTableView().getItems().get(getIndex());
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exam/ExamWindow.fxml"));
-                Parent root = (Parent) loader.load();
-                // Obtain the Sign In window controller
-                ExamWindowController controller = (ExamWindowController) loader.getController();
-                controller.setStage(stage);
-                controller.initStage(root);
-                controller.setUser(user);
+                if (currentSubject.getName() != null) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exam/ExamWindow.fxml"));
+                    Parent root = (Parent) loader.load();
+                    // Obtain the Sign In window controller
+                    ExamWindowController controller = (ExamWindowController) loader.getController();
+                    controller.setUser(user);
+                    controller.setStage(stage);
+                    controller.initStage(root);
+                    controller.setCurrentSubject(currentSubject);
+                } else {
+                    showErrorAlert("Please insert a name before showing units");
+                }
+
             } catch (IOException ex) {
                 Logger.getLogger(HyperLinkEditingCellExam.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -70,5 +78,11 @@ public class HyperLinkEditingCellExam extends TableCell<Subject, String> {
         } else {
             setGraphic(link);
         }
+    }
+
+    public void showErrorAlert(String errorMsg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.OK);
+        alert.showAndWait();
+
     }
 }

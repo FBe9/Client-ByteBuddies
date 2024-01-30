@@ -5,27 +5,56 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.util.StringConverter;
+import javafx.util.converter.LocalDateStringConverter;
 import models.Exam;
 
 /**
+ * Custom date cell factory for the Table View containing exams. Creates a date
+ * picker.
  *
  * @author Alex
  */
-public class DateExamEditingCell extends TableCell<Exam, Date>{
-    private DatePicker dpCell;
+public class DateExamEditingCell extends TableCell<Exam, Date> {
+
+    /**
+     * The date picker graphic.
+     */
+    private DatePicker datePicker;
+
+    /**
+     * The date format converter.
+     */
+    private LocalDateStringConverter converter;
+
+    /**
+     * The OS date format locale.
+     */
     private Locale locale;
+
+    /**
+     * The date formatter.
+     */
     private DateFormat dateFormatter;
+
+    /**
+     * The date in string format.
+     */
     private String dateText;
-    
+
+    /**
+     * Default constructor that manages the different variable formats and
+     * information transaction between them.
+     */
     public DateExamEditingCell() {
-        this.dpCell = new DatePicker();
+        this.datePicker = new DatePicker();
 
         // Configurar un StringConverter para convertir entre Date y String
-        dpCell.setConverter(new StringConverter<LocalDate>() {
-
+        datePicker.setConverter(new StringConverter<LocalDate>() {
             @Override
             public String toString(LocalDate object) {
                 if (object != null) {
@@ -44,9 +73,14 @@ public class DateExamEditingCell extends TableCell<Exam, Date>{
                 }
             }
         });
-
     }
 
+    /**
+     * Manages when and how to update the information of the cell.
+     *
+     * @param date The item to observe.
+     * @param empty Whether it's empty or not.
+     */
     @Override
     protected void updateItem(Date date, boolean empty) {
         super.updateItem(date, empty);
@@ -57,16 +91,15 @@ public class DateExamEditingCell extends TableCell<Exam, Date>{
             setText(null);
             setGraphic(null);
         } else {
-
             if (isEditing()) {
-                setText(null);
-                setGraphic(dpCell);
+                setText(getTableView().getItems().get(getIndex()).getDateInit().toString());
+                setGraphic(datePicker);
             } else if (date != null) {
                 dateText = dateFormatter.format(date);
                 setText(dateText);
                 setGraphic(null);
             } else {
-                if(!getTableView().getItems().get(getIndex()).getDescription().equals("")){
+                if (!getTableView().getItems().get(getIndex()).getDescription().equals("")) {
                     setText(dateFormatter.format(getTableView().getItems().get(getIndex()).getDateInit()));
                 }
                 setGraphic(null);
@@ -74,19 +107,34 @@ public class DateExamEditingCell extends TableCell<Exam, Date>{
         }
     }
 
+    /**
+     * Manages the beginning of the edit event.
+     */
     @Override
     public void startEdit() {
         if (!isEmpty()) {
             super.startEdit();
-            dpCell = new DatePicker();
-            dpCell.setOnAction((e) -> {
-                commitEdit(Date.from(dpCell.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            datePicker = new DatePicker();
+            datePicker.focusedProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> arg0,
+                        Boolean arg1, Boolean arg2) {
+                    if (!arg2) {
+                        commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                    }
+                }
+            });
+            datePicker.setOnAction((e) -> {
+                commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
             });
             setText(null);
-            setGraphic(dpCell);
+            setGraphic(datePicker);
         }
     }
 
+    /**
+     * Manages the end of the editing event.
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();

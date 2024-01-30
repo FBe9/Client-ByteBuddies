@@ -52,7 +52,7 @@ public class Exam implements Serializable {
      * The subject which the exam belongs to.
      */
     private final SimpleObjectProperty<Subject> subject;
-    
+
     /**
      * Default empty constructor for the entity Exam.
      */
@@ -65,17 +65,17 @@ public class Exam implements Serializable {
         this.filePath = new SimpleStringProperty();
         this.subject = new SimpleObjectProperty<>();
     }
-    
+
     /**
      * Constructor with parameters for the Exam entity.
      *
-     * @param id
-     * @param description
-     * @param callType
-     * @param dateInit
-     * @param duration
-     * @param filePath
-     * @param subject
+     * @param id The ID of the exam.
+     * @param description The description of the exam.
+     * @param callType The call when the exam happens.
+     * @param dateInit The date of the exam.
+     * @param duration The duration of the exam.
+     * @param filePath The path where the file is stored.
+     * @param subject The subject the exam belongs to.
      */
     public Exam(Integer id, String description, CallType callType, Date dateInit, String duration, String filePath, Subject subject) {
         this.id = new SimpleIntegerProperty(id);
@@ -87,6 +87,15 @@ public class Exam implements Serializable {
         this.subject = new SimpleObjectProperty(subject);
     }
 
+    /**
+     * Constructor without id or callType.
+     *
+     * @param description The description of the exam.
+     * @param dateInit The date of the exam.
+     * @param duration The duration of the exam.
+     * @param filePath The path where the file is stored.
+     * @param subject The subject the exam belongs to.
+     */
     public Exam(String description, Date dateInit, String duration, String filePath, Subject subject) {
         this.id = null;
         this.callType = null;
@@ -96,8 +105,6 @@ public class Exam implements Serializable {
         this.filePath = new SimpleStringProperty(filePath);
         this.subject = new SimpleObjectProperty(subject);
     }
-    
-    
 
     /**
      * Gets the exam id.
@@ -111,7 +118,7 @@ public class Exam implements Serializable {
     /**
      * Sets the exam id
      *
-     * @param id
+     * @param id The ID of the exam.
      */
     public void setId(Integer id) {
         this.id.set(id);
@@ -129,7 +136,7 @@ public class Exam implements Serializable {
     /**
      * Sets the name of the exam.
      *
-     * @param description
+     * @param description The description of the exam.
      */
     public void setDescription(String description) {
         this.description.set(description);
@@ -147,7 +154,7 @@ public class Exam implements Serializable {
     /**
      * Sets the date of the exam.
      *
-     * @param dateInit
+     * @param dateInit The date of the exam.
      */
     public void setDateInit(Date dateInit) {
         this.dateInit.set(dateInit);
@@ -165,7 +172,7 @@ public class Exam implements Serializable {
     /**
      * Sets the duration of the exam (in minutes).
      *
-     * @param duration
+     * @param duration The duration of the exam.
      */
     public void setDuration(String duration) {
         this.duration.set(duration);
@@ -183,7 +190,7 @@ public class Exam implements Serializable {
     /**
      * Sets the path to where the exam heading is stored.
      *
-     * @param filePath
+     * @param filePath The path.
      */
     public void setFilePath(String filePath) {
         this.filePath.set(filePath);
@@ -202,12 +209,12 @@ public class Exam implements Serializable {
     /**
      * Sets the subject the exam belongs to.
      *
-     * @param subject
+     * @param subject The subject.
      */
     public void setSubject(Subject subject) {
         this.subject.set(subject);
     }
-    
+
     /**
      * Gets the call type of the exam.
      *
@@ -220,7 +227,7 @@ public class Exam implements Serializable {
     /**
      * Sets the call type.
      *
-     * @param callType
+     * @param callType The enum Call Type.
      */
     public void setCallType(CallType callType) {
         this.callType.set(callType);
@@ -231,7 +238,7 @@ public class Exam implements Serializable {
      *
      * @return int value of the hash code.
      */
-    @Override    
+    @Override
     public int hashCode() {
         int hash = 5;
         hash = 19 * hash + Objects.hashCode(this.id);
@@ -245,7 +252,7 @@ public class Exam implements Serializable {
      * @return boolean value, true if it's equal to any other exam, false if
      * opposite.
      */
-    @Override    
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -280,6 +287,4 @@ public class Exam implements Serializable {
         }
         return true;
     }
-    
-    
 }

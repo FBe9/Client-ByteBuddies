@@ -14,12 +14,12 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: #ECF4FF;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.subject.SubjectController">
     <children>
-        <fx:include fx:id="hBoxMenu" source="../MenuBar.fxml" />
-        <ImageView fitHeight="752.0" fitWidth="170.0" layoutX="-3.0" layoutY="25.0" pickOnBounds="true">
+        <ImageView fitHeight="778.0" fitWidth="170.0" layoutX="-3.0" layoutY="-1.0" pickOnBounds="true">
             <image>
                 <Image url="@../../resources/BlueWallpaper.jpg" />
             </image>
         </ImageView>
+        <fx:include fx:id="hBoxMenu" source="../MenuBar.fxml" />
         <ImageView fitHeight="165.0" fitWidth="139.0" layoutX="1175.0" layoutY="57.0" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../../resources/BlueStar.png" />
@@ -35,7 +35,7 @@
                 <Image url="@../../resources/AllWhiteStar.png" />
             </image>
         </ImageView>
-        <TableView fx:id="tbSubjects" layoutX="186.0" layoutY="219.0" prefHeight="355.0" prefWidth="1096.0" style="-fx-border-color: #74B0E7;">
+        <TableView fx:id="tbSubjects" layoutX="186.0" layoutY="219.0" prefHeight="355.0" prefWidth="1100.0" style="-fx-border-color: #74B0E7;">
             <columns>
                 <TableColumn fx:id="tbColNameSub" prefWidth="110.0" text="Name" />
                 <TableColumn fx:id="tbColTeachersSub" prefWidth="110.0" text="Teachers" />
@@ -56,7 +56,6 @@
             </font>
         </TextField>
         <ComboBox fx:id="cbSearchSubject" layoutX="186.0" layoutY="178.0" prefHeight="28.0" prefWidth="299.0" />
-        <Button fx:id="btnSearchSubject" layoutX="782.0" layoutY="178.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" />
         <Button fx:id="btnCreateSubject" layoutX="189.0" layoutY="593.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Create">
             <font>
                 <Font name="Calibri Italic" size="12.0" />
@@ -67,11 +66,15 @@
                 <Font name="Calibri Italic" size="12.0" />
             </font>
         </Button>
-        <ImageView fx:id="btnSearchSubjectima" fitHeight="16.0" fitWidth="21.0" layoutX="809.0" layoutY="185.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-                <Image url="@../../resources/searchIcon.png" />
-            </image>
-        </ImageView>
+        <Button fx:id="btnSearchSubject" layoutX="816.0" layoutY="175.0" mnemonicParsing="false" onAction="#handleSearchButtonAction" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;">
+            <graphic>
+                <ImageView fitHeight="16.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../resources/searchIcon.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+        </Button>
         <Button fx:id="btnPrintSubject" layoutX="1213.0" layoutY="593.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" style="-fx-background-color: #A4C7F4;" text="Print">
             <font>
                 <Font name="Calibri Italic" size="12.0" />

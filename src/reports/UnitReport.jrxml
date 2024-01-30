@@ -3,6 +3,12 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="subject" class="models.Subject"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="dateInit" class="java.util.Date"/>
+	<field name="dateEnd" class="java.util.Date"/>
+	<field name="hours" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -24,47 +30,67 @@
 		<band height="61" splitType="Stretch">
 			<staticText>
 				<reportElement x="0" y="41" width="100" height="20" uuid="d1819bf8-b47d-4f4b-a912-266edc7c6d3e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="100" y="41" width="100" height="20" uuid="fe048263-d61c-4eaf-a9d4-13dbd88d60df"/>
+				<reportElement x="100" y="41" width="92" height="20" uuid="fe048263-d61c-4eaf-a9d4-13dbd88d60df"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[Subjet Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="200" y="41" width="100" height="20" uuid="954b4e18-2198-4e48-8456-2d58175ba4a6"/>
+				<reportElement x="292" y="41" width="99" height="20" uuid="954b4e18-2198-4e48-8456-2d58175ba4a6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[Date Init]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="300" y="41" width="100" height="20" uuid="86bdab86-d676-467f-aaa7-e6aaa82083ef"/>
-				<text><![CDATA[Date End]]></text>
+				<reportElement x="490" y="41" width="65" height="20" uuid="2dcf6bf1-5975-46b9-9651-5e1e7bda6a48"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Hours]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="400" y="41" width="100" height="20" uuid="2dcf6bf1-5975-46b9-9651-5e1e7bda6a48"/>
-				<text><![CDATA[Hours]]></text>
+				<reportElement x="192" y="41" width="100" height="20" uuid="9df9f528-8d4f-4b30-a620-398c48d39645"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="391" y="41" width="99" height="20" uuid="86bdab86-d676-467f-aaa7-e6aaa82083ef"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Date End]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="125" splitType="Stretch">
+		<band height="20" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="100" height="20" uuid="c7dab3ce-1684-47b8-8b7c-9e7a3f77cce5"/>
-				<textFieldExpression><![CDATA[$F{field}]]></textFieldExpression>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="100" y="0" width="100" height="20" uuid="8547d4b4-49ba-4b02-8abf-d6bc862e7c20"/>
-				<textFieldExpression><![CDATA[$F{field}]]></textFieldExpression>
+				<reportElement x="100" y="0" width="92" height="20" uuid="8547d4b4-49ba-4b02-8abf-d6bc862e7c20"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{subject}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="200" y="0" width="100" height="20" uuid="d4f93f52-6643-448c-8b13-c0b4d06a7145"/>
-				<textFieldExpression><![CDATA[$F{field}]]></textFieldExpression>
+				<reportElement x="192" y="0" width="100" height="20" uuid="d4f93f52-6643-448c-8b13-c0b4d06a7145"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="300" y="0" width="100" height="20" uuid="7b72ac51-9e00-4849-9e0b-b400324391ab"/>
-				<textFieldExpression><![CDATA[$F{field}]]></textFieldExpression>
+				<reportElement x="292" y="0" width="99" height="20" uuid="7b72ac51-9e00-4849-9e0b-b400324391ab"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format($F{dateInit})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="400" y="0" width="100" height="20" uuid="875563b9-054c-416f-a8db-96aba730c587"/>
-				<textFieldExpression><![CDATA[$F{field}]]></textFieldExpression>
+				<reportElement x="490" y="0" width="65" height="20" uuid="1cac5db1-9a50-4d90-ad56-667741ccac8d"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{hours}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="391" y="0" width="99" height="20" uuid="875563b9-054c-416f-a8db-96aba730c587"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format($F{dateEnd})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

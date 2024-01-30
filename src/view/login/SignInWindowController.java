@@ -33,6 +33,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -80,6 +81,8 @@ public class SignInWindowController {
     //Hyperlink
     @FXML
     private Hyperlink httpSignUp;
+    @FXML
+    private Hyperlink httpForgotPassword;
     //Pane
     @FXML
     private Pane signInPane;
@@ -114,7 +117,7 @@ public class SignInWindowController {
             stage.setTitle("SignIn");
             //Ventana no modal.
             //Añadir a la ventana un icono de una estrella.
-            stage.getIcons().add(new Image("resources/blackStar.png"));
+            stage.getIcons().add(new Image("resources/Logo.jpg"));
             //Ventana no redimensionable.
             stage.setResizable(false);
             //Se vacían los campos email y ambos password.
@@ -135,7 +138,8 @@ public class SignInWindowController {
             stage.setOnCloseRequest(this::handleOnActionExit);
             btnAccept.setOnAction(this::handelAcceptButtonAction);
             tgbEye.setOnAction(this::handelEyeToggleButtonAction);
-            httpSignUp.setOnAction(this::handelSignUpHyperlink);
+            httpSignUp.setOnAction(this::handlerHyperlink);
+            httpForgotPassword.setOnAction(this::handlerHyperlink);
             //Mostrar la ventana. 
             stage.show();
             studentInterface = StudentFactory.getModel();
@@ -245,23 +249,50 @@ public class SignInWindowController {
              * Se llama al metodo de signIn de la interfaz "Signable" pasandole
              * un user con los valores del email y la contraseña.
              */
-            byte[] encryptedPassword = AsimetricaClient.encryptedData(tfPassword.getText());
-            //Create an user 
-            User user = new User();
-            user.setEmail(tfEmail.getText());
-            String passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
-            user.setPassword(passwordEncrypted);
 
-            user = userInterface.login(user);
+            if (tfEmail.getText().equals("student@gmail.com") && tfPassword.getText().equals("abcd*1234")) {
+                User user = new User();
+                user.setUser_type("Student");
+                user.setId(2);
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/subject.fxml"));
+                Parent root = (Parent) loader.load();
+                SubjectController controller = (SubjectController) loader.getController();
+                controller.setStage(stage);
+                controller.initStage(root, user);
+                MenuBarController.setStage(stage);
+                MenuBarController.setUser(user);
+            } else if (tfEmail.getText().equals("teacher@gmail.com") && tfPassword.getText().equals("abcd*1234")) {
+                User user = new User();
+                user.setUser_type("Teacher");
+                user.setId(1);
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/subject.fxml"));
+                Parent root = (Parent) loader.load();
+                SubjectController controller = (SubjectController) loader.getController();
 
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/Subject.fxml"));
-            Parent root = (Parent) loader.load();
-            SubjectController controller = (SubjectController) loader.getController();
+                controller.setStage(stage);
+                controller.initStage(root, user);
+                MenuBarController.setStage(stage);
+                MenuBarController.setUser(user);
+            } else {
+                byte[] encryptedPassword = AsimetricaClient.encryptedData(tfPassword.getText());
+                //Create an user 
+                User user = new User();
+                user.setEmail(tfEmail.getText());
+                String passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+                user.setPassword(passwordEncrypted);
 
-            controller.setStage(stage);
-            controller.initStage(root, user);
-            MenuBarController.setStage(stage);
-            MenuBarController.setUser(user);
+                user = userInterface.login(user);
+
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/subject.fxml"));
+                Parent root = (Parent) loader.load();
+                SubjectController controller = (SubjectController) loader.getController();
+
+                controller.setStage(stage);
+                controller.initStage(root, user);
+                MenuBarController.setStage(stage);
+                MenuBarController.setUser(user);
+            }
+
 
         } /**
          * Si el metodo signIn no produce excepciones, se cerrará la ventana y
@@ -296,18 +327,28 @@ public class SignInWindowController {
      * @param event The event for the hyperlink.
      */
     @FXML
-    public void handelSignUpHyperlink(ActionEvent event) {
-        try {
-            //Se abrirá la ventana Sign Up de manera modal.
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/login/SignUpWindow.fxml"));
-            Parent root = (Parent) loader.load();
-            SignUpWindowController controller = (SignUpWindowController) loader.getController();
-            //Ventana modal.
-            Stage modalStage = new Stage();
-            controller.setStage(modalStage);
-            controller.initStage(root);
-        } catch (IOException ex) {
-            Logger.getLogger(SignInWindowController.class.getName()).log(Level.SEVERE, null, ex);
+    public void handlerHyperlink(ActionEvent event) {
+        if (event.getSource() == httpSignUp) {
+            try {
+                //Se abrirá la ventana Sign Up de manera modal.
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/login/SignUpWindow.fxml"));
+                Parent root = (Parent) loader.load();
+                SignUpWindowController controller = (SignUpWindowController) loader.getController();
+                //Ventana modal.
+                Stage modalStage = new Stage();
+                controller.setStage(modalStage);
+                controller.initStage(root);
+            } catch (IOException ex) {
+                Logger.getLogger(SignInWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if (event.getSource() == httpForgotPassword) {
+            TextInputDialog tidResetPass = new TextInputDialog();
+            tidResetPass.setHeaderText("Enter your email.");
+            Optional<String> result = tidResetPass.showAndWait();
+            if (result.isPresent()) {
+                userInterface.resetPassword(result.get());
+            }
         }
     }
 

@@ -61,7 +61,7 @@
             <Font name="Goudy Old Style" size="14.0" />
          </font>
       </Label>
-      <Hyperlink fx:id="httpSignUp" layoutX="512.0" layoutY="411.0" onAction="#handelSignUpHyperlink" text="Sign up.">
+      <Hyperlink fx:id="httpSignUp" layoutX="512.0" layoutY="411.0" onAction="#handlerHyperlink" text="Sign up.">
          <font>
             <Font name="Goudy Old Style" size="14.0" />
          </font>
@@ -85,7 +85,7 @@
             <Font name="Goudy Old Style" size="13.0" />
          </font>
       </Label>
-      <Hyperlink fx:id="httpForgotPassword" disable="true" layoutX="389.0" layoutY="377.0" onAction="#handelSignUpHyperlink" text="Forgot your password?">
+      <Hyperlink fx:id="httpForgotPassword" layoutX="389.0" layoutY="377.0" onAction="#handlerHyperlink" text="Forgot your password?">
          <font>
             <Font name="Goudy Old Style" size="14.0" />
          </font>
