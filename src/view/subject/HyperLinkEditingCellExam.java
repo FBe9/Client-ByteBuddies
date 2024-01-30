@@ -51,12 +51,12 @@ public class HyperLinkEditingCellExam extends TableCell<Subject, String> {
                     Parent root = (Parent) loader.load();
                     // Obtain the Sign In window controller
                     ExamWindowController controller = (ExamWindowController) loader.getController();
+                    controller.setUser(user);
                     controller.setStage(stage);
                     controller.initStage(root);
-                    controller.setUser(user);
                     controller.setCurrentSubject(currentSubject);
-                }else{
-                     showErrorAlert("Please insert a name before showing units");
+                } else {
+                    showErrorAlert("Please insert a name before showing units");
                 }
 
             } catch (IOException ex) {
@@ -79,7 +79,8 @@ public class HyperLinkEditingCellExam extends TableCell<Subject, String> {
             setGraphic(link);
         }
     }
-     public void showErrorAlert(String errorMsg) {
+
+    public void showErrorAlert(String errorMsg) {
         Alert alert = new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.OK);
         alert.showAndWait();
 
