@@ -14,6 +14,7 @@ import factories.SubjectFactory;
 import interfaces.EnrolledInterface;
 
 import interfaces.SubjectManager;
+import java.text.DateFormat;
 
 import javafx.event.ActionEvent;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -60,6 +62,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import models.Enrolled;
 import models.EnrolledId;
 import models.LanguageType;
@@ -273,7 +276,35 @@ public class SubjectController {
         tbColEndDateSub.setCellFactory(dateCell);
         tbColUnits.setCellFactory(hyperlinkCellUnit);
         tbColExams.setCellFactory(hyperlinkCellExam);
+        // Establece el StringConverter personalizado
+        dpDateSearchSubject.setConverter(new StringConverter<LocalDate>() {
+            Locale locale = Locale.getDefault();
+            // Formato de fecha para mostrar
+            private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 
+            // Convierte de LocalDate a String
+            @Override
+            public String toString(LocalDate localDate) {
+                if (localDate != null) {
+                    return dateFormatter.format(java.sql.Date.valueOf(localDate));
+                }
+                return null;
+            }
+
+            // Convierte de String a LocalDate
+            @Override
+            public LocalDate fromString(String string) {
+                if (string != null && !string.isEmpty()) {
+                    try {
+                        java.util.Date date = dateFormatter.parse(string);
+                        return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                return null;
+            }
+        });
         // 1. Columna Name
         //Asignar la factoría de celdas
         tbColNameSub.setCellFactory(TextFieldTableCell.<Subject>forTableColumn());
@@ -581,6 +612,7 @@ public class SubjectController {
         //Menu de contexto para el create
         MenuItem createNewSubjectMenuItem = new MenuItem("Create new Subject");
         createNewSubjectMenuItem.setOnAction((ActionEvent e) -> {
+            createSubject();
         });
         //Menu de contexto para el delete
         MenuItem deleteSubjectMenuItem = new MenuItem("Delete a subject");
@@ -622,7 +654,6 @@ public class SubjectController {
      * @param oldValue El valor anterior (no se utiliza en esta implementación).
      * @param newValue El nuevo valor del Observable.
      */
-
     public void textChanged(ObservableValue observable, Object oldValue, Object newValue) {
         //Si el valor seleccionado es algunos de los siguientes: "name",  "teacher Name",   "with at Least _ number of units",  " with at least _ number of enrolled students", validar si “tfSearchSubject” está visible; si no lo está, establecerlo como visible. Luego, validar si “dpDateSearchSubject” no está visible; si no lo está, ponerlo en no visible.
         String selectedOption = (String) cbSearchSubject.getSelectionModel().getSelectedItem();

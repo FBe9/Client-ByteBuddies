@@ -11,7 +11,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import main.SubjectMainStudent;
 import models.Subject;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.junit.BeforeClass;
