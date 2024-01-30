@@ -44,7 +44,7 @@ public class AsimetricaClient {
         try {
 
             // Load ECC Public Key
-            InputStream fis = AsimetricaClient.class.getResourceAsStream("publicKey.der");
+            InputStream fis = AsimetricaClient.class.getResourceAsStream("publickey.der");
             byte[] publicKeyBytes = new byte[fis.available()];
             fis.read(publicKeyBytes);
             fis.close();
