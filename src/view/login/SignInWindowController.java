@@ -254,7 +254,7 @@ public class SignInWindowController {
                 User user = new User();
                 user.setUser_type("Student");
                 user.setId(2);
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/Subject.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/subject.fxml"));
                 Parent root = (Parent) loader.load();
                 SubjectController controller = (SubjectController) loader.getController();
                 controller.setStage(stage);
@@ -265,7 +265,7 @@ public class SignInWindowController {
                 User user = new User();
                 user.setUser_type("Teacher");
                 user.setId(1);
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/Subject.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/subject.fxml"));
                 Parent root = (Parent) loader.load();
                 SubjectController controller = (SubjectController) loader.getController();
 
@@ -283,7 +283,7 @@ public class SignInWindowController {
 
                 user = userInterface.login(user);
 
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/Subject.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/subject.fxml"));
                 Parent root = (Parent) loader.load();
                 SubjectController controller = (SubjectController) loader.getController();
 

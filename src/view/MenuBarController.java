@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import models.User;
 import view.exam.*;
 import view.exercise.*;
+import view.login.SignInWindowController;
 import view.subject.*;
 import view.unit.*;
 
@@ -190,7 +191,7 @@ public class MenuBarController {
     }
 
     public void handleLogOutMenuItemAction(Event event) {
-        /*try {
+        try {
             //Ask user for confirmation on exit
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, loggedUser.getName()+", are you sure that you want to log out?");
             Optional<ButtonType> action = alert.showAndWait();
@@ -200,7 +201,7 @@ public class MenuBarController {
                 stageMenu.close();
 
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/SignInWindow.fxml"));
+                    FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/login/SignInWindow.fxml"));
                     Parent root = (Parent) loader.load();
                     SignInWindowController controller = (SignInWindowController) loader.getController();
                     controller.setStage(stageMenu);
@@ -217,7 +218,7 @@ public class MenuBarController {
             Alert alert = new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.OK);
             alert.showAndWait();
             LOGGER.log(Level.SEVERE, errorMsg);
-        }*/
+        }
     }
 
     public static void setUser(User user) {
