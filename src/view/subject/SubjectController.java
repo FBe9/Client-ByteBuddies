@@ -135,6 +135,8 @@ public class SubjectController {
     private ObservableList<Teacher> teachers;
     private ObservableSet<Teacher> teachersPrueba;
     private ResourceBundle configFile;
+    String regexLetters = "^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]+$";
+    String regexNumbers = "^[0-9]+$";
 
     public SubjectController() {
         subjectManager = SubjectFactory.getModel();
@@ -273,8 +275,6 @@ public class SubjectController {
         tbColExams.setCellFactory(hyperlinkCellExam);
 
         // 1. Columna Name
-        //Regex para las comprobaciones
-        String regexLetters = "^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]+$";
         //Asignar la factoría de celdas
         tbColNameSub.setCellFactory(TextFieldTableCell.<Subject>forTableColumn());
         //Implementación on edit commit
@@ -499,8 +499,6 @@ public class SubjectController {
                 }
         );
         //7. Columna hours
-        //Regex para comprobar que solo introduce números
-        String regexNumbers = "^[0-9]+$";
 
         //Establecer la factoría de celdas
         tbColHoursSub.setCellFactory(TextFieldTableCell.<Subject>forTableColumn());
@@ -613,6 +611,18 @@ public class SubjectController {
 
     }
 
+    /**
+     * Este método se invoca cuando cambia el valor de un Observable
+     * (observable). Actualiza la visibilidad de los campos de búsqueda y la
+     * configuración del botón de búsqueda en función de la opción seleccionada
+     * en un ComboBox y el tipo de usuario.
+     *
+     * @param observable El objeto que está siendo observado (no se utiliza en
+     * esta implementación).
+     * @param oldValue El valor anterior (no se utiliza en esta implementación).
+     * @param newValue El nuevo valor del Observable.
+     */
+
     public void textChanged(ObservableValue observable, Object oldValue, Object newValue) {
         //Si el valor seleccionado es algunos de los siguientes: "name",  "teacher Name",   "with at Least _ number of units",  " with at least _ number of enrolled students", validar si “tfSearchSubject” está visible; si no lo está, establecerlo como visible. Luego, validar si “dpDateSearchSubject” no está visible; si no lo está, ponerlo en no visible.
         String selectedOption = (String) cbSearchSubject.getSelectionModel().getSelectedItem();
@@ -657,6 +667,17 @@ public class SubjectController {
         }
     }
 
+    /**
+     * Este método se invoca cuando cambia el valor de un DatePicker (selector
+     * de fecha). Actualiza el estado de un botón de búsqueda en función de los
+     * cambios en el valor del DatePicker.
+     *
+     * @param observable El objeto que se está observando (no se utiliza en esta
+     * implementación).
+     * @param oldValue El valor anterior del DatePicker (no se utiliza en esta
+     * implementación).
+     * @param newValue El nuevo valor del DatePicker.
+     */
     public void textChangedDtPicker(ObservableValue observable, Object oldValue, Object newValue) {
         //Si el datePicker esta vacio des habilitar el botón de búsqueda, si no, habilitar el botón de búsqueda.
         if (dpDateSearchSubject.getValue() != null) {
@@ -672,6 +693,11 @@ public class SubjectController {
         }
     }
 
+    /**
+     * Método para el boton de búsqueda
+     *
+     * @param event el evento de acción
+     */
     public void handleSearchButtonAction(ActionEvent event) {
         String selectedOption = (String) cbSearchSubject.getSelectionModel().getSelectedItem();
 
@@ -681,6 +707,15 @@ public class SubjectController {
             if (selectedOption.equalsIgnoreCase("name")) {
 
                 try {
+                    //Si el valor seleccionado en el combobox es cualquiera de los siguientes: "name" o "Teacher Name", 
+                    //se validará que la información ingresada en el campo “tfSearchSubject”consista exclusivamente de letras. 
+                    //En caso contrario, se lanzará la excepción WrongNameFormatException 
+                    //y se le mostrará al usuario el siguiente mensaje de error: “Invalid input {tfSearchSubject}. 
+                    //Please enter only letters.” {tfSearchSubject} se reemplazará con la información real introducida por el usuario.
+
+                    if (!tfSearchSubject.getText().matches(regexLetters)) {
+                        throw new WrongNameFormatException();
+                    }
                     //Validar que el texto no sea nulo
                     if (tfSearchSubject.getText() != null) {
                         subjects = FXCollections.observableArrayList(subjectManager.findSubjectsByName(tfSearchSubject.getText()));
@@ -692,6 +727,14 @@ public class SubjectController {
                 //y llamar al método findSubjectsByTeacher pasando como parámetro contenido del textfield "tfSearchSubject"
             } else if (selectedOption.equalsIgnoreCase("teacher name")) {
                 try {
+                    //Si el valor seleccionado en el combobox es cualquiera de los siguientes: "name" o "Teacher Name", 
+                    //se validará que la información ingresada en el campo “tfSearchSubject”consista exclusivamente de letras. 
+                    //En caso contrario, se lanzará la excepción WrongNameFormatException 
+                    //y se le mostrará al usuario el siguiente mensaje de error: “Invalid input {tfSearchSubject}. 
+                    //Please enter only letters.” {tfSearchSubject} se reemplazará con la información real introducida por el usuario.
+                    if (!tfSearchSubject.getText().matches(regexLetters)) {
+                        throw new WrongNameFormatException();
+                    }
                     //Validar que el texto no sea nulo
                     if (tfSearchSubject.getText() != null) {
                         subjects = FXCollections.observableArrayList(subjectManager.findSubjectsByTeacher(tfSearchSubject.getText()));
@@ -724,6 +767,15 @@ public class SubjectController {
                 //llamar al método findSubjectsWithXUnits pasando como parámetro contenido del textfield "tfSearchSubject". 
             } else if (selectedOption.equalsIgnoreCase("with at least _ number of units")) {
                 try {
+                    //Si el valor seleccionado en el combobox es cualquiera de los siguientes: 
+                    //" with at least _ number of units", "with at least _ number of enrolled students", 
+                    //se validará que la información ingresada en el campo “tfSearchSubject” consista 
+                    //exclusivamente de números. En caso contrario, se lanzará la excepción WrongNumberFormatException
+                    //y se le mostrará al usuario el siguiente mensaje de error: “Invalid input {tfSearchSubject}. 
+                    //Please enter only numbers.” {tfSearchSubject} se reemplazará con la información real introducida por el usuario.
+                    if (!tfSearchSubject.getText().matches(regexNumbers)) {
+                        throw new WrongNumberFormatException();
+                    }
                     if (tfSearchSubject.getText() != null) {
                         subjects = FXCollections.observableArrayList(subjectManager.findSubjectsWithXUnits(tfSearchSubject.getText()));
                     }
@@ -762,12 +814,22 @@ public class SubjectController {
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
                 }
-
+                //Se habilitará otra vez que el usuario pueda matricularse
                 checkBoxMatriculated();
-                //La búsqueda 'with at Least _ number of enrolled students' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager y 
-                //llamar al método findSubjectsWithEnrolledStudentsCount pasando como parámetro contenido del textfield "tfSearchSubject"
             } else if (selectedOption.equalsIgnoreCase("with at least _ number of students")) {
                 try {
+                    //Si el valor seleccionado en el combobox es cualquiera de los siguientes: 
+                    //" with at least _ number of units", "with at least _ number of enrolled students", 
+                    //se validará que la información ingresada en el campo “tfSearchSubject” consista 
+                    //exclusivamente de números. En caso contrario, se lanzará la excepción WrongNumberFormatException
+                    //y se le mostrará al usuario el siguiente mensaje de error: “Invalid input {tfSearchSubject}. 
+                    //Please enter only numbers.” {tfSearchSubject} se reemplazará con la información real introducida por el usuario.
+
+                    if (!tfSearchSubject.getText().matches(regexNumbers)) {
+                        throw new WrongNumberFormatException();
+                    }
+                    //La búsqueda 'with at Least _ number of enrolled students' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager y 
+                    //llamar al método findSubjectsWithEnrolledStudentsCount pasando como parámetro contenido del textfield "tfSearchSubject"
                     if (tfSearchSubject.getText() != null) {
                         subjects = FXCollections.observableArrayList(subjectManager.findSubjectsWithEnrolledStudentsCount(tfSearchSubject.getText()));
                     }
@@ -775,56 +837,59 @@ public class SubjectController {
                     showErrorAlert(ex.getMessage());
                 }
             }
+
+            //Para las nuevas busquedas que haga la cuenta otra vez de enrollments
+            if (!subjects.isEmpty()) {
+                //Recoge el número de estudiantes
+                for (Subject subject : subjects) {
+                    int matriculatedCount = 0;
+                    for (Enrolled enrollment : subject.getEnrollments()) {
+
+                        if (enrollment.getIsMatriculate()) {
+                            matriculatedCount++;
+                        }
+                    }
+                    subject.setStudentsCount(matriculatedCount);
+                }
+                //Si el usuario es un estudiante no se le muestran las que estan nuelas
+                if (user.getUser_type().equals("Student")) {
+                    List<Subject> subjectsToRemove = new ArrayList<>();
+                    for (Subject subject : subjects) {
+                        if (subject.getName() == null) {
+                            // Agregar la asignatura a la lista de asignaturas a eliminar
+                            subjectsToRemove.add(subject);
+
+                        }
+                    }
+                    if (subjectsToRemove.size() > 0) {
+                        // Eliminar las asignaturas de la colección original fuera del bucle
+                        subjects.removeAll(subjectsToRemove);
+                    }
+
+                }
+
+            } else {
+                ///Muestra un mensaje de error si no se encuentra búsqueda
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("No Results");
+                alert.setHeaderText(null);
+                alert.setContentText("No results found for the search criteria.");
+
+                alert.showAndWait();
+            }
+            //Añadir los subjects
+            tbSubjects.setItems(subjects);
+            //Después de cada búsqueda limpiar el textfield
+            tfSearchSubject.clear();
+            //Después de cada búsqueda ponerle null
+            dpDateSearchSubject.setValue(null);
+        } catch (WrongNameFormatException ex) {
+            showErrorAlert("Invalid input " + tfSearchSubject.getText() + ". Please enter only letters.");
+        } catch (WrongNumberFormatException ex) {
+            showErrorAlert("Invalid input " + tfSearchSubject.getText() + ". Please enter only numbers.");
         } catch (Exception ex) {
             showErrorAlert("Error trying to get the information");
-            new Alert(Alert.AlertType.ERROR, "Error trying to get the information", ButtonType.OK).showAndWait();
         }
-
-        //Para las nuevas busquedas que haga la cuenta otra vez de enrollments
-        if (!subjects.isEmpty()) {
-            //Recoge el número de estudiantes
-            for (Subject subject : subjects) {
-                int matriculatedCount = 0;
-                for (Enrolled enrollment : subject.getEnrollments()) {
-
-                    if (enrollment.getIsMatriculate()) {
-                        matriculatedCount++;
-                    }
-                }
-                subject.setStudentsCount(matriculatedCount);
-            }
-            //Si el usuario es un estudiante no se le muestran las que estan nuelas
-            if (user.getUser_type().equals("Student")) {
-                List<Subject> subjectsToRemove = new ArrayList<>();
-                for (Subject subject : subjects) {
-                    if (subject.getName() == null) {
-                        // Agregar la asignatura a la lista de asignaturas a eliminar
-                        subjectsToRemove.add(subject);
-
-                    }
-                }
-                if (subjectsToRemove.size() > 0) {
-                    // Eliminar las asignaturas de la colección original fuera del bucle
-                    subjects.removeAll(subjectsToRemove);
-                }
-
-            }
-
-        } else {
-            ///Muestra un mensaje de error si no se encuentra búsqueda
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("No Results");
-            alert.setHeaderText(null);
-            alert.setContentText("No results found for the search criteria.");
-
-            alert.showAndWait();
-        }
-        //Añadir los subjects
-        tbSubjects.setItems(subjects);
-        //Después de cada búsqueda limpiar el textfield
-        tfSearchSubject.clear();
-        //Después de cada búsqueda ponerle null
-        dpDateSearchSubject.setValue(null);
 
     }
 
@@ -901,7 +966,7 @@ public class SubjectController {
     }
 
     /**
-     * Method to create a subject
+     * Método para crear la asignatura
      */
     public void createSubject() {
         //Crear la subject por defecto
@@ -942,7 +1007,7 @@ public class SubjectController {
     }
 
     /**
-     * Method to delete the subject
+     * Método para borrar una asignatura
      */
     public void deleteSubject() {
 
@@ -979,6 +1044,10 @@ public class SubjectController {
         }
     }
 
+    /**
+     * Método para que un alumno pueda o no matricularse teniendo en cuenta el
+     * checkbox
+     */
     public void checkBoxMatriculated() {
         for (Subject subject : subjects) {
             int matriculatedCount = 0;
@@ -1084,7 +1153,7 @@ public class SubjectController {
     }
 
     /**
-     * Method to print a report
+     * Metodo para imprimir un report
      */
     public void printAReport() {
         try {
@@ -1115,7 +1184,7 @@ public class SubjectController {
     }
 
     /**
-     * Handles the action triggered by an "Imprimir" (Print) event.
+     * Controla la acción para el boton de imprimir
      *
      * @param event The ActionEvent associated with the print action.
      */
@@ -1124,18 +1193,18 @@ public class SubjectController {
     }
 
     /**
-     * Handles the action triggered by a "Create" button event.
+     * Controla la acción de crear para el boton crear.
      *
-     * @param event The ActionEvent associated with the create button action.
+     * @param event The ActionEvent asociado al boton de creación.
      */
     public void handleCreateButtonAction(ActionEvent event) {
         createSubject();
     }
 
     /**
-     * Handles the action triggered by a "Delete" button event.
+     * Controla la acción del boton de delete
      *
-     * @param event The ActionEvent associated with the delete button action.
+     * @param event The ActionEvent asociado al boton de delete.
      */
     public void handleDeleteButtonAction(ActionEvent event) {
         deleteSubject();
@@ -1151,7 +1220,7 @@ public class SubjectController {
     }
 
     /**
-     * Exit button event handler.
+     * Boton para salir
      *
      * @param event An ActionEvent object.
      */
