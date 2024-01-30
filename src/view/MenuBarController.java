@@ -98,9 +98,10 @@ public class MenuBarController {
             Parent root = (Parent) loader.load();
             // Obtain the Sign In window controller
             ExamWindowController controller = (ExamWindowController) loader.getController();
+            controller.setUser(loggedUser);
             controller.setStage(stageMenu);
             controller.initStage(root);
-            controller.setUser(loggedUser);
+
         } catch (IOException ex) {
             Logger.getLogger(MenuBarController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -189,7 +190,7 @@ public class MenuBarController {
     }
 
     public void handleLogOutMenuItemAction(Event event) {
-      /*try {
+        /*try {
             //Ask user for confirmation on exit
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, loggedUser.getName()+", are you sure that you want to log out?");
             Optional<ButtonType> action = alert.showAndWait();
