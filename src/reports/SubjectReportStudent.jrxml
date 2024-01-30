@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7408f6e9-29c7-4067-b0b0-f345de2c1beb">
+	<property name="ireport.zoom" value="1.1"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="hours" class="java.lang.String"/>
+	<field name="levelType" class="java.lang.Object"/>
+	<field name="languageType" class="java.lang.Object"/>
+	<field name="dateInit" class="java.util.Date"/>
+	<field name="dateEnd" class="java.util.Date"/>
+	<field name="studentsCount" class="java.lang.Integer"/>
+	<field name="status" class="java.lang.Boolean"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="184" y="21" width="195" height="35" uuid="2151d228-191e-4761-955b-7492f23c9b2b"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[Subject Report Test]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="44" splitType="Stretch">
+			<staticText>
+				<reportElement x="5" y="0" width="50" height="16" uuid="32dfbdb5-28b3-414f-84e0-562f612c1135"/>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="65" y="0" width="27" height="16" uuid="529758b3-c4a8-4ad7-ac25-bb82be6e43c1"/>
+				<text><![CDATA[Level ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="146" y="0" width="50" height="16" uuid="d9743870-12fc-49c9-98b9-56f51e3c2bbc"/>
+				<text><![CDATA[Language]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="218" y="0" width="50" height="16" uuid="3ce62bdf-99f4-4591-bd62-5419c13f371e"/>
+				<text><![CDATA[Start Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="289" y="0" width="50" height="16" uuid="b9500a20-c026-41cf-89bf-880f67961f2f"/>
+				<text><![CDATA[End Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="362" y="0" width="35" height="16" uuid="ca5ef7f9-3f85-46ef-bb82-59d5ca494bc9"/>
+				<text><![CDATA[Hours]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="-1" width="42" height="16" uuid="515bd2fb-2897-4415-8c1d-e53eb3e7e499"/>
+				<text><![CDATA[Students]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="481" y="1" width="30" height="16" uuid="5de250ad-f9e7-40f1-883a-0b359100f29c"/>
+				<text><![CDATA[Status]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="45" splitType="Stretch">
+			<textField>
+				<reportElement x="5" y="0" width="46" height="16" uuid="0f705b1d-2b64-404b-af5f-24bb749e75be"/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="65" y="0" width="86" height="16" uuid="e3d2a790-9977-4856-9404-80aeabfb16e4"/>
+				<textFieldExpression><![CDATA[$F{levelType}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="146" y="0" width="51" height="16" uuid="500d6789-5357-4bb0-ad1d-96cfcbea87bb"/>
+				<textFieldExpression><![CDATA[$F{languageType}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="218" y="0" width="55" height="16" uuid="044ad3be-916c-442a-896d-50c96a40213f"/>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dateInit})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="289" y="0" width="58" height="16" uuid="773a8676-ce22-4e60-b2dc-60a63f90e996"/>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{dateEnd})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="362" y="0" width="46" height="16" uuid="ca5ef7f9-3f85-46ef-bb82-59d5ca494bc9"/>
+				<textFieldExpression><![CDATA[$F{hours}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="-1" width="26" height="16" uuid="515bd2fb-2897-4415-8c1d-e53eb3e7e499"/>
+				<textFieldExpression><![CDATA[$F{studentsCount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="481" y="0" width="73" height="16" uuid="5de250ad-f9e7-40f1-883a-0b359100f29c"/>
+				<textFieldExpression><![CDATA[$F{status} ? "Matriculado" : "No matriculado"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<textField>
+				<reportElement x="226" y="22" width="100" height="20" uuid="75fae653-6d1d-4d5d-96a6-2783efd0d457"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

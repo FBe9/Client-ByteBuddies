@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package services;
 
 import java.util.ResourceBundle;
@@ -26,59 +21,49 @@ import javax.ws.rs.core.GenericType;
  */
 public class TeacherRESTClient {
 
+    /**
+     * Represents a webTarget to interact with a web resource
+     */
     private WebTarget webTarget;
+    /**
+     * Represents a client for managing communication with a web resource.
+     */
     private Client client;
+    /**
+     * Uri of the server
+     */
+
     private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
 
+    /**
+     * Constructs a new instance of TeacherRESTClient. Initializes the web
+     * client and sets the base URI for the REST resource.
+     */
     public TeacherRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.teacher");
     }
 
-    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
-
-    public <T> T find_JSON(Class<T> responseType, String id) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
-    }
-
+    /**
+     * Performs a GET request to find all teachers using XML representation.
+     *
+     * @param <T> The type of the response expected.
+     * @param responseType The generic type of the response.
+     * @return A response of the specified type containing all available
+     * teachers.
+     * @throws WebApplicationException If an error occurs during the web
+     * application communication.
+     */
     public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findAll_JSON(GenericType<T> responseType) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
-    }
-
-    public void createTeacher_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
-    }
-
-    public void createTeacher_JSON(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
-    }
-
-    public void updateTeacher_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
-    }
-
-    public void updateTeacher_JSON(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
-    }
-
-    public void remove(String id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
-    }
-
+    /**
+     * Closes the underlying client.
+     */
     public void close() {
         client.close();
     }
-    
+
 }

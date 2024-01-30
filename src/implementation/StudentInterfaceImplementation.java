@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package implementation;
 
 import exceptions.CreateErrorException;
@@ -18,12 +13,20 @@ import models.User;
 import services.StudentRESTClient;
 
 /**
+ * The implementation of StudentInterface
+ *
  *
  * @author irati
  */
 public class StudentInterfaceImplementation implements StudentInterface {
 
+    /**
+     * The webClient for StudentRESTClient
+     */
     private StudentRESTClient webClient;
+    /**
+     * Logger for the class
+     */
     private static final Logger LOGGER = Logger.getLogger("StudentInterfaceImplementation");
 
     /**
@@ -33,6 +36,13 @@ public class StudentInterfaceImplementation implements StudentInterface {
         webClient = new StudentRESTClient();
     }
 
+    /**
+     * Finds a student based on the provided User object.
+     *
+     * @param student The User object representing the student to be found.
+     * @return The found student as a User object.
+     * @throws FindErrorException If an error occurs during the find operation.
+     */
     @Override
     public User find(User student) throws FindErrorException {
         User studentSearch;
@@ -46,6 +56,12 @@ public class StudentInterfaceImplementation implements StudentInterface {
         return studentSearch;
     }
 
+    /**
+     * Finds all students.
+     *
+     * @return A Collection of Student objects representing all students.
+     * @throws FindErrorException If an error occurs during the find operation.
+     */
     @Override
     public Collection<Student> findAll() throws FindErrorException {
         Set<Student> students;
@@ -60,6 +76,13 @@ public class StudentInterfaceImplementation implements StudentInterface {
         return students;
     }
 
+    /**
+     * Creates a new student.
+     *
+     * @param student The Student object to be created.
+     * @throws CreateErrorException If an error occurs during the create
+     * operation.
+     */
     @Override
     public void createStudent(Student student) throws CreateErrorException {
         try {

@@ -27,58 +27,85 @@ and open the template in the editor.
     </head>
     <body>
         <div>
-            <h3>Administrator Management: Help</h3>
+            <h3>Subject Management: Help</h3>
+            <img src="../../resources/SubjectHelp/VentanaCompleta.png" alt="Ventana Completa">
             <h4>Descripción general</h4>
-            <p>Dependiendo del tipo de usuario que inicie sesión en la aplicación 
-                podrá hacer una cosa u otra. Si es de tipo profesor, el 
-                usuario podrá mediante los controles de los que dispone la 
-                ventana crear, modificar, buscar y eliminar los ejercicios de 
-                las unidades de las asignaturas de las que se haga cargo. Si es
-                de tipo alumno, el usuario solo podrá buscar los ejercicios de
-                las unidades de las asignaturas en las que este previamente 
-                matriculado. Así mismo podrán generar un informe que contiene un 
-                listado de los ejercicios con sus correspondientes datos.</p>
+            <p>Dependiendo del tipo de usuario que inicie sesión en la aplicación, podrá realizar acciones específicas. 
+                Si el usuario es de tipo profesor, tendrá acceso a controles que le permitirán crear, modificar,
+                buscar y eliminar asignaturas. Por otro lado, si el usuario es de tipo alumno, podrá realizar 
+                búsquedas sobre las diferentes asignaturas. Además, si se encuentra en la opción de visualizar 
+                todas las asignaturas, tendrá la posibilidad de matricularse. Esta opción estará seleccionada 
+                por defecto al abrir la ventana y al pulsar "All Subjects" en el combo box de selección. </p>
             <h4>Operaciones para profesores</h4>
-            <strong>Crear ejercicios</strong>
-            <p>Para crear un ejercicio, tendrá que seleccionar la unidad, 
-                el número, un archivo con el enunciado del ejercicios, otro 
-                archivo distinto con la solución de dicho ejercicios, las horas
-                que se tarda en hacerlo, la fecha límite, seleccionar la 
-                dificultad y la descripción. Una vez estén todos los campos 
-                válidados, el profesor podrá pulsar en el botón de 
-                <strong>Create</strong>. Si no se produce ningún error, 
-                se creará el mental disease.</p>
-            <strong>Modificar ejercicios</strong>
-            <p>Para modificar un ejercicio deberá seleccionar un ejercicio de la 
-                tabla y tendrá que cambiar el campo que quiera y pulsar el botón 
-                <strong>Modify</strong>. Saldrá una confirmación que le preguntará 
-                si quiere modificarlo. Si es afirmativa y no se produce ningún 
-                error se modificará el ejercicio.</p>
-            <strong>Borrar ejercicios</strong>
-            <p>Para eliminar un ejercicio deberá seleccionar el que quiera 
+            <strong>Crear asignaturas</strong>
+            <img src="../../resources/SubjectHelp/Create.png">
+            <p>Para crear una asignatura, el usuario deberá hacer clic en el botón
+                <strong>Create</strong>. Se generará una asignatura con valores predeterminados,
+                inicializando los campos Level a 'BEGINNER', Language a 'SPANISH' y las fechas a
+                la fecha del día de creación. Los demás campos estarán vacíos.
+
+                Si no hay errores, la nueva entrada se mostrará en la tabla.
+
+            </p>
+
+            <strong>Modificar asignaturas</strong>
+            </br>
+            <p>La modificación de asignaturas se realizará directamente sobre la tabla, la cual es editable. 
+                Para modificar los campos de texto, como "name" y "hours", simplemente haz doble clic en el campo que deseas editar 
+                y presiona "Enter" para finalizar la edición.</p>
+            <img src="../../resources/SubjectHelp/editText.gif" width="350" height="232">
+            <p>Para asignar profesores a la asignatura, haz doble clic en la celda correspondiente a los profesores. 
+                Se abrirá un menú desplegable con la lista de todos los profesores, donde los que ya estén asignados a esa asignatura 
+                aparecerán preseleccionados. Después de seleccionar los nuevos profesores, presiona "Enter" para guardar la selección.</p>
+            <img src="../../resources/SubjectHelp/listView.gif" width="278" height="322">
+            <p>Para editar los campos de nivel e idioma, haz doble clic en sus respectivas celdas y se desplegará un menú de selección 
+                con las diferentes opciones disponibles. Al seleccionar una opción diferente a la actual, se realizará el cambio.</p>
+            <img src="../../resources/SubjectHelp/combo.gif" width="370" height="325">
+            <p>Finalmente, para editar las celdas de fecha, selecciona la celda correspondiente y se abrirá un selector de fechas, 
+                donde podrás elegir la nueva fecha deseada.</p>
+            <img src="../../resources/SubjectHelp/datePicker.gif" width="236" height="268">
+            </br>
+            <strong>Borrar asignaturas</strong>
+            <img src="../../resources/SubjectHelp/Delete.png">
+            <p>Para eliminar una asignatura deberá seleccionar el que quiera 
                 de la tabla y pulsar en el botón de <strong>Delete</strong>. Si no 
                 se produce ningún error, se le pedirá una confirmación para borrar 
-                el ejercicio deseado. Si se confirma el borrado se eliminará el 
-                ejercicio y se actualizará la tabla que se muestra en la ventana.</p>
+                la asignatura deseada. Si se confirma el borrado se eliminará la asignatura
+                y se actualizará la tabla que se muestra en la ventana.</p>
+            <h4>Operaciones para alumnos</h4>
+            <img src="../../resources/SubjectHelp/AlumnoMatriculado.png">
+            <strong>Matricularse y desmatricularse en una asignatura</strong>
+          
+            <p> Un alumno podrá matricularse o desmatricularse en una asignatura si se 
+                encuentra en la opción de visualizar todas las asignaturas.
+                Se le solicitará confirmación para llevar a cabo la matriculación o desmatriculación 
+                en dicha asignatura. Después de la confirmación, la acción se realizará. </p>
+
             <h4>Operaciones para profesores y alumnos</h4>
-            <strong>Busqueda de ejercicios</strong>
-            <p>Para buscar los datos de un ejercicio primero deberá 
-                seleccionar en el combobox de las unidades la unidad de la cual
-                quiera los ejercicios. También tendrá que seleccionar en el 
-                combobox llamado search type como quiere buscarlo, si por la 
-                fecha, por el tipo de dificultad o por el número de ejercicio.
-                En caso de que el usuario ser un profesor, también tendrá la 
-                opción de buscar todos los ejercicios. Cuando ya sepa que quiere 
-                buscar, le tendrá que pulsar en el botón de 
-                <strong>Search</strong>, si no sale ningún error, la tabla se 
-                actualizará con los ejercicios que quiere encontrar. 
-                Si no se encuentra, saldra un error de no encontrado.</p>
+            <strong>Busqueda de asignaturas</strong>
+            <p>Para buscar información sobre una asignatura, primero debes seleccionar el criterio de 
+                búsqueda en el ComboBox. Puedes buscar por nombre de asignatura, nombres de profesores,
+                fechas de inicio o fin de la asignatura, o por la cantidad de horas que tiene. 
+                Además, puedes ver todas las asignaturas y aquellas asociadas contigo 
+                (las que impartes si eres profesor o las que cursas si eres estudiante). 
+                Una vez que hayas decidido tu criterio de búsqueda, 
+                haz clic en el botón <strong>Buscar</strong>. 
+                Si no hay errores, la tabla se actualizará con las 
+                asignaturas encontradas. Si no se encuentra nada, se mostrará un mensaje de error.</p>
+
             <strong>Imprimir listado de mental disease</strong>
             <p>Pulsando el botón <strong>Print</strong> se abrirá una ventana 
-                donde puede ver un documento que contiene un listado de los 
-                ejercicios que existen en la aplicación. Mediante los botones de 
+                donde puede ver un documento que contiene un listado de las asignaturas
+                que existen en la aplicación. Mediante los botones de 
                 la parte superior de la ventana podrá imprimir o almacenar dicho 
                 informe.</p>
+
+            <h4>Menús contextuales</h4>
+            <img src="../../resources/SubjectHelp/MenuContexto.png">
+            <p>Si el usuario es un profesor, tendrá la capacidad de eliminar y crear asignaturas, 
+                así como imprimir informes. Esto se logra haciendo clic derecho sobre la tabla, 
+                donde se desplegará un menú contextual con estas tres opciones disponibles.</p>
+            <p> </p>
         </div>
     </body>
 </html>

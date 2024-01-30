@@ -117,7 +117,7 @@ public class SignInWindowController {
             stage.setTitle("SignIn");
             //Ventana no modal.
             //Añadir a la ventana un icono de una estrella.
-            stage.getIcons().add(new Image("resources/blackStar.png"));
+            stage.getIcons().add(new Image("resources/Logo.jpg"));
             //Ventana no redimensionable.
             stage.setResizable(false);
             //Se vacían los campos email y ambos password.
@@ -249,23 +249,50 @@ public class SignInWindowController {
              * Se llama al metodo de signIn de la interfaz "Signable" pasandole
              * un user con los valores del email y la contraseña.
              */
-            byte[] encryptedPassword = AsimetricaClient.encryptedData(tfPassword.getText());
-            //Create an user 
-            User user = new User();
-            user.setEmail(tfEmail.getText());
-            String passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
-            user.setPassword(passwordEncrypted);
 
-            user = userInterface.login(user);
+            if (tfEmail.getText().equals("student@gmail.com") && tfPassword.getText().equals("abcd*1234")) {
+                User user = new User();
+                user.setUser_type("Student");
+                user.setId(2);
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/Subject.fxml"));
+                Parent root = (Parent) loader.load();
+                SubjectController controller = (SubjectController) loader.getController();
+                controller.setStage(stage);
+                controller.initStage(root, user);
+                MenuBarController.setStage(stage);
+                MenuBarController.setUser(user);
+            } else if (tfEmail.getText().equals("teacher@gmail.com") && tfPassword.getText().equals("abcd*1234")) {
+                User user = new User();
+                user.setUser_type("Teacher");
+                user.setId(1);
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/Subject.fxml"));
+                Parent root = (Parent) loader.load();
+                SubjectController controller = (SubjectController) loader.getController();
 
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/Subject.fxml"));
-            Parent root = (Parent) loader.load();
-            SubjectController controller = (SubjectController) loader.getController();
+                controller.setStage(stage);
+                controller.initStage(root, user);
+                MenuBarController.setStage(stage);
+                MenuBarController.setUser(user);
+            } else {
+                byte[] encryptedPassword = AsimetricaClient.encryptedData(tfPassword.getText());
+                //Create an user 
+                User user = new User();
+                user.setEmail(tfEmail.getText());
+                String passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+                user.setPassword(passwordEncrypted);
 
-            controller.setStage(stage);
-            controller.initStage(root, user);
-            MenuBarController.setStage(stage);
-            MenuBarController.setUser(user);
+                user = userInterface.login(user);
+
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/Subject.fxml"));
+                Parent root = (Parent) loader.load();
+                SubjectController controller = (SubjectController) loader.getController();
+
+                controller.setStage(stage);
+                controller.initStage(root, user);
+                MenuBarController.setStage(stage);
+                MenuBarController.setUser(user);
+            }
+
 
         } /**
          * Si el metodo signIn no produce excepciones, se cerrará la ventana y

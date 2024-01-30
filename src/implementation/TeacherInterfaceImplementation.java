@@ -4,7 +4,6 @@ import exceptions.FindErrorException;
 import interfaces.TeacherInterface;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
@@ -12,14 +11,21 @@ import models.Teacher;
 import models.User;
 import services.TeacherRESTClient;
 
-
 /**
+ * The implementation of TeacherInterface
+ *
  *
  * @author irati
  */
 public class TeacherInterfaceImplementation implements TeacherInterface {
 
+    /**
+     * The webClient for TeacherRESTClient
+     */
     private TeacherRESTClient webClient;
+    /**
+     * The logger for the class.
+     */
     private static final Logger LOGGER = Logger.getLogger("TeacherInterfaceImplementation");
 
     /**
@@ -28,31 +34,24 @@ public class TeacherInterfaceImplementation implements TeacherInterface {
     public TeacherInterfaceImplementation() {
         webClient = new TeacherRESTClient();
     }
-
-    @Override
-    public User find(User teacher) throws FindErrorException {
-        User teacherSearch;
-        try {
-            LOGGER.info("Finding teacher with ID " + teacher.getId());
-            teacherSearch = webClient.find_XML(Teacher.class, teacher.getId().toString());
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "TeacherInterface: Error finding teacher - " + e.getMessage());
-            throw new FindErrorException("Error finding the teacher");
-        }
-        return teacherSearch;
-    }
-
+   
+    /**
+     * Finds all teachers.
+     *
+     * @return A Collection of Teacher objects representing all teachers.
+     * @throws FindErrorException If an error occurs during the find operation.
+     */
     @Override
     public Collection<Teacher> findAll() throws FindErrorException {
         List<Teacher> teachers;
         try {
             LOGGER.info("Finding all teachers");
-            teachers = webClient.findAll_JSON(new GenericType<List<Teacher>>() {});
+            teachers = webClient.findAll_XML(new GenericType<List<Teacher>>() {
+            });
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "TeacherInterface: Error finding all teachers - " + e.getMessage());
             throw new FindErrorException("Error finding all teachers");
         }
         return teachers;
     }
-
 }

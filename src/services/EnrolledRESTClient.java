@@ -1,14 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package services;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
 
 /**
  * Jersey REST client generated for REST resource:EnrolledFacadeREST
@@ -25,59 +20,65 @@ import javax.ws.rs.core.GenericType;
  */
 public class EnrolledRESTClient {
 
+    /**
+     * Represents a webTarget to interact with a web resource 
+     */
     private WebTarget webTarget;
+    /**
+     * Represents a client for managing communication with a web resource.
+     */
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/Server-ByteBuddies/webresources";
+    /**
+     * Uri of the server
+     */
+    private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
 
+    /**
+     * Constructs a new EnrolledRESTClient instance.
+     */
     public EnrolledRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.enrolled");
     }
 
-    public <T> T find_XML(Class<T> responseType, String studentId, String subjectId) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{studentId, subjectId}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
-
-    public <T> T find_JSON(Class<T> responseType, String studentId, String subjectId) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{studentId, subjectId}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
-    }
-
+    /**
+     * Updates an enrolled entity using XML representation.
+     *
+     * @param requestEntity The entity to be updated.
+     * @throws WebApplicationException If an error occurs during the web service
+     * call.
+     */
     public void updateEnrolled_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public void updateEnrolled_JSON(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
-    }
-
+    /**
+     * Creates a new enrolled entity using XML representation.
+     *
+     * @param requestEntity The entity to be created.
+     * @throws WebApplicationException If an error occurs during the web service
+     * call.
+     */
     public void createEnrolled_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public void createEnrolled_JSON(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
-    }
-
+    /**
+     * Removes an enrolled entity by studentId and subjectId.
+     *
+     * @param studentId The student ID.
+     * @param subjectId The subject ID.
+     * @throws WebApplicationException If an error occurs during the web service
+     * call.
+     */
     public void removeEnrolled(String studentId, String subjectId) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{studentId, subjectId})).request().delete();
     }
 
-    public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
-
-    public <T> T findAll_JSON(GenericType<T> responseType) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
-    }
-
+    /**
+     * Closes the underlying client.
+     */
     public void close() {
         client.close();
     }
-    
 }

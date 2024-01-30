@@ -3,11 +3,8 @@ package view.subject;
 import java.text.DateFormat;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
-import javafx.util.StringConverter;
 import models.Subject;
 
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
@@ -21,36 +18,20 @@ public class DateSubjectEditingCell extends TableCell<Subject, Date> {
     private DatePicker dpSubjectCell;
     private DateFormat dateFormatter;
 
+    /**
+     * Default constructor for DateSubjectEditingCell.
+     */
     public DateSubjectEditingCell() {
-        this.dpSubjectCell = new DatePicker();
-
-        // Configurar un StringConverter para convertir entre Date y String
-        dpSubjectCell.setConverter(new StringConverter<LocalDate>() {
-
-            @Override
-            public String toString(LocalDate object) {
-                if (object != null) {
-                    return dateFormatter.format(Date.from(object.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                } else {
-                    return "";
-                }
-            }
-
-            @Override
-            public LocalDate fromString(String string) {
-                if (string != null && !string.isEmpty()) {
-                    return LocalDate.parse(string);
-                } else {
-                    return null;
-                }
-            }
-        });
-
     }
 
+    /**
+     * Updates the graphic content of the cell based on the provided date.
+     * Displays the date in text form when not in editing mode.
+     */
     @Override
     protected void updateItem(Date date, boolean empty) {
         super.updateItem(date, empty);
+        //La columna de la fecha de inicio (tbColStartDate) y fecha de finalización ((tbColEndDate) de la tabla de subject se mostrará en un formato que se ajuste a la configuración local del ordenador del usuario.
         Locale locale = Locale.getDefault();
         dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 
@@ -70,6 +51,10 @@ public class DateSubjectEditingCell extends TableCell<Subject, Date> {
         }
     }
 
+    /**
+     * Initiates the editing process for the cell. Creates a DatePicker for date
+     * selection.
+     */
     @Override
     public void startEdit() {
         if (!isEmpty()) {
@@ -83,6 +68,9 @@ public class DateSubjectEditingCell extends TableCell<Subject, Date> {
         }
     }
 
+    /**
+     * Cancels the editing process and clears the graphic content.
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();
