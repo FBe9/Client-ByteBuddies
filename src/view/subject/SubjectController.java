@@ -15,6 +15,8 @@ import interfaces.EnrolledInterface;
 
 import interfaces.SubjectManager;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
 
 import javafx.event.ActionEvent;
 import java.time.LocalDate;
@@ -31,6 +33,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -276,13 +279,14 @@ public class SubjectController {
         tbColEndDateSub.setCellFactory(dateCell);
         tbColUnits.setCellFactory(hyperlinkCellUnit);
         tbColExams.setCellFactory(hyperlinkCellExam);
+
         // Establece el StringConverter personalizado
         dpDateSearchSubject.setConverter(new StringConverter<LocalDate>() {
             Locale locale = Locale.getDefault();
-            // Formato de fecha para mostrar
             private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+            
+            private final DateTimeFormatter defaultFormatter = DateTimeFormatter.ofPattern(ResourceBundle.getBundle("config.config").getString("DATEFORMAT"));
 
-            // Convierte de LocalDate a String
             @Override
             public String toString(LocalDate localDate) {
                 if (localDate != null) {
@@ -291,18 +295,16 @@ public class SubjectController {
                 return null;
             }
 
-            // Convierte de String a LocalDate
             @Override
             public LocalDate fromString(String string) {
-                if (string != null && !string.isEmpty()) {
-                    try {
-                        java.util.Date date = dateFormatter.parse(string);
-                        return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                // Intenta parsear la cadena en un objeto LocalDate
+                LocalDate localDate = LocalDate.parse(string, defaultFormatter);
+                try {
+                    return localDate;
+                } catch (Exception e) {
+                    showErrorAlert("formato incorrecto");
+                    return null;
                 }
-                return null;
             }
         });
         // 1. Columna Name
@@ -731,6 +733,10 @@ public class SubjectController {
      */
     public void handleSearchButtonAction(ActionEvent event) {
         String selectedOption = (String) cbSearchSubject.getSelectionModel().getSelectedItem();
+        List<Subject> beforeSearch = subjects;
+        Locale locale = Locale.getDefault();
+        // Formato de fecha para mostrar
+        DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 
         try {
             //La búsqueda 'name' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager y llamar al método  
@@ -780,6 +786,8 @@ public class SubjectController {
                 try {
                     if (dpDateSearchSubject.getValue() != null) {
                         subjects = FXCollections.observableArrayList(subjectManager.findSubjectByInitDate(dpDateSearchSubject.getValue().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+                    } else {
+                        showErrorAlert("The date should be written following the next example: 18-ene-2023");
                     }
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
@@ -790,6 +798,8 @@ public class SubjectController {
                 try {
                     if (dpDateSearchSubject.getValue() != null) {
                         subjects = FXCollections.observableArrayList(subjectManager.findSubjectByEndDate(dpDateSearchSubject.getValue().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+                    } else {
+                        showErrorAlert("The date should be written following the next example: 18-ene-2023");
                     }
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
@@ -1000,41 +1010,58 @@ public class SubjectController {
      * Método para crear la asignatura
      */
     public void createSubject() {
-        //Crear la subject por defecto
-        Subject defaultSubject = new Subject();
-        defaultSubject.setName(null);
-        defaultSubject.setHours(null);
-        defaultSubject.setLevelType(LevelType.BEGGINER);
-        defaultSubject.setLanguageType(LanguageType.SPANISH);
-        defaultSubject.setDateInit(new Date());
-        defaultSubject.setDateEnd(new Date());
+        ObservableList<Subject> newSubjects = null;
+        Boolean noEmptyName = false;
         try {
-            //Después, se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager 
-            //y se invocará al método createSubject, pasando como parámetro un objeto Subject.
-            subjectManager.createSubject(defaultSubject);
-        } catch (CreateErrorException ex) {
+            newSubjects = FXCollections.observableArrayList(subjectManager.findAllSubjects());
+        } catch (FindErrorException ex) {
             showErrorAlert(ex.getMessage());
         }
-        loadData();
-
-        //Poner siempre las asignaturas nuevas al final de la tabla
-        for (int i = 0; i < subjects.size(); i++) {
-            if (subjects.get(i).getName() == null) {
-                Subject nullNameSubject = subjects.remove(i);
-                subjects.add(nullNameSubject);
+        for (Subject subject : newSubjects) {
+            if (subject.getName() == null) {
+                noEmptyName = true;
+                showErrorAlert("It looks like you've started creating a subject, but you forgot to give it a name. Please complete that one before creating another.");
             }
         }
-        // Mover todas las asignaturas con name igual a null al final de la lista
-        List<Subject> nullNameSubjects = subjects.stream()
-                .filter(subject -> subject.getName() == null)
-                .collect(Collectors.toList());
+        if (!noEmptyName) {
 
-        subjects.removeAll(nullNameSubjects);
-        subjects.addAll(nullNameSubjects);
-        //Asignar las asignaturas
-        tbSubjects.setItems(subjects);
-        //Refresh la tabla
-        tbSubjects.refresh();
+            //Crear la subject por defecto
+            Subject defaultSubject = new Subject();
+            defaultSubject.setName(null);
+            defaultSubject.setHours(null);
+            defaultSubject.setLevelType(LevelType.BEGGINER);
+            defaultSubject.setLanguageType(LanguageType.SPANISH);
+            defaultSubject.setDateInit(new Date());
+            defaultSubject.setDateEnd(new Date());
+
+            try {
+                //Después, se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager 
+                //y se invocará al método createSubject, pasando como parámetro un objeto Subject.
+                subjectManager.createSubject(defaultSubject);
+            } catch (CreateErrorException ex) {
+                showErrorAlert(ex.getMessage());
+            }
+            loadData();
+
+            //Poner siempre las asignaturas nuevas al final de la tabla
+            for (int i = 0; i < subjects.size(); i++) {
+                if (subjects.get(i).getName() == null) {
+                    Subject nullNameSubject = subjects.remove(i);
+                    subjects.add(nullNameSubject);
+                }
+            }
+            // Mover todas las asignaturas con name igual a null al final de la lista
+            List<Subject> nullNameSubjects = subjects.stream()
+                    .filter(subject -> subject.getName() == null)
+                    .collect(Collectors.toList());
+
+            subjects.removeAll(nullNameSubjects);
+            subjects.addAll(nullNameSubjects);
+            //Asignar las asignaturas
+            tbSubjects.setItems(subjects);
+            //Refresh la tabla
+            tbSubjects.refresh();
+        }
     }
 
     /**
@@ -1138,6 +1165,7 @@ public class SubjectController {
                                 enrolledInterface.createEnrolled(enrollmentNew);
                                 //Cambia la suma de estudiantes
                                 subject.setStudentsCount(subject.getStudentsCount() + 1);
+                                // subject.setStatus(true);
                                 //Refresca la tabla
                                 tbSubjects.refresh();
                             } catch (CreateErrorException ex) {
@@ -1167,6 +1195,7 @@ public class SubjectController {
                                 //Cambiar el valor de enrolled
                                 enrolledInterface.updateEnrolled(enrolled);
                                 //Se cambia el número de estudiantes
+                                // subject.setStatus(true);
                                 subject.setStudentsCount(subject.getStudentsCount() - 1);
                                 //Se refresca la tabla.
                                 tbSubjects.refresh();
