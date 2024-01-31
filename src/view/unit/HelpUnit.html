@@ -17,60 +17,101 @@
                 font: 18px arial, sans-serif;
                 text-decoration: underline;
                 font-weight: bold;
-            }            
+            } 
+            img {
+                align: center;
+            }
         </style>    
     </head>
     <body>
         <div>
-            <h3>Units Manager: Help</h3>
-            <h4>Descripción general</h4>
-            <p>Dependiendo del tipo de usuario que inicie sesión en la aplicación 
-                podrá hacer una cosa u otra. </p>
+            <h3><strong>Units Manager: Help</strong></h3>
+            <h4><strong>Descripción general:</strong></h4>
+            <p>Esta ventana te permite ver las <strong>"Units"</strong> de una <strong>"Subject"</strong>.</p>
 
-            <p>Si es de tipo <strong>"Teacher"</strong>, el usuario podrá mediante los controles de 
-                los que dispone la ventana crear, modificar, buscar y eliminar las 
-                units de las subjects en las que este enseñando el usuario.</p>
+            <p>La aplicación permite dos tipos de usuario y tendran permisos diferentes.</p>
 
-            <p>Si es de tipo  <strong>"Student"</strong>, el usuario solo podrá buscar las units de
-                de las subjects en las que este previamente matriculado. 
-                Así mismo. ambos usuarios podrán generar un informe que contiene un 
+            <p>Los <strong>"Teachers"</strong> por un lado, tendran permisos especiales para poder <strong>crear</strong>, <strong>modificar</strong>, <strong>buscar</strong> y <strong>eliminar</strong> las 
+                <strong>units</strong> de las <strong>subjects</strong> en las que este enseñando.</p>
+
+            <p>Los <strong>"Students"</strong> por otro lado, tendran unicamente permisos para poder <strong>buscar</strong> las <strong>units</strong> de
+                de las <strong>subjects</strong> en las que este previamente matriculado. </p>
+
+            <p> Así mismo, ambos usuarios podrán <strong>generar un informe</strong>> que contiene un 
                 listado de los unidades con sus correspondientes datos.</p>
-            <h4>Operaciones para  <strong>"Teacher"</strong></h4>
-            <strong>Crear Units</strong>
+            <p>Y también podran mediante el link que hay en la tabla por cada fila, <strong>"View all Exercises"</strong> ir a la ventana de manejo de exercises y verlos.</p>
 
-            <p>Para crear una Unit, tendras que hacer click en el botón de 
-                <strong>"Create"</strong> y este generara una Unit con valores por 
-                defecto en la tabla.</p>
+            <h4>Operaciones para  <strong>"Teacher"</strong>:</h4>
 
-            <img src="../../resources/unit/UnitCreateSelection.png" alt="" height="807" width="1368">
+            <h4><strong>Crear Units</strong></h4>
+
+            <p><strong>Para crear una Unit,</strong> tendras que hacer click en el botón de 
+                <strong>"Create"</strong> y este generara una Unit con <strong>valores por 
+                    defecto</strong> en la tabla.</p>
+
+            <p>Vamos a hacer un ejemplo en la subject "ADT" y le damos al botón de <strong>"Create"</strong>":</p>
+
+            <img src="../../resources/unit/UnitCreateSelection.png" alt="" height="500" width="900">
 
             <p><strong>Si todo sale bien:</strong> saldra un mensajito de que se ha añadido una nueva unit</p>
 
-            <img src="../../resources/unit/UnitAddedSuccessfully.png" alt="" height="807" width="1368">
+            <img src="../../resources/unit/UnitAddedSuccessfully.png" alt="" height="350" width="700">
 
-            <p>Despues de aceptar el mensaje la tabla se cargará con el nuevo valor</p>
+            <p>Despues de aceptar el mensaje la tabla se cargará con el nuevo valor.</p>
 
-            <img src="../../resources/unit/NewRow.png" alt="" height="807" width="1368">
+            <img src="../../resources/unit/NewRow.png" alt="" height="500" width="900">
 
-            <p> <strong>Si algo falla: </strong>Sera porque en una misma Subject no pueden haber dos Unit con el mismo nombre, por lo que antes
-                de crear la unit con valores por defecto te conprobara que no existe una sin nombre en 
+            <p><strong>Si algo falla: </strong>Puede ser porque en una misma <strong>Subject no pueden haber dos Unit con el mismo nombre</strong>, por lo que antes
+                de crear la unit con valores por defecto te <strong>conprobara que no existe una sin nombre</strong> en 
                 la misma subjects donde se creé.</p>
-            <p>Si sucede este problema aparecera una alerta avisando que añadas nombre a la unit que no tiene.</p>
+            <p>Si sucede este problema aparecera una alerta avisando que añadas nombre a la unit que no tiene y despues de añadirselo te dejara crear otra en la misma subject con valores por defecto.</p>
 
-            <img src="../../resources/unit/ErrorNo2namesWithoutText.png" alt="" height="807" width="1368">
+            <img src="../../resources/unit/ErrorNo2namesWithoutText.png" alt="" height="350" width="700">
 
-            <p>Otro problema podria ser que te has pasado de caracteres, ya que la celda solo permite 100
-                asi que serias avisado de que te has pasado del limite con este otro mensaje</p>
+            <h4><strong>Modificar Units:</strong></h4>
+
+            <p>Al ser una tabla editable puedes editar directamente la información que quieras clickando dos veces en el campo que quieras editar.</p>
+
+            <strong>--> Modificar Name:</strong>
+
+            <p>Continuando con el ejemplo anterior, vamos a cambiarle los valores por defecto a la unit.</p>
+
+            <p>Primero clickaremos dos veces en la celda de <strong>"name"</strong> para ponerla en modo edición.</p>
+
+            <img src="../../resources/unit/UpdateName.png" alt="" height="500" width="900">
+
+            <p>Le cambiaremos el nombre a <strong>"Unit to update" y le daremos al enter para aceptar el valor.</strong></p>
+
+            <img src="../../resources/unit/NameUpdated.png" alt="" height="500" width="900">
+
+            <strong>--> Posibles errores al modificar Name:</strong>
+
+            <p>Un error podría ser que metas el nombre de una unit que ya existe en la misma subject. Por ejemplo, vamos a poner <strong>"UD1 ADT"</strong> otra vez.</p>
+
+            <img src="../../resources/unit/RepetirNombre.png" alt="" height="500" width="900">
+
+            <p>Y al darle al enter nos mostrara un mensjae avisando de que se repiten nombres en la subject y el valor no se guardara.</p>
+
+            <img src="../../resources/unit/UnitExist.png" alt="" height="350" width="700">
+
+            <p><strong>Otro problema podria ser:</strong> que el <strong>nombre</strong> que as escrito <strong>se ha pasado del limite de caracteres</strong>, ya que la celda solo permite 100
+                asi que serias avisado de que te has pasado del limite con este otro mensaje.</p>
 
             //---------FOTOOOOOOO Error LIMITE CHARACTERS
 
-            <p>Una vez lo corrijas podras añadirla.</p>
-
-            //---------FOTOOOOOOO Añadida con correción.
-
-            <strong>Modificar Units</strong>
-            <p>Al ser una tabla editable puedes editar directamente la información que quieras clickando dos veces en el campo que quieras editar.
-            </p>
+            <strong>--> Modificar Subject</strong>
+            vista de las opciones en la celda
+            <img src="../../resources/unit/EditingComboBox.png" alt="" height="500" width="900">
+            vista de la seleccion de pgr
+            <img src="../../resources/unit/SeleccionarPGR.png" alt="" height="500" width="900">
+            vista de que ya no esta en la tabla de adt la unit
+            <img src="../../resources/unit/DesaparecioEnADT.png" alt="" height="500" width="900">
+            abrimos tabla de pgr
+            <img src="../../resources/unit/AbrirTablapgr.png" alt="" height="500" width="900">
+            <strong>--> Modificar Description</strong>
+            <strong>--> Modificar Date Init</strong>
+            <strong>--> Modificar Date End</strong>
+            <strong>--> Modificar Hours </strong>
             <strong>Borrar Units</strong>
 
             <p> Se pueden borrar "Units" de dos maneras: Con el <strong>boton</strong> o con <strong>click derecho</strong> sobre la tabla.</p>
@@ -82,11 +123,11 @@
             //---------FOTOOOOOOO Seleccion == Delete activado
             <p>Cuando se realice una de las dos acciones saldra una pregunta esperando confirmación para borrar la Unit seleccionada.</p>
 
-            //---------FOTOOOOOOO Alert Are you sure?
+            <img src="../../resources/unit/AreYouSureRemove.png" alt="" height="350" width="700">
             <p>Si le das a la x o a cancelar desaparecera y entonces no se borrará nada.</p>
 
             <p>Si le das a acceptar la unit se borrará y la tabla se actualizara.</p>
-            //---------FOTOOOOOOO UNIT NO ESTA
+            <img src="../../resources/unit/Borrada.png" alt="" height="500" width="900">
 
             <h4>Operaciones para <strong>ambos users</strong></h4>
             <strong>Busqueda de Units</strong>
