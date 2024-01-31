@@ -20,6 +20,9 @@ public class DateUnitEditingCell extends TableCell<Unit, Date> {
     private Locale locale;
     private DateFormat dateFormatter;
 
+    /**
+     * Custom cell factory for the tbvUnits. It create a date picker.
+     */
     public DateUnitEditingCell() {
         this.dpUnitCell = new DatePicker();
         // Configurar un StringConverter para convertir entre Date y String
@@ -46,6 +49,12 @@ public class DateUnitEditingCell extends TableCell<Unit, Date> {
 
     }
 
+    /**
+     * It gets the current item of the cell.
+     *
+     * @param date The date that the the cell has.
+     * @param empty If the cell is empty.
+     */
     @Override
     protected void updateItem(Date date, boolean empty) {
         super.updateItem(date, empty);
@@ -68,6 +77,9 @@ public class DateUnitEditingCell extends TableCell<Unit, Date> {
         }
     }
 
+    /**
+     * The metho of the cell edit.
+     */
     @Override
     public void startEdit() {
         if (!isEmpty()) {
@@ -81,6 +93,9 @@ public class DateUnitEditingCell extends TableCell<Unit, Date> {
         }
     }
 
+    /**
+     * The cancelation of the edit.
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();

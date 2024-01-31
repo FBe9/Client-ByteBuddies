@@ -60,8 +60,10 @@ public class MenuBarController {
     private static final Logger LOGGER = Logger.getLogger("package view");
 
     /**
+     * Abre la ventana de Subject pasandole el usuario conectado a la aplicación
+     * y el stage donde abrir la ventana.
      *
-     * @param event
+     * @param event El evento de apertura de ventana.
      */
     public void handleSubjectMenuItemAction(Event event) {
         try {
@@ -77,8 +79,10 @@ public class MenuBarController {
     }
 
     /**
+     * Abre la ventana de Unit pasandole el usuario conectado a la aplicación y
+     * el stage donde abrir la ventana.
      *
-     * @param event
+     * @param event El evento de apertura de ventana.
      */
     public void handleUnitMenuItemAction(Event event) {
         try {
@@ -94,8 +98,10 @@ public class MenuBarController {
     }
 
     /**
+     * Abre la ventana de Exam pasandole el usuario conectado a la aplicación y
+     * el stage donde abrir la ventana.
      *
-     * @param event
+     * @param event El evento de apertura de ventana.
      */
     public void handleExamMenuItemAction(Event event) {
         try {
@@ -113,8 +119,10 @@ public class MenuBarController {
     }
 
     /**
+     * Abre la ventana de Exercise pasandole el usuario conectado a la
+     * aplicación y el stage donde abrir la ventana.
      *
-     * @param event
+     * @param event El evento de apertura de ventana.
      */
     public void handleExerciseMenuItemAction(Event event) {
         try {
@@ -130,8 +138,10 @@ public class MenuBarController {
     }
 
     /**
+     * Abre la ventana de help de Subject pasandole el usuario conectado a la
+     * aplicación y el stage donde abrir la ventana.
      *
-     * @param event
+     * @param event El evento de apertura de ventana.
      */
     public void handleSubjectHelpMenuItemAction(Event event) {
         try {
@@ -146,8 +156,10 @@ public class MenuBarController {
     }
 
     /**
+     * Abre la ventana de help de Unit pasandole el usuario conectado a la
+     * aplicación y el stage donde abrir la ventana.
      *
-     * @param event
+     * @param event El evento de apertura de ventana.
      */
     public void handleUnitHelpMenuItemAction(Event event) {
         try {
@@ -162,8 +174,10 @@ public class MenuBarController {
     }
 
     /**
+     * Abre la ventana de help de Exam pasandole el usuario conectado a la
+     * aplicación y el stage donde abrir la ventana.
      *
-     * @param event
+     * @param event El evento de apertura de ventana.
      */
     public void handleExamHelpMenuItemAction(Event event) {
         try {
@@ -178,8 +192,10 @@ public class MenuBarController {
     }
 
     /**
+     * Abre la ventana de help de Exercise pasandole el usuario conectado a la
+     * aplicación y el stage donde abrir la ventana.
      *
-     * @param event
+     * @param event El evento de apertura de ventana.
      */
     public void handleExerciseHelpMenuItemAction(Event event) {
         try {
@@ -193,6 +209,12 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Espera a la confirmación del usuario para cerrar la aplicación y despues
+     * la cierra.
+     *
+     * @param event El evento de clausura de ventana.
+     */
     public void handleCloseApplicationMenuItemAction(Event event) {
         try {
             //Ask user for confirmation on exit
@@ -215,8 +237,10 @@ public class MenuBarController {
     }
 
     /**
+     * Espera a la confirmación del usuario para cerrar la sesion en la
+     * aplicación y despues de cerrarla abre la ventana de sign in.
      *
-     * @param event
+     * @param event El evento de cerrar sesión.
      */
     public void handleLogOutMenuItemAction(Event event) {
         try {
@@ -250,16 +274,19 @@ public class MenuBarController {
     }
 
     /**
+     * Se asigna el usuario, que corresponde con el usuario conectado a la
+     * aplicación.
      *
-     * @param user
+     * @param user El usuario conectado a la aplicación.
      */
     public static void setUser(User user) {
         loggedUser = user;
     }
 
     /**
+     * Se asigna el stage para abrir la ventana.
      *
-     * @param stage
+     * @param stage El stage donde abrir la ventana.
      */
     public static void setStage(Stage stage) {
         stageMenu = stage;
