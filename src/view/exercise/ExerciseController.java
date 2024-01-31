@@ -46,9 +46,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javax.ws.rs.core.GenericType;
 import models.Exercise;
 import models.LevelType;
 import models.Unit;
@@ -181,7 +181,8 @@ public class ExerciseController {
         stage.setTitle("Exercise");
 
         //Se añadirá a la ventana el icono de una estrella.
-        //TODO
+        stage.getIcons().add(new Image("resources/Logo.jpg"));
+        
         //Ventana no redimensionable.
         stage.setResizable(false);
 
@@ -299,7 +300,7 @@ public class ExerciseController {
                     this.cbUnitSearch.getItems().addAll(unitNames);
                     this.cbUnitSearch.getSelectionModel().selectFirst();
                 }
-            } catch (Exception e) {
+            } catch (FindErrorException e) {
                 LOGGER.log(Level.SEVERE, "Error searching for student unit");
             }
         }
@@ -364,8 +365,7 @@ public class ExerciseController {
         );
         String unitName = this.cbUnitSearch.getSelectionModel().getSelectedItem().toString();
         //Crear una obsevable list para la tabla de exercises.
-        exerciseData = FXCollections.observableArrayList(exerciseInterface.getExercisesByUnitName_XML(new GenericType<List<Exercise>>() {
-        }, unitName));
+        exerciseData = FXCollections.observableArrayList(exerciseInterface.findExercisesByUnitName(unitName));
         //Añadir modelos a la tabla.
         this.tvExercise.setItems(exerciseData);
 
@@ -612,7 +612,7 @@ public class ExerciseController {
                 this.lblErrorCreateModify.setText("🛈 Only numbers are allowed on the hours fields.");
             }
             try {
-                exerciseInterface.create_XML(newExercise);
+                exerciseInterface.createExercise(newExercise);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Created successfully", ButtonType.OK);
                 alert.showAndWait();
                 tvExercise.refresh();
@@ -626,7 +626,7 @@ public class ExerciseController {
             } catch (CreateErrorException e) {
                 new Alert(Alert.AlertType.ERROR, "Failed to create", ButtonType.OK).showAndWait();
             }
-        } catch (Exception ex) {
+        } catch (FindErrorException ex) {
             showErrorAlert("Error create");
             LOGGER.log(Level.SEVERE, ex.getMessage());
         }
@@ -681,7 +681,7 @@ public class ExerciseController {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 //modify exercise from server side
                 String itemId = exerciseModify.getId().toString();
-                exerciseInterface.edit_XML(exerciseModify, itemId);
+                exerciseInterface.updateExercise(exerciseModify, itemId);
                 Alert alert2 = new Alert(Alert.AlertType.INFORMATION, "Successfully modified", ButtonType.OK);
                 alert2.showAndWait();
                 tvExercise.refresh();
@@ -733,16 +733,13 @@ public class ExerciseController {
             } else {
                 searchValue = cbSearchType.getSelectionModel().getSelectedItem().toString();
                 if (searchValue.equalsIgnoreCase("All")) {
-                    exerciseData = FXCollections.observableArrayList(exerciseInterface.getExercisesByUnitName_XML(new GenericType<List<Exercise>>() {
-                    }, unitValue));
+                    exerciseData = FXCollections.observableArrayList(exerciseInterface.findExercisesByUnitName(unitValue));
                     tvExercise.setItems((ObservableList) exerciseData);
                 } else if (searchValue.equalsIgnoreCase("Level type")) {
-                    exerciseData = FXCollections.observableArrayList(exerciseInterface.getExercisesByLevelAndUnitName_XML(new GenericType<List<Exercise>>() {
-                    }, tfSearch.getText(), unitValue));
+                    exerciseData = FXCollections.observableArrayList(exerciseInterface.findExercisesByLevelAndUnitName(tfSearch.getText(), unitValue));
                     tvExercise.setItems((ObservableList) exerciseData);
                 } else if (searchValue.equalsIgnoreCase("Number")) {
-                    exerciseData = FXCollections.observableArrayList(exerciseInterface.getExercisesByNumberAndUnitName_XML(new GenericType<List<Exercise>>() {
-                    }, tfSearch.getText(), unitValue));
+                    exerciseData = FXCollections.observableArrayList(exerciseInterface.findExercisesByNumberAndUnitName(tfSearch.getText(), unitValue));
                     tvExercise.setItems((ObservableList) exerciseData);
                 }
             }
@@ -819,7 +816,7 @@ public class ExerciseController {
             //If OK to deletion
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 //delete exercise from server side
-                exerciseInterface.remove(selectedExercise.getId().toString());
+                exerciseInterface.removeExercise(selectedExercise.getId().toString());
                 //removes selected item from table
                 this.tvExercise.getItems().remove(selectedExercise);
                 this.tvExercise.refresh();
@@ -905,8 +902,9 @@ public class ExerciseController {
         // RECEIVE METHOD
         if (exerciseFile.getFile() != null) {
             try {
-                fileInterface.receiveFile(exerciseFile.getFile());
-            } catch (Exception ex) {
+                File file = fileInterface.receiveFile(exerciseFile.getFile());
+                Desktop.getDesktop().open(file);
+            } catch (IOException ex) {
                 Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
@@ -927,8 +925,9 @@ public class ExerciseController {
         // RECEIVE METHOD
         if (exerciseFileSolution.getFileSolution() != null) {
             try {
-                fileInterface.receiveFile(exerciseFileSolution.getFileSolution());
-            } catch (Exception ex) {
+                File file = fileInterface.receiveFile(exerciseFileSolution.getFileSolution());
+                Desktop.getDesktop().open(file);
+            } catch (IOException ex) {
                 Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {

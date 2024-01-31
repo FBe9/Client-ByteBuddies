@@ -139,7 +139,7 @@
             <Font name="Goudy Old Style" size="14.0" />
          </font>
       </Button>
-      <Label layoutX="597.0" layoutY="605.0" text="Download:">
+      <Label layoutX="597.0" layoutY="605.0" text="Open:">
          <font>
             <Font name="Calibri Italic" size="15.0" />
          </font>

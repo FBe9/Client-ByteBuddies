@@ -250,16 +250,20 @@ public class SignInWindowController {
              * un user con los valores del email y la contraseña.
              */
 
+                Stage stageNew = new Stage();
             if (tfEmail.getText().equals("student@gmail.com") && tfPassword.getText().equals("abcd*1234")) {
                 User user = new User();
                 user.setUser_type("Student");
                 user.setId(2);
+                
                 FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/subject.fxml"));
                 Parent root = (Parent) loader.load();
                 SubjectController controller = (SubjectController) loader.getController();
-                controller.setStage(stage);
+                
+                controller.setStage(stageNew);
+                stage.close();
                 controller.initStage(root, user);
-                MenuBarController.setStage(stage);
+                MenuBarController.setStage(stageNew);
                 MenuBarController.setUser(user);
             } else if (tfEmail.getText().equals("teacher@gmail.com") && tfPassword.getText().equals("abcd*1234")) {
                 User user = new User();
@@ -269,9 +273,10 @@ public class SignInWindowController {
                 Parent root = (Parent) loader.load();
                 SubjectController controller = (SubjectController) loader.getController();
 
-                controller.setStage(stage);
+                controller.setStage(stageNew);
+                stage.close();
                 controller.initStage(root, user);
-                MenuBarController.setStage(stage);
+                MenuBarController.setStage(stageNew);
                 MenuBarController.setUser(user);
             } else {
                 byte[] encryptedPassword = AsimetricaClient.encryptedData(tfPassword.getText());
@@ -287,9 +292,10 @@ public class SignInWindowController {
                 Parent root = (Parent) loader.load();
                 SubjectController controller = (SubjectController) loader.getController();
 
-                controller.setStage(stage);
+                controller.setStage(stageNew);
+                stage.close();
                 controller.initStage(root, user);
-                MenuBarController.setStage(stage);
+                MenuBarController.setStage(stageNew);
                 MenuBarController.setUser(user);
             }
 
