@@ -1,10 +1,10 @@
 package encrypt;
 
+import static com.google.common.io.ByteStreams.toByteArray;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,8 +16,6 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.Cipher;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -35,24 +33,19 @@ public class AsimetricaClient {
      * @param password The password to be encrypted.
      * @return The encrypted data.
      */
-    public static byte[] encryptedData(String password) {
+    public byte[] encryptedData(String password) {
         byte[] encryptedData = null;
         try {
-
-            // Load ECC Public Key
-            InputStream fis = AsimetricaClient.class.getResourceAsStream("publickey.der");
-            byte[] publicKeyBytes = new byte[fis.available()];
-            fis.read(publicKeyBytes);
-            fis.close();
-
+            
+            InputStream input = getClass().getResourceAsStream("public.der");
+            byte fileKey[] = toByteArray(input);
+            input.close();
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-
-            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
-
-            Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            encryptedData = cipher.doFinal(password.getBytes());
+            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(fileKey);
+            PublicKey publicKey = keyFactory.generatePublic(x509EncodedKeySpec);
+            Cipher c = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            c.init(Cipher.ENCRYPT_MODE, publicKey);
+            encryptedData = c.doFinal(password.getBytes());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,5 +69,6 @@ public class AsimetricaClient {
         }
         return buf.toString();
     }
+
 
 }
