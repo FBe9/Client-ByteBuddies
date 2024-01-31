@@ -100,7 +100,11 @@ public class DateExamEditingCell extends TableCell<Exam, Date> {
                 setGraphic(null);
             } else {
                 if (!getTableView().getItems().get(getIndex()).getDescription().equals("")) {
-                    setText(dateFormatter.format(getTableView().getItems().get(getIndex()).getDateInit()));
+                    try{
+                        setText(dateFormatter.format(getTableView().getItems().get(getIndex()).getDateInit()));
+                    } catch(NullPointerException ex){
+                        setText("");
+                    }
                 }
                 setGraphic(null);
             }

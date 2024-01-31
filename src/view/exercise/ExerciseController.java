@@ -849,7 +849,7 @@ public class ExerciseController {
                     Desktop.getDesktop().open(file);
                     // CALL SENDFILE INTERFACE
                     // SEND METHOD
-                    fileInterface.sendFile(file);
+                    //fileInterface.sendFile(file);
                 } catch (IOException ex) {
                     Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -879,7 +879,7 @@ public class ExerciseController {
                     Desktop.getDesktop().open(file);
                     // CALL SENDFILE INTERFACE
                     // SEND METHOD
-                    fileInterface.sendFile(file);
+                    //fileInterface.sendFile(file);
                 } catch (IOException ex) {
                     Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -901,12 +901,12 @@ public class ExerciseController {
         // CALL SENDFILE INTERFACE
         // RECEIVE METHOD
         if (exerciseFile.getFile() != null) {
-            try {
-                File file = fileInterface.receiveFile(exerciseFile.getFile());
-                Desktop.getDesktop().open(file);
+            /*try {
+                //File file = fileInterface.receiveFile(exerciseFile.getFile());
+                //Desktop.getDesktop().open(file);
             } catch (IOException ex) {
                 Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }*/
         } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "There are no files selected for this exercise yet.", ButtonType.OK);
             alert.showAndWait();
@@ -924,12 +924,12 @@ public class ExerciseController {
         // CALL SENDFILE INTERFACE
         // RECEIVE METHOD
         if (exerciseFileSolution.getFileSolution() != null) {
-            try {
+            /*try {
                 File file = fileInterface.receiveFile(exerciseFileSolution.getFileSolution());
                 Desktop.getDesktop().open(file);
             } catch (IOException ex) {
                 Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }*/
         } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "There are no files solution selected for this exercise yet.", ButtonType.OK);
             alert.showAndWait();

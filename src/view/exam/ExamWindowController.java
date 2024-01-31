@@ -322,7 +322,6 @@ public class ExamWindowController {
             }
         }
 
-        IntegerProperty disableRowIndex = new SimpleIntegerProperty();
         // El resto de columnas se rellenarán con los atributos de su mismo nombre.
         tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
         tcDuration.setCellValueFactory(new PropertyValueFactory<>("duration"));
@@ -339,8 +338,6 @@ public class ExamWindowController {
             btnPrintExam.setDisable(true);
             btnCancelExam.setDisable(false);
             btnSaveExam.setDisable(false);
-            disableRowIndex.setValue(t.getTablePosition().getRow());
-
         });
         tcSubject.setOnEditStart((TableColumn.CellEditEvent<Exam, Subject> t) -> {
             cbSearchCriteria.setDisable(true);
@@ -375,11 +372,16 @@ public class ExamWindowController {
         });
         tvExam.setRowFactory(tv -> {
             TableRow<Exam> row = new TableRow<>();
+            tvExam.getSelectionModel().selectedItemProperty().addListener((obs, oldCell, newCell) ->{
+                if(newCell == null){
+                    row.disableProperty().unbind();
+                    row.setDisable(false);
+                }
+            });
             tvExam.editingCellProperty().addListener((obs, oldCell, newCell) -> {
                 if (newCell != null) {
-                    row.setDisable(row.getIndex() != newCell.getRow());
+                    row.disableProperty().bind(row.indexProperty().isNotEqualTo(tvExam.getSelectionModel().getSelectedIndex()));
                 } else {
-                    row.setDisable(false);
                 }
             });
             return row;
@@ -420,6 +422,7 @@ public class ExamWindowController {
                     }
                     examEditing.setDescription(t.getNewValue());
                 }
+                //disabledRowIndex = new disabledRowIndex();
         );
         tcSubject.setOnEditCommit(
                 (TableColumn.CellEditEvent<Exam, Subject> t) -> {
@@ -669,12 +672,14 @@ public class ExamWindowController {
             // Si elige “Yes” se cancela la edición, se revierten los datos de la tabla a su estado anterior a la edición actual.
             if (result.isPresent() && result.get() == ButtonType.YES) {
                 LOGGER.info("Response yes. Cancel edit.");
-                tvExam.setItems(exams);
+
                 if (flagNewRow) {
                     tvExam.getItems().remove(tvExam.getItems().size() - 1);
+                } else {
+                    tvExam.setItems(exams);
                 }
-                tvExam.refresh();
-                examEditing = new Exam();
+                //tvExam.refresh();
+                examEditing = null;
                 // Se deshabilita el botón “btnDeleteExam” y se esconden los botones “btnCancelExam” y “btnSaveExam” y se vuelven a
                 // habilitar el resto de campos, ComboBoxes y botones que se han deshabilitado anteriormente.
                 cbSearchCriteria.setDisable(false);
@@ -720,7 +725,8 @@ public class ExamWindowController {
                             ex.setDateInit(examEditing.getDateInit());
                             examInterface.createExam(ex);
                             if (flagNewRow) {
-                                exams.add(examEditing);
+                                exams.remove(exams.size() - 1);
+                                exams.add(ex);
                             }
                         }
                     } catch (CreateErrorException | UpdateErrorException ex) {
@@ -750,8 +756,7 @@ public class ExamWindowController {
         LOGGER.info("Exit pressed.");
         // Se observará que no se esté editando la tabla o que no haya datos sin guardar.
         // TO FINISH
-        
-        
+
         try {
             //Ask user for confirmation on exit
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
@@ -794,7 +799,8 @@ public class ExamWindowController {
         btnPrintExam.setDisable(true);
         // Se crea una nueva fila con valores por defecto, donde todos los campos están vacíos
         ObservableList<Exam> visibleExams = tvExam.getItems();
-        visibleExams.add(new Exam("", null, "", "", null));
+        examEditing = new Exam("", null, "", "", null);
+        visibleExams.add(examEditing);
         tvExam.setItems(visibleExams);
         int newIndex = tvExam.getItems().size() - 1;
         // Se asigna el foco a la columna “Description” de la nueva fila.
