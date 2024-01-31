@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,11 +29,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  */
 public class AsimetricaClient {
 
-    static {
-        // Add Bouncy Castle as a security provider
-        Security.addProvider(new BouncyCastleProvider());
-    }
-
     /**
      * Encrypts the provided password using the ECC public key.
      *
@@ -49,12 +45,12 @@ public class AsimetricaClient {
             fis.read(publicKeyBytes);
             fis.close();
 
-            KeyFactory keyFactory = KeyFactory.getInstance("EC");
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
 
             PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 
-            Cipher cipher = Cipher.getInstance("ECIES");
+            Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             encryptedData = cipher.doFinal(password.getBytes());
 
