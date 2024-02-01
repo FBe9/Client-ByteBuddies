@@ -715,7 +715,8 @@ public class UnitWindowController {
                 clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits(comboValue));
                 tbvUnit.setItems((ObservableList) clientsDataU);
                 tbvUnit.refresh();
-
+                tfSearch.setText("");
+                dpSearch.setValue(null);
             }
         } catch (FindErrorException ex) {
             Logger.getLogger("Error while recharging the table").log(Level.SEVERE, null, ex);
