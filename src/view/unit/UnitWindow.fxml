@@ -48,7 +48,7 @@
                 <TableColumn fx:id="tbcExercises" prefWidth="148.0" text="Exercises" />
             </columns>
          <contextMenu>
-            <ContextMenu>
+            <ContextMenu fx:id="contextMenu">
               <items>
                 <MenuItem fx:id="cmiCreateUnit" mnemonicParsing="false" onAction="#handelCreateButtonAction" text="Create new Unit" />
                   <MenuItem fx:id="cmiDeleteUnit" mnemonicParsing="false" onAction="#handelDeleteButtonAction" text="Delete Unit" />
