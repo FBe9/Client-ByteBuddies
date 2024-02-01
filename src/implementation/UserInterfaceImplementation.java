@@ -1,14 +1,9 @@
 package implementation;
 
-import exceptions.CreateErrorException;
 import exceptions.FindErrorException;
-import exceptions.UpdateErrorException;
 import interfaces.UserInterface;
-import java.util.Collection;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.core.GenericType;
 import models.User;
 import services.UserRESTClient;
 
@@ -55,6 +50,11 @@ public class UserInterfaceImplementation implements UserInterface {
         return userSearch;
     }
 
+    /**
+     * Method to reset a password
+     *
+     * @param email the email of the user that wants to reset the password.
+     */
     @Override
     public void resetPassword(String email) {
         LOGGER.info("Sending password reset request for " + email);

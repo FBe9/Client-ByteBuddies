@@ -182,7 +182,7 @@ public class ExerciseController {
 
         //Se añadirá a la ventana el icono de una estrella.
         stage.getIcons().add(new Image("resources/Logo.jpg"));
-        
+
         //Ventana no redimensionable.
         stage.setResizable(false);
 
@@ -253,7 +253,8 @@ public class ExerciseController {
 
         //Se rellenará el combobox “cbLevelTypeCreate” con una lista de los 
         //tres tipos de nivel. Se seleccionará el primero.
-        this.cbLevelTypeCreate.getItems().addAll(LevelType.values());
+        ObservableList<LevelType> levelTypes = FXCollections.observableArrayList(LevelType.BEGGINER, LevelType.MEDIUM, LevelType.EXPERIENCED);
+        this.cbLevelTypeCreate.getItems().addAll(levelTypes);
         cbLevelTypeCreate.getSelectionModel().selectFirst();
 
         //Se rellenará el combobox “cbUnitSearch” con una lista de unidades de 
@@ -502,6 +503,7 @@ public class ExerciseController {
         }
         if (!this.tfNumber.getText().matches(NUMBERS_REGEX) || !this.tfHours.getText().matches(NUMBERS_REGEX) || this.tfNumber.getText().trim().isEmpty() || this.tfHours.getText().trim().isEmpty() || this.tfDescription.getText().trim().isEmpty()) {
             this.btmCreate.setDisable(true);
+            this.btmModify.setDisable(true);
         }
     }
 
@@ -849,8 +851,9 @@ public class ExerciseController {
                     Desktop.getDesktop().open(file);
                     // CALL SENDFILE INTERFACE
                     // SEND METHOD
-                    //fileInterface.sendFile(file);
-                } catch (IOException ex) {
+                    fileInterface.sendFile(file, exerciseFile, "file");
+                    tvExercise.refresh();
+                } catch (IOException | UpdateErrorException ex) {
                     Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -879,8 +882,9 @@ public class ExerciseController {
                     Desktop.getDesktop().open(file);
                     // CALL SENDFILE INTERFACE
                     // SEND METHOD
-                    //fileInterface.sendFile(file);
-                } catch (IOException ex) {
+                    fileInterface.sendFile(file, exerciseFileSolution, "fileSolution");
+                    tvExercise.refresh();
+                } catch (IOException | UpdateErrorException ex) {
                     Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -901,10 +905,10 @@ public class ExerciseController {
         // CALL SENDFILE INTERFACE
         // RECEIVE METHOD
         if (exerciseFile.getFile() != null) {
-            /*try {
-                //File file = fileInterface.receiveFile(exerciseFile.getFile());
-                //Desktop.getDesktop().open(file);
-            } catch (IOException ex) {
+            try {
+                File file = fileInterface.receiveFile(exerciseFile.getFile(), exerciseFile);
+                Desktop.getDesktop().open(file);
+            } catch (IOException | FindErrorException ex) {
                 Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
             }*/
         } else {
@@ -924,10 +928,10 @@ public class ExerciseController {
         // CALL SENDFILE INTERFACE
         // RECEIVE METHOD
         if (exerciseFileSolution.getFileSolution() != null) {
-            /*try {
-                File file = fileInterface.receiveFile(exerciseFileSolution.getFileSolution());
+            try {
+                File file = fileInterface.receiveFile(exerciseFileSolution.getFileSolution(), exerciseFileSolution);
                 Desktop.getDesktop().open(file);
-            } catch (IOException ex) {
+            } catch (IOException | FindErrorException ex) {
                 Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
             }*/
         } else {

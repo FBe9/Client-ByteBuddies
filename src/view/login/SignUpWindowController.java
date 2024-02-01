@@ -2,23 +2,17 @@ package view.login;
 
 import encrypt.AsimetricaClient;
 import exceptions.CreateErrorException;
-import exceptions.EmailExistsException;
-import exceptions.FindErrorException;
 
 import exceptions.WrongEmailFormatException;
-import exceptions.WrongMobileFormatException;
 import exceptions.WrongNameFormatException;
 import exceptions.WrongPasswordFormatException;
 import factories.StudentFactory;
 import factories.UserFactory;
 import interfaces.StudentInterface;
 import interfaces.UserInterface;
-import java.time.LocalDate;
 import java.util.Date;
-import java.util.List;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -42,10 +36,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javax.ws.rs.core.GenericType;
 import models.LevelType;
 import models.Student;
-import models.Subject;
 import models.User;
 
 /**
@@ -352,8 +344,20 @@ public class SignUpWindowController {
             userStudent.setUser_type("Student");
             userStudent.setSurname(tfLastName.getText());
             userStudent.setEmail(tfEmailSignUp.getText());
-            byte[] encryptedPassword = AsimetricaClient.encryptedData(tfPasswordSignUp.getText());
-            String passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+            AsimetricaClient asimetricaClient = new AsimetricaClient();
+            byte[] encryptedPassword = null;
+            try {
+                encryptedPassword = asimetricaClient.encryptedData(tfPasswordSignUp.getText());
+            } catch (Exception ex) {
+                showErrorAlert("Error during login");
+            }
+
+            String passwordEncrypted = null;
+            try {
+                passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+            } catch (Exception ex) {
+                showErrorAlert("Error during login");
+            }
             userStudent.setPassword(passwordEncrypted);
             userStudent.setLevelType(cbLevelType.getSelectionModel().getSelectedItem());
             userStudent.setDateInit(new Date());

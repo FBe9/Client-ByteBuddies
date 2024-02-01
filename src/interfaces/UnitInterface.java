@@ -6,6 +6,7 @@ import java.util.List;
 import models.Unit;
 
 /**
+ * This interface has all the unit entity CRUD methods.
  *
  * @author Nerea
  */
@@ -130,7 +131,7 @@ public interface UnitInterface {
      * during reading.
      */
     public List<Unit> findSubjectUnitsByHours(String hours, String subject) throws FindErrorException;
-    
+
     /**
      * This method finds all the units from the subjects where the Teacher
      * teachs.

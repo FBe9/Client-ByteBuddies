@@ -1,12 +1,7 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
-        <title>UNIT HELP PAGE</title>
+        <title>Units help page</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
@@ -22,63 +17,152 @@ and open the template in the editor.
                 font: 18px arial, sans-serif;
                 text-decoration: underline;
                 font-weight: bold;
-            }            
+            } 
+            img {
+                align: center;
+            }
         </style>    
     </head>
     <body>
         <div>
-            <h3>Administrator Management: Help</h3>
-            <h4>Descripción general</h4>
-            <p>Dependiendo del tipo de usuario que inicie sesión en la aplicación 
-                podrá hacer una cosa u otra. Si es de tipo profesor, el 
-                usuario podrá mediante los controles de los que dispone la 
-                ventana crear, modificar, buscar y eliminar los ejercicios de 
-                las unidades de las asignaturas de las que se haga cargo. Si es
-                de tipo alumno, el usuario solo podrá buscar los ejercicios de
-                las unidades de las asignaturas en las que este previamente 
-                matriculado. Así mismo podrán generar un informe que contiene un 
-                listado de los ejercicios con sus correspondientes datos.</p>
-            <h4>Operaciones para profesores</h4>
-            <strong>Crear ejercicios</strong>
-            <p>Para crear un ejercicio, tendrá que seleccionar la unidad, 
-                el número, un archivo con el enunciado del ejercicios, otro 
-                archivo distinto con la solución de dicho ejercicios, las horas
-                que se tarda en hacerlo, la fecha límite, seleccionar la 
-                dificultad y la descripción. Una vez estén todos los campos 
-                válidados, el profesor podrá pulsar en el botón de 
-                <strong>Create</strong>. Si no se produce ningún error, 
-                se creará el mental disease.</p>
-            <strong>Modificar ejercicios</strong>
-            <p>Para modificar un ejercicio deberá seleccionar un ejercicio de la 
-                tabla y tendrá que cambiar el campo que quiera y pulsar el botón 
-                <strong>Modify</strong>. Saldrá una confirmación que le preguntará 
-                si quiere modificarlo. Si es afirmativa y no se produce ningún 
-                error se modificará el ejercicio.</p>
-            <strong>Borrar ejercicios</strong>
-            <p>Para eliminar un ejercicio deberá seleccionar el que quiera 
-                de la tabla y pulsar en el botón de <strong>Delete</strong>. Si no 
-                se produce ningún error, se le pedirá una confirmación para borrar 
-                el ejercicio deseado. Si se confirma el borrado se eliminará el 
-                ejercicio y se actualizará la tabla que se muestra en la ventana.</p>
-            <h4>Operaciones para profesores y alumnos</h4>
-            <strong>Busqueda de ejercicios</strong>
-            <p>Para buscar los datos de un ejercicio primero deberá 
-                seleccionar en el combobox de las unidades la unidad de la cual
-                quiera los ejercicios. También tendrá que seleccionar en el 
-                combobox llamado search type como quiere buscarlo, si por la 
-                fecha, por el tipo de dificultad o por el número de ejercicio.
-                En caso de que el usuario ser un profesor, también tendrá la 
-                opción de buscar todos los ejercicios. Cuando ya sepa que quiere 
-                buscar, le tendrá que pulsar en el botón de 
-                <strong>Search</strong>, si no sale ningún error, la tabla se 
-                actualizará con los ejercicios que quiere encontrar. 
-                Si no se encuentra, saldra un error de no encontrado.</p>
-            <strong>Imprimir listado de mental disease</strong>
-            <p>Pulsando el botón <strong>Print</strong> se abrirá una ventana 
+            <h3><strong>Units Manager: Help</strong></h3>
+            <h4><strong>Descripción general:</strong></h4>
+            <p>Esta ventana te permite ver las <strong>"Units"</strong> de una <strong>"Subject"</strong>.</p>
+
+            <p>La aplicación permite dos tipos de usuario y tendran permisos diferentes.</p>
+            <p>Los <strong>"Teachers"</strong> por un lado, tendran permisos especiales para poder <strong>crear</strong>, <strong>modificar</strong>, <strong>buscar</strong> y <strong>eliminar</strong> las 
+                <strong>units</strong> de las <strong>subjects</strong> en las que este enseñando.</p>
+            <p>Los <strong>"Students"</strong> por otro lado, tendran unicamente permisos para poder <strong>buscar</strong> las <strong>units</strong> de
+                de las <strong>subjects</strong> en las que este previamente matriculado. </p>
+            <p> Así mismo, ambos usuarios podrán <strong>generar un informe</strong>> que contiene un 
+                listado de los unidades con sus correspondientes datos.</p>
+            <p>Y también podran mediante el link que hay en la tabla por cada fila, <strong>"View all Exercises"</strong> ir a la ventana de manejo de exercises y verlos.</p>
+
+            <h4>Operaciones para  <strong>"Teacher"</strong>:</h4>
+
+            <h4><strong>Crear Units</strong></h4>
+            <p><strong>Para crear una Unit,</strong> tendras que hacer click en el botón de 
+                <strong>"Create"</strong> y este generara una Unit con <strong>valores por 
+                    defecto</strong> en la tabla.</p>
+            <p>Vamos a hacer un ejemplo en la subject "ADT" y le damos al botón de <strong>"Create"</strong>":</p>
+            <img src="../../resources/unit/UnitCreateSelection.png" alt="" height="500" width="900">
+            <p><strong>Si todo sale bien:</strong> saldra un mensajito de que se ha añadido una nueva unit</p>
+            <img src="../../resources/unit/UnitAddedSuccessfully.png" alt="" height="350" width="700">
+            <p>Despues de aceptar el mensaje la tabla se cargará con el nuevo valor.</p>
+            <img src="../../resources/unit/NewRow.png" alt="" height="500" width="900">
+
+            <p><strong>Si algo falla: </strong>Puede ser porque en una misma <strong>Subject no pueden haber dos Unit con el mismo nombre</strong>, por lo que antes
+                de crear la unit con valores por defecto te <strong>conprobara que no existe una sin nombre</strong> en 
+                la misma subjects donde se creé.</p>
+            <p>Si sucede este problema aparecera una alerta avisando que añadas nombre a la unit que no tiene y despues de añadirselo te dejara crear otra en la misma subject con valores por defecto.</p>
+            <img src="../../resources/unit/ErrorNo2namesWithoutText.png" alt="" height="350" width="700">
+            <h4><strong>Modificar Units:</strong></h4>
+            <p>Al ser una tabla editable puedes editar directamente la información que quieras clickando dos veces en el campo que quieras editar.</p>
+
+            <p><strong>--> Modificar Name:</strong></p>
+            <p>Continuando con el ejemplo anterior, vamos a cambiarle los valores por defecto a la unit.</p>
+            <p>Primero clickaremos dos veces en la celda de <strong>"Name"</strong> para ponerla en modo edición.</p>
+            <img src="../../resources/unit/UpdateName.png" alt="" height="500" width="900">
+            <p>Le cambiaremos el nombre a <strong>"Unit to update" y le daremos al enter para aceptar el valor.</strong></p>
+            <img src="../../resources/unit/NameUpdated.png" alt="" height="500" width="900">
+
+            <p><strong>--> Posibles errores al modificar Name:</strong></p>
+            <p>Un error podría ser que metas el nombre de una unit que ya existe en la misma subject. Por ejemplo, vamos a poner <strong>"UD1 ADT"</strong> otra vez.</p>
+            <img src="../../resources/unit/RepetirNombre.png" alt="" height="500" width="900">
+            <p>Y al darle al enter nos mostrara un mensjae avisando de que se repiten nombres en la subject y el valor no se guardara.</p>
+            <img src="../../resources/unit/UnitExist.png" alt="" height="350" width="700">
+            <p><strong>Otro problema podria ser:</strong> que el <strong>nombre</strong> que as escrito <strong>se ha pasado del limite de caracteres</strong>, ya que la celda solo permite 100
+                asi que serias avisado de que te has pasado del limite con este otro mensaje.</p>
+            <img src="../../resources/unit/CampoConN_ombre100.png" alt="" height="500" width="900">        
+            <img src="../../resources/unit/100Limit.png" alt="" height="350" width="700">
+
+            <p><strong>--> Modificar Subject</strong></p>
+            <p>Al clickar dos veces en la tabla, veremos un combobox con los valores de las subjects en las que enseña el profesor.</p>
+            <img src="../../resources/unit/EditingComboBox.png" alt="" height="500" width="900">
+            <p>Para el ejemplo pondremos <strong>"PGR"</strong>.</p>
+            <img src="../../resources/unit/SeleccionarPGR.png" alt="" height="500" width="900">
+            <p>Al aceptar el valor desaparecera la unit porque estamos listando las units the <strong>"ADT"</strong>.</p>
+            <img src="../../resources/unit/DesaparecioEnADT.png" alt="" height="500" width="900">
+            <p>Pero si abrimos <strong>"PGR"</strong> la volveremos a ver.</p>
+            <img src="../../resources/unit/AbrirTablapgr.png" alt="" height="500" width="900">
+
+            <p><strong>--> Modificar Description</strong></p>
+            <p>Primero clickaremos dos veces en la celda de <strong>"Description"</strong> para ponerla en modo edición.</p>
+            <img src="../../resources/unit/EditandoDescrption.png" alt="" height="500" width="900">
+            <p>Escribiremos un valor de ejemplo.</p>
+            <img src="../../resources/unit/nuevoDesc.png" alt="" height="500" width="900">
+            <p>Si el valor es correcto se actualiza la tabla con la nueva información.</p>
+            <img src="../../resources/unit/DescActualizado.png" alt="" height="500" width="900">
+
+            <p><strong>--> Posibles errores al modificar Description:</strong></p>
+            <p>El error podria ser que la <strong>description</strong> que as escrito <strong>se ha pasado del limite de caracteres</strong>, ya que la celda solo permite 100
+                asi que serias avisado de que te has pasado del limite con este otro mensaje.</p>
+            <img src="../../resources/unit/DescLIMIT.jpg" alt="" height="350" width="700">
+
+            <p><strong>--> Modificar Date Init</strong></p>
+            <p>Primero clickaremos dos veces en la celda de <strong>"Date Init"</strong> para ponerla en modo edición y aparecera un datepicker para elegir fechas.</p>
+            <img src="../../resources/unit/DatePickerEnCelda.png" alt="" height="500" width="900">
+            <p>Si la fecha es correcta se guardara el valor y se actualizara la tabla</p>
+            <img src="../../resources/unit/NuevaFechaInit.png" alt="" height="500" width="900">
+
+            <p><strong>--> Modificar Date End</strong></p>
+            <p>El campo de dateEnd es igual que el de Date Init pero el valor tiene que ser posterior al date init</p>
+            <p>Asi que vamos a meter una fecha posterior</p>
+            <img src="../../resources/unit/ActuDateEnd.png" alt="" height="500" width="900">
+            
+            <p><strong>--> Modificar Hours </strong></p>
+            <p>Primero clickaremos dos veces en la celda de <strong>"Hours"</strong> para ponerla en modo edición.</p>
+            <p>Tendremos que meter un número entero para que sea un valor valido.</p>
+            <img src="../../resources/unit/CambiarHOurs.png" alt="" height="500" width="900">
+            
+            <p><strong>--> Posibles errores al modificar Hours:</strong></p>
+            <p>Meter letras o otro caracter diferente de un número dara error y no guardará el valor</p>
+            <img src="../../resources/unit/LetraEnNum.jpg" alt="" height="350" width="700">
+
+            <p><strong>Borrar Units:</strong></p>
+            <p> Se pueden borrar "Units" con el boton de <strong>"Delete"</strong>.</p>
+            <p> Se necesitara tener algo seleccionado en la tabla, si no el boton no se activara.</p>
+            <img src="../../resources/unit/DeleteDesactivado.png" alt="" height="500" width="900">
+            <img src="../../resources/unit/FilaDelteActive.png" alt="" height="500" width="900">
+            <p>Cuando se realice la  accion saldra una pregunta esperando confirmación para borrar la Unit seleccionada.</p>
+            <img src="../../resources/unit/AreYouSureRemove.png" alt="" height="350" width="700">
+            <p>Si le das a la x o a cancelar desaparecera y entonces no se borrará nada.</p>
+            <p>Si le das a acceptar la unit se borrará y la tabla se actualizara.</p>
+            <img src="../../resources/unit/Borrada.png" alt="" height="500" width="900">
+
+            <p><strong>Menú de contexto:</strong></p>
+            <p>Al hacer click derecho sobre la tabla aparecera un menú de contexto con las opciones de <strong>"Create"</strong>, <strong>"Delete"</strong> y <strong>"Print"</strong>"</p>
+            <img src="../../resources/unit/MenuContext.png" alt="" height="500" width="900">
+            <p>Estos permitiran hacer lo mismo que sus respectivos botones y en el caso del delete tendras que seleccionar una fila.</p>
+
+            <h4>Operaciones para <strong>ambos users</strong></h4>
+            <p><strong>Busqueda de Units</strong></p>         
+            <p>La ventana tiene 4 tipos de busqueda y necesitas seleccionar una subject en concreto para que te permita buscar.</p>
+            <img src="../../resources/unit/type.jpg" alt="" height="400" width="200">            
+            <p>Para buscar por nombre y por horas saldra un campo de texto con limite de caracteres a 300.</p>
+            <img src="../../resources/unit/BUSQtf.jpg" alt="" height="350" width="750">
+            <p>Para buscar por Date Init y por Date End saldra un datepiquer como en la tabla antes.</p>
+            <img src="../../resources/unit/Busqdp.jpg" alt="" height="350" width="750">
+            <p>La busqueda cargara la tabla teniendo en cuenta el tipo de busqueda y la subject en la que buscas.</p>
+            <p>Ejemplo, vamos a buscar por hours en ADT un "2":</p>
+            <img src="../../resources/unit/2Busqueda.png" alt="" height="500" width="900"> 
+            <p>Al buscar el "2" se nos cargan las dos unidades que hemos visto que tenian "2" en las horas.</p>
+            <img src="../../resources/unit/Resultado2.png" alt="" height="500" width="900"> 
+            <p>Si ahora lo cambiaramos al 4, se nos cargaría solo la restante.</p>
+            <img src="../../resources/unit/Resultado4.png" alt="" height="500" width="900"> 
+
+            <strong>Imprimir listado de Units</strong>
+            <p>Pulsando el botón <strong>"Print"</strong> se abrirá una ventana 
                 donde puede ver un documento que contiene un listado de los 
-                ejercicios que existen en la aplicación. Mediante los botones de 
-                la parte superior de la ventana podrá imprimir o almacenar dicho 
-                informe.</p>
+                <strong>"Units"</strong> que existen en la aplicación.</p>
+            <img src="../../resources/unit/ClickPrint.jpg" alt="" height="500" width="900">
+            <img src="../../resources/unit/Reporte.png" alt="" height="500" width="900">
+            
+            <p>La ultima opción que pueden hacer ambos usuarios es ir a la ventana de exercise desde el link de la tabla.</p>
+            <img src="../../resources/unit/ClickExercise.jpg" alt="" height="500" width="900">
+            
+            <p>Disfruta de la gestión.</p>
+            
         </div>
     </body>
 </html>

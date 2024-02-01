@@ -1,18 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package interfaces;
 
-import exceptions.CreateErrorException;
 import exceptions.FindErrorException;
-import exceptions.UpdateErrorException;
-import java.util.Collection;
 import models.User;
 
 /**
- * Interface for user rest methods
+ * Interface for user rest methods.
  * @author irati
  */
 public interface UserInterface {
@@ -25,7 +17,10 @@ public interface UserInterface {
      * @throws FindErrorException If an error occurs during user authentication.
      */
     public User login(User user) throws FindErrorException;
-    
+    /**
+     * Method to reset a password
+     * @param email the email of the user that wants to reset the password.
+     */
     public void resetPassword(String email);
 
 }
