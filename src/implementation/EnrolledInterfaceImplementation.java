@@ -10,6 +10,7 @@ import models.Enrolled;
 import services.EnrolledRESTClient;
 
 /**
+ * Implementation of the EnrolledInterface.
  *
  * @author irati
  */

@@ -10,8 +10,7 @@ import javafx.stage.Stage;
 import view.login.SignInWindowController;
 
 /**
- * The application start window. 
- * This window starts the app by calling the
+ * The application start window. This window starts the app by calling the
  * SignInWindowController to open it.
  *
  * @author Nerea

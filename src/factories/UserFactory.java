@@ -5,6 +5,7 @@ import interfaces.UserInterface;
 
 /**
  * Factory class for obtaining an instance of UserInterface.
+ *
  * @author irati
  */
 public class UserFactory {

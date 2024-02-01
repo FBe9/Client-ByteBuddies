@@ -24,6 +24,9 @@ public class UnitManagerImplementation implements UnitInterface {
 
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
+    /**
+     * Constructs a new UnitInterfaceImplementation instance.
+     */
     public UnitManagerImplementation() {
         webClient = new UnitRESTClient();
     }

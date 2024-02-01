@@ -15,7 +15,6 @@ import services.StudentRESTClient;
 /**
  * The implementation of StudentInterface
  *
- *
  * @author irati
  */
 public class StudentInterfaceImplementation implements StudentInterface {

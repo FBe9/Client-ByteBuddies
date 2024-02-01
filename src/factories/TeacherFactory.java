@@ -5,10 +5,14 @@ import interfaces.TeacherInterface;
 
 /**
  * Factory class to obtain the implementation of a Teacher.
+ *
  * @author irati
  */
 public class TeacherFactory {
 
+    /**
+     * The instance of UserInterface.
+     */
     public static TeacherInterface model;
 
     /**

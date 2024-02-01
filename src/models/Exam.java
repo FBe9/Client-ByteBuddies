@@ -248,7 +248,7 @@ public class Exam implements Serializable {
     /**
      * Checks if this exam is equal to any other exam.
      *
-     * @param obj
+     * @param obj The exam to check.
      * @return boolean value, true if it's equal to any other exam, false if
      * opposite.
      */

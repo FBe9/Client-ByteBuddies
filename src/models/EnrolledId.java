@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents a composite key for the Enrolled class.
- * 
+ *
  * @author irati
  */
 @XmlRootElement
@@ -16,7 +16,8 @@ public class EnrolledId implements Serializable {
     private final SimpleIntegerProperty subjectId;
 
     /**
-     * Default constructor for creating an EnrolledId object with default values.
+     * Default constructor for creating an EnrolledId object with default
+     * values.
      */
     public EnrolledId() {
         this.studentId = new SimpleIntegerProperty();
