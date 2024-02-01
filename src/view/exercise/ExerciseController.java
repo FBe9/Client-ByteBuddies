@@ -182,7 +182,7 @@ public class ExerciseController {
 
         //Se añadirá a la ventana el icono de una estrella.
         stage.getIcons().add(new Image("resources/Logo.jpg"));
-        
+
         //Ventana no redimensionable.
         stage.setResizable(false);
 
@@ -502,6 +502,7 @@ public class ExerciseController {
         }
         if (!this.tfNumber.getText().matches(NUMBERS_REGEX) || !this.tfHours.getText().matches(NUMBERS_REGEX) || this.tfNumber.getText().trim().isEmpty() || this.tfHours.getText().trim().isEmpty() || this.tfDescription.getText().trim().isEmpty()) {
             this.btmCreate.setDisable(true);
+            this.btmModify.setDisable(true);
         }
     }
 
@@ -849,8 +850,9 @@ public class ExerciseController {
                     Desktop.getDesktop().open(file);
                     // CALL SENDFILE INTERFACE
                     // SEND METHOD
-                    fileInterface.sendFile(file);
-                } catch (IOException ex) {
+                    fileInterface.sendFile(file, exerciseFile, "file");
+                    tvExercise.refresh();
+                } catch (IOException | UpdateErrorException ex) {
                     Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -879,8 +881,9 @@ public class ExerciseController {
                     Desktop.getDesktop().open(file);
                     // CALL SENDFILE INTERFACE
                     // SEND METHOD
-                    fileInterface.sendFile(file);
-                } catch (IOException ex) {
+                    fileInterface.sendFile(file, exerciseFileSolution, "fileSolution");
+                    tvExercise.refresh();
+                } catch (IOException | UpdateErrorException ex) {
                     Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -902,9 +905,9 @@ public class ExerciseController {
         // RECEIVE METHOD
         if (exerciseFile.getFile() != null) {
             try {
-                File file = fileInterface.receiveFile(exerciseFile.getFile());
+                File file = fileInterface.receiveFile(exerciseFile.getFile(), exerciseFile);
                 Desktop.getDesktop().open(file);
-            } catch (IOException ex) {
+            } catch (IOException | FindErrorException ex) {
                 Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
@@ -925,9 +928,9 @@ public class ExerciseController {
         // RECEIVE METHOD
         if (exerciseFileSolution.getFileSolution() != null) {
             try {
-                File file = fileInterface.receiveFile(exerciseFileSolution.getFileSolution());
+                File file = fileInterface.receiveFile(exerciseFileSolution.getFileSolution(), exerciseFileSolution);
                 Desktop.getDesktop().open(file);
-            } catch (IOException ex) {
+            } catch (IOException | FindErrorException ex) {
                 Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
