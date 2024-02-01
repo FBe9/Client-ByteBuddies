@@ -40,13 +40,4 @@ public interface EnrolledInterface {
      */
     public void updateEnrolled(Enrolled enrolled) throws UpdateErrorException;
 
-    /**
-     * Finds enrolled entities by a given identifier.
-     * 
-     * @param id The identifier used for finding enrolled entities.
-     * @return A collection of enrolled entities matching the given identifier.
-     * @throws FindErrorException If an error occurs while finding enrolled entities.
-     */
-    public Collection<Enrolled> findById(String id) throws FindErrorException;
-
 }

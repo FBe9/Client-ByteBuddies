@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package implementation;
 
 import exceptions.CreateErrorException;
@@ -19,12 +14,19 @@ import javax.ws.rs.core.GenericType;
 import services.SubjectRESTClient;
 
 /**
- *Implementation of the SubjectManager interface for subject management.
+ * Implementation of the SubjectManager interface for subject management.
+ *
  * @author irati
  */
 public class SubjectManagerImplementation implements SubjectManager {
 
+    /**
+     * The webclient for SubjectRest
+     */
     private final SubjectRESTClient webClient;
+    /**
+     * The logger for the class.
+     */
     private static final Logger LOGGER = Logger.getLogger("SubjectManagerImplementation ");
 
     /**
@@ -48,6 +50,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             LOGGER.info("Find the subject with id: " + id);
             subject = webClient.find_XML(Subject.class, id);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new FindErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Exception finding subject with id " + id + ": " + e.getMessage());
             throw new FindErrorException("Error finding subject" + e.getMessage());
@@ -70,8 +76,12 @@ public class SubjectManagerImplementation implements SubjectManager {
             subjects = webClient.findAll_XML(new GenericType<Set<Subject>>() {
             });
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new FindErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
-                    "SubjectManager: Exception all subjects" + e.getMessage());
+                    "SubjectManager: Exception all subjects " + e.getMessage());
             throw new FindErrorException("Error finding all subjects" + e.getMessage());
         }
         return subjects;
@@ -94,6 +104,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             subjects = webClient.findSubjectsByName_XML(new GenericType<Set<Subject>>() {
             }, name);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new FindErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Exception finding all subjects that contain the searched name" + e.getMessage());
             throw new FindErrorException("Exception all subjects that contain the searched name" + e.getMessage());
@@ -118,6 +132,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             subjects = webClient.findSubjectsByTeacher_XML(new GenericType<Set<Subject>>() {
             }, teacherName);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new FindErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Exception finding all the subject for a teacher" + e.getMessage());
             throw new FindErrorException("Exception finding all the subject for a teacher" + e.getMessage());
@@ -142,6 +160,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             subjects = webClient.findSubjectsByEndDate_XML(new GenericType<Set<Subject>>() {
             }, endDate);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new FindErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Find all subject with a specific end Date" + e.getMessage());
             throw new FindErrorException("Find all subject with a specific end Date" + e.getMessage());
@@ -166,6 +188,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             subjects = webClient.findSubjectsByInitDate_XML(new GenericType<Set<Subject>>() {
             }, initDate);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new FindErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Find all subject with a specific init date" + e.getMessage());
             throw new FindErrorException("Find all subject with a specific init date" + e.getMessage());
@@ -190,6 +216,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             subjects = webClient.findSubjectsWithXUnits_XML(new GenericType<Set<Subject>>() {
             }, number);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new FindErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Find all subjects with a specific number of units" + e.getMessage());
             throw new FindErrorException("Find all subjects with a specific number of units" + e.getMessage());
@@ -215,6 +245,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             subjects = webClient.findSubjectsWithEnrolledStudentsCount_XML(new GenericType<Set<Subject>>() {
             }, number);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new FindErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Find all subjects with a specific number of enrolled students" + e.getMessage());
             throw new FindErrorException("Find all subjects with a specific number of enrolled students" + e.getMessage());
@@ -240,6 +274,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             subjects = webClient.findByEnrollments_XML(new GenericType<Set<Subject>>() {
             }, studentId);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new FindErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Finding all subjects that a student is enrolled" + e.getMessage());
             throw new FindErrorException("Finding all subjects that a student is enrolled" + e.getMessage());
@@ -264,6 +302,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             subjects = webClient.findSubjectsByTeacherId_XML(new GenericType<Set<Subject>>() {
             }, teacherId);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new FindErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Finding all subjects that a teacher has" + e.getMessage());
             throw new FindErrorException("Finding all subjects that a teacher has" + e.getMessage());
@@ -272,6 +314,7 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     /**
+     * Method to create a subject.
      *
      * @param subject The subject to create.
      * @throws CreateErrorException If an error occurs while creating the
@@ -283,6 +326,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             LOGGER.info("Creating a subject");
             webClient.createSubject_XML(subject);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new CreateErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Error creating a subject" + e.getMessage());
             throw new CreateErrorException("Error creating a subject" + e.getMessage());
@@ -290,6 +337,7 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     /**
+     * Method to delete a subject.
      *
      * @param id The unique identifier of the subject to delete.
      * @throws DeleteErrorException if an error while deleting the subject
@@ -300,6 +348,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             LOGGER.info("Delete a subject");
             webClient.removeSubject(id);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new DeleteErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Error deleting a subject" + e.getMessage());
             throw new DeleteErrorException("Error deleting a subject" + e.getMessage());
@@ -307,6 +359,7 @@ public class SubjectManagerImplementation implements SubjectManager {
     }
 
     /**
+     * Method to update a subject.
      *
      * @param subject The subject to update.
      * @throws UpdateErrorException if an error while updating the subject.
@@ -317,6 +370,10 @@ public class SubjectManagerImplementation implements SubjectManager {
             LOGGER.info("Update a subject");
             webClient.updateSubject_XML(subject);
         } catch (Exception e) {
+            if (e instanceof javax.ws.rs.ProcessingException
+                    && e.getCause() instanceof java.net.ConnectException) {
+                throw new UpdateErrorException("Unable to connect to the server. Please check the server availability and try again later.");
+            }
             LOGGER.log(Level.SEVERE,
                     "SubjectManager: Error updating a subject" + e.getMessage());
             throw new UpdateErrorException("Error updating a subject" + e.getMessage());

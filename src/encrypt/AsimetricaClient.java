@@ -28,7 +28,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 public class AsimetricaClient {
 
     /**
-     * Encrypts the provided password using the ECC public key.
+     * Encrypts the provided password using the RSA public key.
      *
      * @param password The password to be encrypted.
      * @return The encrypted data.

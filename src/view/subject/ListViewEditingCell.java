@@ -13,7 +13,6 @@ import javafx.collections.ObservableSet;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.input.KeyCode;
@@ -28,10 +27,29 @@ import models.Teacher;
  */
 public class ListViewEditingCell extends TableCell<Subject, ObservableSet<Teacher>> {
 
+    /**
+     * JavaFX ListView component to display a list of teachers.
+     */
     private javafx.scene.control.ListView<Teacher> listViewTeacher;
+
+    /**
+     * ObservableList containing the teachers used for search results.
+     */
     private ObservableList<Teacher> teachersSearch;
+
+    /**
+     * ObservableList containing the subjects.
+     */
     private ObservableList<Subject> subjects;
+
+    /**
+     * Interface for interacting with the Teacher data in the application.
+     */
     private TeacherInterface teacherInterface = TeacherFactory.getModel();
+
+    /**
+     * Manager for handling Subject-related operations in the application.
+     */
     private SubjectManager subjectManager = SubjectFactory.getModel();
 
     /**
@@ -148,6 +166,11 @@ public class ListViewEditingCell extends TableCell<Subject, ObservableSet<Teache
         super.cancelEdit();
     }
 
+    /**
+     * To show an error message
+     *
+     * @param errorMsg the error message to display
+     */
     public void showErrorAlert(String errorMsg) {
         Alert alert = new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.OK);
         alert.showAndWait();
