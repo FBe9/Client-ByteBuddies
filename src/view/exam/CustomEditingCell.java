@@ -30,7 +30,7 @@ public class CustomEditingCell extends TableCell<Exam, String> {
     @Override
     public void startEdit() {
         super.startEdit();
-        textField = new TextField(" ");
+        textField = new TextField("");
         textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0,
@@ -93,6 +93,6 @@ public class CustomEditingCell extends TableCell<Exam, String> {
      * @return The string representation of the item.
      */
     private String getString() {
-        return getItem() == null ? "" : getItem().toString();
+        return getItem() == null ? "" : getItem();
     }
 }

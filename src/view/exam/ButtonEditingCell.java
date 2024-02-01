@@ -1,18 +1,22 @@
 package view.exam;
 
+import exceptions.FindErrorException;
+import exceptions.UpdateErrorException;
+import factories.SendFileFactory;
+import interfaces.SendFileInterface;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import models.Exam;
-import models.Student;
-import models.Teacher;
 import models.User;
 
 /**
@@ -22,6 +26,13 @@ import models.User;
  * @author Alex
  */
 public class ButtonEditingCell extends TableCell<Exam, String> {
+
+    private static final Logger LOGGER = Logger.getLogger("ButtonEditingCell");
+    
+    /**
+     * Interface instance to send and/or receive the files.
+     */
+    SendFileInterface fileInterface;
 
     /**
      * The button graphic for the cell.
@@ -45,6 +56,7 @@ public class ButtonEditingCell extends TableCell<Exam, String> {
      * @param stage The stage of the window the table belongs to.
      */
     public ButtonEditingCell(User currentUser, Stage stage) {
+        fileInterface = SendFileFactory.getModel();
         btn = new Button();
         applicationUser = currentUser;
         this.stage = stage;
@@ -96,15 +108,20 @@ public class ButtonEditingCell extends TableCell<Exam, String> {
                 btn.setDisable(false);
             }
             if (exam.getFilePath() != null) {
-
                 btn.setText("Download");
                 btn.setDisable(false);
                 btn.setOnAction(event -> {
-                    // CALL SENDFILE INTERFACE
-                    // RECEIVE METHOD
+                    try {
+                        Exam examReceive = getTableView().getItems().get(getIndex());
+                        File file = fileInterface.receiveFile(examReceive.getFilePath(), exam);
+                        Desktop.getDesktop().open(file);
+                    } catch (IOException | IllegalArgumentException | FindErrorException ex) {
+                        LOGGER.log(Level.SEVERE, "File Not Found.");
+                        new Alert(Alert.AlertType.WARNING, "File Not Found", ButtonType.OK).showAndWait();
+                    }
                 });
             } else {
-                if (applicationUser instanceof Teacher) {
+                if (applicationUser.getUser_type().equals("Teacher")) {
                     btn.setText("Add file");
                     btn.setOnAction(event -> {
                         FileChooser fileChooser = new FileChooser();
@@ -112,16 +129,14 @@ public class ButtonEditingCell extends TableCell<Exam, String> {
                         File file = fileChooser.showOpenDialog(stage);
                         if (file != null) {
                             try {
-                                Desktop.getDesktop().open(file);
-                                // CALL SENDFILE INTERFACE
-                                // SEND METHOD
-                            } catch (IOException ex) {
-                                Logger.getLogger(ButtonEditingCell.class.getName()).log(Level.SEVERE, null, ex);
+                                fileInterface.sendFile(file, getTableView().getItems().get(getIndex()));
+                            } catch (UpdateErrorException ex) {
+                                LOGGER.log(Level.SEVERE, "Error updating info.");
+                                new Alert(Alert.AlertType.WARNING, "Error updating info.", ButtonType.OK).showAndWait();
                             }
                         }
-
                     });
-                } else if (applicationUser instanceof Student) {
+                } else if (applicationUser.getUser_type().equals("Student")) {
                     btn.setText("Not available");
                     btn.setDisable(true);
                 }

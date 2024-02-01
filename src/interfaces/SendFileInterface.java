@@ -3,10 +3,8 @@ package interfaces;
 import exceptions.FindErrorException;
 import exceptions.UpdateErrorException;
 import java.io.File;
-import java.util.logging.Logger;
 import models.Exam;
 import models.Exercise;
-import services.ExamRESTClient;
 
 /**
  * Interface for managing the transaction of files.
