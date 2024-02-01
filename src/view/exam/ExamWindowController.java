@@ -733,7 +733,7 @@ public class ExamWindowController {
                         // Si elige “Cancel” se cancelará la actualización o creación.
                     }
                 } else {
-                    new Alert(Alert.AlertType.ERROR, "The duration must only be numbers.").showAndWait();
+                    new Alert(Alert.AlertType.ERROR, "The duration must only be single digit numbers.").showAndWait();
                 }
             }
         }
