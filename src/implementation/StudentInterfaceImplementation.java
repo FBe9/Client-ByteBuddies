@@ -1,12 +1,17 @@
 package implementation;
 
 import exceptions.CreateErrorException;
+import exceptions.EmailAlreadyExistsException;
+import exceptions.EncryptException;
 import exceptions.FindErrorException;
 import interfaces.StudentInterface;
 import java.util.Collection;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import models.Student;
 import models.User;
@@ -81,13 +86,25 @@ public class StudentInterfaceImplementation implements StudentInterface {
      * @param student The Student object to be created.
      * @throws CreateErrorException If an error occurs during the create
      * operation.
+     * @throws EmailAlreadyExistsException If the email already exists.
+     * @throws EncryptException If there is an error in the server during
+     * encrypt.
      */
     @Override
-    public void createStudent(Student student) throws CreateErrorException {
+    public void createStudent(Student student) throws CreateErrorException, EmailAlreadyExistsException, EncryptException {
         try {
             LOGGER.info("Creating a new student");
             webClient.createStudent_XML(student);
+        } catch (NotAuthorizedException e) {
+            // HTTP 401 Unauthorized - Email already exists
+            LOGGER.log(Level.SEVERE, "StudentInterface: Unauthorized - " + e.getMessage());
+            throw new EmailAlreadyExistsException("Email already exists. Please use a different email.");
+        } catch (InternalServerErrorException e) {
+            // Internal Server Error - 500
+            LOGGER.log(Level.SEVERE, "UserInterface: Internal Server Error - " + e.getMessage());
+            throw new EncryptException("ServerError: Error creating user. Please try again later.");
         } catch (Exception e) {
+            // Catch more general exceptions
             LOGGER.log(Level.SEVERE, "StudentInterface: Error creating a student - " + e.getMessage());
             throw new CreateErrorException("Error creating a student");
         }

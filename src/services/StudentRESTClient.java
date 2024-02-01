@@ -5,6 +5,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import models.Student;
 
 /**
  * Jersey REST client generated for REST resource:StudentFacadeREST
@@ -55,11 +56,14 @@ public class StudentRESTClient {
      * Performs a POST request to create a new student using XML representation.
      *
      * @param requestEntity The entity representing the student to be created.
+     * @return the student created.
      * @throws WebApplicationException If an error occurs during the web
      * application communication.
      */
-    public void createStudent_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    public Student createStudent_XML(Object requestEntity) throws WebApplicationException {
+        return webTarget
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Student.class);
     }
 
     /**

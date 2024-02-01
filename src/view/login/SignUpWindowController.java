@@ -2,6 +2,8 @@ package view.login;
 
 import encrypt.AsimetricaClient;
 import exceptions.CreateErrorException;
+import exceptions.EmailAlreadyExistsException;
+import exceptions.EncryptException;
 import exceptions.WrongEmailFormatException;
 import exceptions.WrongNameFormatException;
 import exceptions.WrongPasswordFormatException;
@@ -10,6 +12,7 @@ import factories.UserFactory;
 import interfaces.StudentInterface;
 import interfaces.UserInterface;
 import java.util.Date;
+
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -344,30 +347,37 @@ public class SignUpWindowController {
             userStudent.setEmail(tfEmailSignUp.getText());
             AsimetricaClient asimetricaClient = new AsimetricaClient();
             byte[] encryptedPassword = null;
+
             try {
                 encryptedPassword = asimetricaClient.encryptedData(tfPasswordSignUp.getText());
-            } catch (Exception ex) {
-                showErrorAlert("Error during login");
+            } catch (EncryptException ex) {
+                showErrorAlert("Error trying to create an student. Please try later");
             }
 
             String passwordEncrypted = null;
-            try {
-                passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
-            } catch (Exception ex) {
-                showErrorAlert("Error during login");
-            }
+            passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+
             userStudent.setPassword(passwordEncrypted);
             userStudent.setLevelType(cbLevelType.getSelectionModel().getSelectedItem());
             userStudent.setDateInit(new Date());
+            Boolean correct = false;
             try {
                 studentInterface.createStudent(userStudent);
+                correct = true;
             } catch (CreateErrorException ex) {
                 showErrorAlert("Error creating user");
+            } catch (EncryptException ex) {
+                showErrorAlert(ex.getMessage());
+            } catch (EmailAlreadyExistsException ex) {
+                showErrorAlert(ex.getMessage());
             }
-            //Se muestra una alerta cuando el registro ha sido correcto.
-            new Alert(Alert.AlertType.CONFIRMATION, userStudent.getName() + ", you have successfully registered.", ButtonType.OK).showAndWait();
-            //Se cierra la ventana de SignUp.
-            stage.close();
+            if (correct) {
+                //Se muestra una alerta cuando el registro ha sido correcto.
+                new Alert(Alert.AlertType.CONFIRMATION, userStudent.getName() + ", you have successfully registered.", ButtonType.OK).showAndWait();
+                //Se cierra la ventana de SignUp.
+                stage.close();
+            }
+
         }
 
     }
@@ -403,11 +413,6 @@ public class SignUpWindowController {
 
     }
 
-    /**
-     * Shows an alert containing the exception message.
-     * 
-     * @param errorMsg The message to show.
-     */
     public void showErrorAlert(String errorMsg) {
         Alert alert = new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.OK);
         alert.showAndWait();
