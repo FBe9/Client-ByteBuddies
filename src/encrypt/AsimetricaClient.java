@@ -17,7 +17,6 @@ import java.security.Security;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.Cipher;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * This class provides methods for asymmetric encryption using the RSA
