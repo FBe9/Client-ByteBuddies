@@ -2,14 +2,10 @@ package implementation;
 
 import exceptions.CreateErrorException;
 import exceptions.DeleteErrorException;
-import exceptions.FindErrorException;
 import exceptions.UpdateErrorException;
 import interfaces.EnrolledInterface;
-import java.util.Collection;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.core.GenericType;
 import models.Enrolled;
 import services.EnrolledRESTClient;
 

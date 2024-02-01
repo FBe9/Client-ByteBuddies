@@ -1,10 +1,5 @@
 package view.subject;
 
-import exceptions.FindErrorException;
-import factories.SubjectFactory;
-import factories.UnitFactory;
-import interfaces.SubjectManager;
-import interfaces.UnitInterface;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
