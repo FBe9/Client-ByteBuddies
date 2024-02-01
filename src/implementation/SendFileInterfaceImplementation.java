@@ -22,15 +22,15 @@ public class SendFileInterfaceImplementation implements SendFileInterface {
     private final ExamInterface examInterface;
     private final ExerciseInterface exerciseInterface;
     private static final Logger LOGGER = Logger.getLogger("ExamInterfaceImplementation");
-    
+
     /**
      * Constructor to initialise the web client.
      */
-    public SendFileInterfaceImplementation(){
+    public SendFileInterfaceImplementation() {
         examInterface = ExamFactory.getModel();
         exerciseInterface = ExerciseFactory.getModel();
     }
-    
+
     /**
      * The method used to send the file. It modifies an exam.
      *
@@ -39,7 +39,7 @@ public class SendFileInterfaceImplementation implements SendFileInterface {
      * @throws UpdateErrorException When an update error occurs.
      */
     @Override
-    public void sendFile(File file, Exam exam) throws UpdateErrorException{
+    public void sendFile(File file, Exam exam) throws UpdateErrorException {
         try {
             exam.setFilePath(file.getAbsolutePath());
             examInterface.updateExam(exam);
@@ -47,22 +47,21 @@ public class SendFileInterfaceImplementation implements SendFileInterface {
             throw new UpdateErrorException(ex.getMessage());
         }
     }
-    
+
     /**
      * The method used to send the file. It modifies an exercise.
-     * 
+     *
      * @param file The file to be sent.
      * @param exercise The exercise to update.
      * @param fileType Whether it's the "File" or the "FileSolution".
      */
     @Override
     public void sendFile(File file, Exercise exercise, String fileType) {
-        if(fileType.equals("file")){
+        if (fileType.equals("file")) {
             exercise.setFile(file.getAbsolutePath());
         } else {
             exercise.setFileSolution(file.getAbsolutePath());
         }
-        //exerciseInterface.
     }
 
     /**
@@ -74,14 +73,13 @@ public class SendFileInterfaceImplementation implements SendFileInterface {
      */
     @Override
     public File receiveFile(String path, Object object) throws FindErrorException {
-        if(object instanceof Exam){
+        if (object instanceof Exam) {
             try {
                 examInterface.findExamById(((Exam) object).getId());
             } catch (FindErrorException ex) {
                 throw new FindErrorException(ex.getMessage());
             }
-        } else if(object instanceof Exercise){
-            //exerciseInterface.getExerciseByID_XML(responseType, path);
+        } else if (object instanceof Exercise) {
         }
         return new File(path);
     }

@@ -1,19 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view.unit;
 
-import view.exercise.*;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 /**
  * Controller class for help window . It shows a help page that explains how to
@@ -39,7 +32,9 @@ public class HelpUnitController {
         Scene scene = new Scene(root);
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.setTitle("Help");
+        stage.setTitle("Help Unit");
+        //Se añadirá a la ventana el icono de una estrella.
+        stage.getIcons().add(new Image("resources/Logo.jpg"));
         stage.setResizable(false);
         stage.setMinWidth(800);
         stage.setMinHeight(600);

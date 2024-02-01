@@ -1,14 +1,8 @@
 package view.subject;
 
-import exceptions.FindErrorException;
-import factories.SubjectFactory;
-import factories.UnitFactory;
-import interfaces.SubjectManager;
-import interfaces.UnitInterface;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -29,10 +23,31 @@ import view.unit.UnitWindowController;
  */
 public class HyperLinkEditingCellUnit extends TableCell<Subject, String> {
 
+    /**
+     * Hyperlink used for navigation or actions in the UI.
+     */
     private Hyperlink link;
+
+    /**
+     * The primary stage for the JavaFX application.
+     */
     private Stage stage;
+
+    /**
+     * User object representing the current user of the application.
+     */
     private User user;
+
+    /**
+     * ObservableList of Unit objects. Used to store and manage a collection of
+     * units.
+     */
     private ObservableList<Unit> units;
+
+    /**
+     * ObservableList of Subject objects. Used to store and manage a collection
+     * of subjects.
+     */
     private ObservableList<Subject> subjects;
 
     /**
@@ -52,12 +67,13 @@ public class HyperLinkEditingCellUnit extends TableCell<Subject, String> {
         link = new Hyperlink("Show units");
         this.stage = primaryStage;
         this.user = user;
-
+        //La acción del hiperlink
         link.setOnAction(evt -> {
             try {
                 Subject currentSubject = getTableView().getItems().get(getIndex());
 
                 if (currentSubject.getName() != null) {
+                    //Abre la ventana de units
                     FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/unit/UnitWindow.fxml"));
                     Parent root = (Parent) loader.load();
                     UnitWindowController controller = (UnitWindowController) loader.getController();
@@ -65,7 +81,7 @@ public class HyperLinkEditingCellUnit extends TableCell<Subject, String> {
                     controller.initStage(root, user);
                     controller.setCurrentSubject(currentSubject);
                 } else {
-                    showErrorAlert("Please insert a name before showing units");
+                    showErrorAlert("Please insert a subject name before showing units");
                 }
 
             } catch (IOException ex) {
@@ -89,6 +105,11 @@ public class HyperLinkEditingCellUnit extends TableCell<Subject, String> {
         }
     }
 
+    /**
+     * Method to show an alert
+     *
+     * @param errorMsg the message of the alert
+     */
     public void showErrorAlert(String errorMsg) {
         Alert alert = new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.OK);
         alert.showAndWait();

@@ -3,10 +3,8 @@ package interfaces;
 import exceptions.FindErrorException;
 import exceptions.UpdateErrorException;
 import java.io.File;
-import java.util.logging.Logger;
 import models.Exam;
 import models.Exercise;
-import services.ExamRESTClient;
 
 /**
  * Interface for managing the transaction of files.
@@ -14,7 +12,7 @@ import services.ExamRESTClient;
  * @author Alex
  */
 public interface SendFileInterface {
-    
+
     /**
      * The method used to send the file. It modifies an exam.
      *
@@ -23,10 +21,10 @@ public interface SendFileInterface {
      * @throws UpdateErrorException When an update error occurs.
      */
     public void sendFile(File file, Exam exam) throws UpdateErrorException;
-    
+
     /**
      * The method used to send the file. It modifies an exercise.
-     * 
+     *
      * @param file The file to be sent.
      * @param exercise The exercise to update.
      * @param fileType Whether it's the "File" or the "FileSolution".
@@ -38,7 +36,7 @@ public interface SendFileInterface {
      * The method used to receive a specific file stored in a given path.
      *
      * @param path The given path.
-     * @param object
+     * @param object The given object.
      * @return The requested file.
      * @throws FindErrorException When an error occurs while finding object.
      */

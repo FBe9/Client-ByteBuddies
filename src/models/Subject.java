@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Represents a subject in the system. 
+ * Represents a subject in the system.
  *
  * @author irati
  */
@@ -36,7 +36,8 @@ public class Subject implements Serializable {
     private final SimpleBooleanProperty status;
 
     /**
-     * Default constructor for creating a SubjectBean object with default values.
+     * Default constructor for creating a SubjectBean object with default
+     * values.
      */
     public Subject() {
         this.id = new SimpleIntegerProperty();
@@ -165,9 +166,9 @@ public class Subject implements Serializable {
     }
 
     /**
-     * Sets the level type of the subject.
+     * Sets the language type of the subject.
      *
-     * @param levelType The level type to be set.
+     * @param languageType The language type to be set.
      */
     public void setLanguageType(LanguageType languageType) {
         this.languageType.set(languageType);

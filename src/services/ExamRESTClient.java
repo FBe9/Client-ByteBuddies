@@ -26,6 +26,9 @@ public class ExamRESTClient {
     private final Client client;
     private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
 
+    /**
+     * Constructs a new ExamRESTClient instance.
+     */
     public ExamRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.exam");
@@ -113,10 +116,11 @@ public class ExamRESTClient {
 
     /**
      * Find method to search for all exams.
-     * 
+     *
      * @param responseType The type of response expected.
      * @return A generic object type containing all the information found.
-     * @throws WebApplicationException When there is an error in the communication with the server or during the transaction.
+     * @throws WebApplicationException When there is an error in the
+     * communication with the server or during the transaction.
      */
     public <T> T findAll_XML(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;

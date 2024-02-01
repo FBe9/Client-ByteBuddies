@@ -1,14 +1,11 @@
 package implementation;
 
-import exceptions.CreateErrorException;
+import exceptions.EncryptException;
 import exceptions.FindErrorException;
-import exceptions.UpdateErrorException;
 import interfaces.UserInterface;
-import java.util.Collection;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.core.GenericType;
+import javax.ws.rs.InternalServerErrorException;
 import models.User;
 import services.UserRESTClient;
 
@@ -43,11 +40,14 @@ public class UserInterfaceImplementation implements UserInterface {
      * @throws FindErrorException If an error occurs during user authentication.
      */
     @Override
-    public User login(User user) throws FindErrorException {
-        User userSearch;
+    public User login(User user) throws FindErrorException, EncryptException {
+        User userSearch = null;
         try {
             LOGGER.info("Logging in user with ID " + user.getId());
             userSearch = webClient.login(user, User.class);
+        } catch (InternalServerErrorException e) {
+            LOGGER.log(Level.SEVERE, "UserInterface: Internal Server Error - " + e.getMessage());
+            throw new EncryptException("ServerError: Error during login. Please try again later.");
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "UserInterface: Error logging in - " + e.getMessage());
             throw new FindErrorException("User not found");
@@ -55,6 +55,11 @@ public class UserInterfaceImplementation implements UserInterface {
         return userSearch;
     }
 
+    /**
+     * Method to reset a password
+     *
+     * @param email the email of the user that wants to reset the password.
+     */
     @Override
     public void resetPassword(String email) {
         LOGGER.info("Sending password reset request for " + email);

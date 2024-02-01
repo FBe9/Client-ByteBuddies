@@ -8,12 +8,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 import models.Teacher;
-import models.User;
 import services.TeacherRESTClient;
 
 /**
  * The implementation of TeacherInterface
- *
  *
  * @author irati
  */
@@ -34,7 +32,7 @@ public class TeacherInterfaceImplementation implements TeacherInterface {
     public TeacherInterfaceImplementation() {
         webClient = new TeacherRESTClient();
     }
-   
+
     /**
      * Finds all teachers.
      *

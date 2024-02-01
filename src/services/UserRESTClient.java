@@ -20,8 +20,8 @@ import javax.ws.rs.client.WebTarget;
  */
 public class UserRESTClient {
 
-   /**
-     * Represents a webTarget to interact with a web resource 
+    /**
+     * Represents a webTarget to interact with a web resource
      */
     private WebTarget webTarget;
     /**
@@ -42,11 +42,11 @@ public class UserRESTClient {
         webTarget = client.target(BASE_URI).path("entities.user");
     }
 
-
     public void resetPassword(String email) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{email})).request().post(null);
     }
- /**
+
+    /**
      * Makes a POST request to the "login" endpoint with the provided request
      * entity. The response is processed based on the specified response type.
      *
@@ -59,6 +59,7 @@ public class UserRESTClient {
     public <T> T login(Object requestEntity, Class<T> responseType) throws WebApplicationException {
         return webTarget.path("login").request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), responseType);
     }
+
     /**
      * Closes the underlying client.
      */

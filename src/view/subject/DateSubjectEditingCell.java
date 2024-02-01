@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import models.Subject;
-
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
@@ -15,7 +14,15 @@ import java.util.Locale;
  */
 public class DateSubjectEditingCell extends TableCell<Subject, Date> {
 
+    /**
+     * JavaFX DatePicker component associated with a cell for displaying date.
+     */
     private DatePicker dpSubjectCell;
+
+    /**
+     * Date formatter used to format and parse date information in the
+     * application.
+     */
     private DateFormat dateFormatter;
 
     /**

@@ -8,18 +8,13 @@ import factories.UserFactory;
 import interfaces.StudentInterface;
 import interfaces.TeacherInterface;
 import interfaces.UserInterface;
-
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -39,8 +34,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import models.LevelType;
-import models.Student;
 import models.User;
 import view.MenuBarController;
 import view.subject.SubjectController;
@@ -250,16 +243,20 @@ public class SignInWindowController {
              * un user con los valores del email y la contraseña.
              */
 
+            Stage stageNew = new Stage();
             if (tfEmail.getText().equals("student@gmail.com") && tfPassword.getText().equals("abcd*1234")) {
                 User user = new User();
                 user.setUser_type("Student");
                 user.setId(2);
+
                 FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/subject.fxml"));
                 Parent root = (Parent) loader.load();
                 SubjectController controller = (SubjectController) loader.getController();
-                controller.setStage(stage);
+
+                controller.setStage(stageNew);
+                stage.close();
                 controller.initStage(root, user);
-                MenuBarController.setStage(stage);
+                MenuBarController.setStage(stageNew);
                 MenuBarController.setUser(user);
             } else if (tfEmail.getText().equals("teacher@gmail.com") && tfPassword.getText().equals("abcd*1234")) {
                 User user = new User();
@@ -269,16 +266,26 @@ public class SignInWindowController {
                 Parent root = (Parent) loader.load();
                 SubjectController controller = (SubjectController) loader.getController();
 
-                controller.setStage(stage);
+                controller.setStage(stageNew);
+                stage.close();
                 controller.initStage(root, user);
-                MenuBarController.setStage(stage);
+                MenuBarController.setStage(stageNew);
                 MenuBarController.setUser(user);
             } else {
-                byte[] encryptedPassword = AsimetricaClient.encryptedData(tfPassword.getText());
+                AsimetricaClient asimetricaClient = new AsimetricaClient();
+                byte[] encryptedPassword = null;
+                try {
+                    encryptedPassword = asimetricaClient.encryptedData(tfPassword.getText());
+                } catch (EncryptException ex) {
+                    showErrorAlert("Error trying to login. Please try later.");
+                }
+
                 //Create an user 
                 User user = new User();
                 user.setEmail(tfEmail.getText());
-                String passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+                String passwordEncrypted = null;
+                passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+
                 user.setPassword(passwordEncrypted);
 
                 user = userInterface.login(user);
@@ -287,12 +294,12 @@ public class SignInWindowController {
                 Parent root = (Parent) loader.load();
                 SubjectController controller = (SubjectController) loader.getController();
 
-                controller.setStage(stage);
+                controller.setStage(stageNew);
+                stage.close();
                 controller.initStage(root, user);
-                MenuBarController.setStage(stage);
+                MenuBarController.setStage(stageNew);
                 MenuBarController.setUser(user);
             }
-
 
         } /**
          * Si el metodo signIn no produce excepciones, se cerrará la ventana y
@@ -310,6 +317,8 @@ public class SignInWindowController {
          * la excepción “LoginCredentialException”.
          */
         catch (FindErrorException ex) {
+            showErrorAlert(ex.getMessage());
+        } catch (EncryptException ex) {
             showErrorAlert(ex.getMessage());
         } catch (WrongEmailFormatException e) {
             lblEmailError.setText(e.getMessage());
@@ -349,6 +358,7 @@ public class SignInWindowController {
             if (result.isPresent()) {
                 userInterface.resetPassword(result.get());
             }
+            new Alert(Alert.AlertType.INFORMATION, "An email with the recovery password was sent to: " + result.get()).showAndWait();
         }
     }
 

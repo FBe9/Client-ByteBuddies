@@ -12,9 +12,8 @@ import exceptions.WrongNumberFormatException;
 import factories.EnrolledFactory;
 import factories.SubjectFactory;
 import interfaces.EnrolledInterface;
-
 import interfaces.SubjectManager;
-
+import java.text.DateFormat;
 import javafx.event.ActionEvent;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -24,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -60,6 +60,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import models.Enrolled;
 import models.EnrolledId;
 import models.LanguageType;
@@ -138,6 +139,9 @@ public class SubjectController {
     String regexLetters = "^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]+$";
     String regexNumbers = "^[0-9]+$";
 
+    /**
+     * Default constructor for the SubjectWindowController class.
+     */
     public SubjectController() {
         subjectManager = SubjectFactory.getModel();
 
@@ -147,6 +151,7 @@ public class SubjectController {
      * Initialises the controller class.
      *
      * @param root The parent window.
+     * @param user The current user.
      */
     public void initStage(Parent root, User user) {
         //Asignar user
@@ -274,6 +279,33 @@ public class SubjectController {
         tbColUnits.setCellFactory(hyperlinkCellUnit);
         tbColExams.setCellFactory(hyperlinkCellExam);
 
+        // Establece el StringConverter personalizado
+        dpDateSearchSubject.setConverter(new StringConverter<LocalDate>() {
+            Locale locale = Locale.getDefault();
+            private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+
+            private final DateTimeFormatter defaultFormatter = DateTimeFormatter.ofPattern(ResourceBundle.getBundle("config.config").getString("DATEFORMAT"));
+
+            @Override
+            public String toString(LocalDate localDate) {
+                if (localDate != null) {
+                    return dateFormatter.format(java.sql.Date.valueOf(localDate));
+                }
+                return null;
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                // Intenta parsear la cadena en un objeto LocalDate
+                LocalDate localDate = LocalDate.parse(string, defaultFormatter);
+                try {
+                    return localDate;
+                } catch (Exception e) {
+                    showErrorAlert("formato incorrecto");
+                    return null;
+                }
+            }
+        });
         // 1. Columna Name
         //Asignar la factoría de celdas
         tbColNameSub.setCellFactory(TextFieldTableCell.<Subject>forTableColumn());
@@ -408,11 +440,37 @@ public class SubjectController {
         LocalDate endDate = LocalDate.parse(endDateConfig);
         tbColInitDateSub.setOnEditCommit(
                 (TableColumn.CellEditEvent<Subject, Date> t) -> {
+                    Boolean checkDate = true;
                     //Coger la fecha para hacer las comprobaciones
+                    Subject subject = (Subject) t.getTableView().getItems().get(t.getTablePosition().getRow());
                     LocalDate dateInitAnalyze = t.getNewValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate dateEndAnalyze = subject.getDateEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     //Se validará que ambas fechas estén comprendidas dentro de un período de tiempo. 
                     // El periodo de tiempo válido será definido en un archivo de configuración y podrá ser modificado. 
                     if (dateInitAnalyze.isBefore(endDate) && dateInitAnalyze.isAfter(startDate)) {
+                        checkDate = true;
+                    } else {
+                        //Si las fechas no se encuentran dentro de ese periodo, se lanzará la excepción WrongDateException y se notificará al usuario mediante una alerta con el siguiente mensaje de error: 
+                        //'Our application only stores information from year X to year Y. Please enter a date between these two years.'
+                        checkDate = false;
+                        try {
+
+                            throw new WrongDateFormatException();
+                        } catch (WrongDateFormatException ex) {
+                            tbSubjects.refresh();
+                            showErrorAlert("Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear() + ".");
+                        }
+                    }
+                    if (dateInitAnalyze.isAfter(dateEndAnalyze)) {
+                        checkDate = false;
+                        try {
+                            throw new WrongDateFormatException();
+                        } catch (WrongDateFormatException ex) {
+                            tbSubjects.refresh();
+                            showErrorAlert("The start date must be before the end date of the subject.");
+                        }
+                    }
+                    if (checkDate) {
                         try {
                             ((Subject) t.getTableView().getItems()
                                     .get(t.getTablePosition().getRow()))
@@ -426,16 +484,6 @@ public class SubjectController {
                             //Se cancelará la edición.
                             t.consume();
                             tbSubjects.refresh();
-                        }
-                    } else {
-                        //Si las fechas no se encuentran dentro de ese periodo, se lanzará la excepción WrongDateException y se notificará al usuario mediante una alerta con el siguiente mensaje de error: 
-                        //'Our application only stores information from year X to year Y. Please enter a date between these two years.'
-                        try {
-
-                            throw new WrongDateFormatException();
-                        } catch (WrongDateFormatException ex) {
-                            tbSubjects.refresh();
-                            showErrorAlert("Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear());
                         }
                     }
 
@@ -463,7 +511,7 @@ public class SubjectController {
                             throw new WrongDateFormatException();
                         } catch (WrongDateFormatException ex) {
                             tbSubjects.refresh();
-                            showErrorAlert("Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear());
+                            showErrorAlert("Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear() + ".");
 
                         }
                     }
@@ -581,6 +629,7 @@ public class SubjectController {
         //Menu de contexto para el create
         MenuItem createNewSubjectMenuItem = new MenuItem("Create new Subject");
         createNewSubjectMenuItem.setOnAction((ActionEvent e) -> {
+            createSubject();
         });
         //Menu de contexto para el delete
         MenuItem deleteSubjectMenuItem = new MenuItem("Delete a subject");
@@ -622,7 +671,6 @@ public class SubjectController {
      * @param oldValue El valor anterior (no se utiliza en esta implementación).
      * @param newValue El nuevo valor del Observable.
      */
-
     public void textChanged(ObservableValue observable, Object oldValue, Object newValue) {
         //Si el valor seleccionado es algunos de los siguientes: "name",  "teacher Name",   "with at Least _ number of units",  " with at least _ number of enrolled students", validar si “tfSearchSubject” está visible; si no lo está, establecerlo como visible. Luego, validar si “dpDateSearchSubject” no está visible; si no lo está, ponerlo en no visible.
         String selectedOption = (String) cbSearchSubject.getSelectionModel().getSelectedItem();
@@ -700,6 +748,10 @@ public class SubjectController {
      */
     public void handleSearchButtonAction(ActionEvent event) {
         String selectedOption = (String) cbSearchSubject.getSelectionModel().getSelectedItem();
+        List<Subject> beforeSearch = subjects;
+        Locale locale = Locale.getDefault();
+        // Formato de fecha para mostrar
+        DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 
         try {
             //La búsqueda 'name' llamará a la factoría SubjectFactoy para obtener la implementación de la interfaz SubjectManager y llamar al método  
@@ -749,6 +801,8 @@ public class SubjectController {
                 try {
                     if (dpDateSearchSubject.getValue() != null) {
                         subjects = FXCollections.observableArrayList(subjectManager.findSubjectByInitDate(dpDateSearchSubject.getValue().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+                    } else {
+                        showErrorAlert("The date should be written following the next example: 18-ene-2023");
                     }
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
@@ -759,6 +813,8 @@ public class SubjectController {
                 try {
                     if (dpDateSearchSubject.getValue() != null) {
                         subjects = FXCollections.observableArrayList(subjectManager.findSubjectByEndDate(dpDateSearchSubject.getValue().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+                    } else {
+                        showErrorAlert("The date should be written following the next example: 18-ene-2023");
                     }
                 } catch (FindErrorException ex) {
                     showErrorAlert(ex.getMessage());
@@ -969,41 +1025,58 @@ public class SubjectController {
      * Método para crear la asignatura
      */
     public void createSubject() {
-        //Crear la subject por defecto
-        Subject defaultSubject = new Subject();
-        defaultSubject.setName(null);
-        defaultSubject.setHours(null);
-        defaultSubject.setLevelType(LevelType.BEGGINER);
-        defaultSubject.setLanguageType(LanguageType.SPANISH);
-        defaultSubject.setDateInit(new Date());
-        defaultSubject.setDateEnd(new Date());
+        ObservableList<Subject> newSubjects = null;
+        Boolean noEmptyName = false;
         try {
-            //Después, se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager 
-            //y se invocará al método createSubject, pasando como parámetro un objeto Subject.
-            subjectManager.createSubject(defaultSubject);
-        } catch (CreateErrorException ex) {
+            newSubjects = FXCollections.observableArrayList(subjectManager.findAllSubjects());
+        } catch (FindErrorException ex) {
             showErrorAlert(ex.getMessage());
         }
-        loadData();
-
-        //Poner siempre las asignaturas nuevas al final de la tabla
-        for (int i = 0; i < subjects.size(); i++) {
-            if (subjects.get(i).getName() == null) {
-                Subject nullNameSubject = subjects.remove(i);
-                subjects.add(nullNameSubject);
+        for (Subject subject : newSubjects) {
+            if (subject.getName() == null) {
+                noEmptyName = true;
+                showErrorAlert("It looks like you've started creating a subject, but you forgot to give it a name. Please complete that one before creating another.");
             }
         }
-        // Mover todas las asignaturas con name igual a null al final de la lista
-        List<Subject> nullNameSubjects = subjects.stream()
-                .filter(subject -> subject.getName() == null)
-                .collect(Collectors.toList());
+        if (!noEmptyName) {
 
-        subjects.removeAll(nullNameSubjects);
-        subjects.addAll(nullNameSubjects);
-        //Asignar las asignaturas
-        tbSubjects.setItems(subjects);
-        //Refresh la tabla
-        tbSubjects.refresh();
+            //Crear la subject por defecto
+            Subject defaultSubject = new Subject();
+            defaultSubject.setName(null);
+            defaultSubject.setHours(null);
+            defaultSubject.setLevelType(LevelType.BEGGINER);
+            defaultSubject.setLanguageType(LanguageType.SPANISH);
+            defaultSubject.setDateInit(new Date());
+            defaultSubject.setDateEnd(new Date());
+
+            try {
+                //Después, se llamará a la factoría SubjectFactory para obtener una implementación de la interfaz SubjectManager 
+                //y se invocará al método createSubject, pasando como parámetro un objeto Subject.
+                subjectManager.createSubject(defaultSubject);
+            } catch (CreateErrorException ex) {
+                showErrorAlert(ex.getMessage());
+            }
+            loadData();
+
+            //Poner siempre las asignaturas nuevas al final de la tabla
+            for (int i = 0; i < subjects.size(); i++) {
+                if (subjects.get(i).getName() == null) {
+                    Subject nullNameSubject = subjects.remove(i);
+                    subjects.add(nullNameSubject);
+                }
+            }
+            // Mover todas las asignaturas con name igual a null al final de la lista
+            List<Subject> nullNameSubjects = subjects.stream()
+                    .filter(subject -> subject.getName() == null)
+                    .collect(Collectors.toList());
+
+            subjects.removeAll(nullNameSubjects);
+            subjects.addAll(nullNameSubjects);
+            //Asignar las asignaturas
+            tbSubjects.setItems(subjects);
+            //Refresh la tabla
+            tbSubjects.refresh();
+        }
     }
 
     /**
@@ -1078,8 +1151,8 @@ public class SubjectController {
                             //Se verifica que ya haya estado matriculado el alumno.
                             if (user.getId() == enrolled.getId().getStudentId()) {
                                 try {
-                                    enrolled.setIsMatriculate(newValue);
-                                    subject.setStatus(newValue);
+                                    enrolled.setIsMatriculate(true);
+                                    subject.setStatus(true);
                                     //Se llama al update de enrollment con el nuevo valor
                                     enrolledInterface.updateEnrolled(enrolled);
                                     //Se cambia el recuento de estudiante
@@ -1100,13 +1173,14 @@ public class SubjectController {
                             enrolledId.setStudentId(user.getId());
                             enrolledId.setSubjectId(subject.getId());
                             enrollmentNew.setId(enrolledId);
-                            enrollmentNew.setIsMatriculate(newValue);
-                            subject.setStatus(newValue);
+                            enrollmentNew.setIsMatriculate(true);
+                            subject.setStatus(true);
                             try {
                                 //Crea la entrada
                                 enrolledInterface.createEnrolled(enrollmentNew);
                                 //Cambia la suma de estudiantes
                                 subject.setStudentsCount(subject.getStudentsCount() + 1);
+
                                 //Refresca la tabla
                                 tbSubjects.refresh();
                             } catch (CreateErrorException ex) {
@@ -1130,12 +1204,13 @@ public class SubjectController {
                         if (user.getId() == enrolled.getId().getStudentId()) {
                             try {
                                 //Cambia el valor para el enrollment
-                                enrolled.setIsMatriculate(newValue);
+                                enrolled.setIsMatriculate(false);
                                 //Cambiar el valor
-                                subject.setStatus(newValue);
+                                // subject.setStatus(false);
                                 //Cambiar el valor de enrolled
                                 enrolledInterface.updateEnrolled(enrolled);
                                 //Se cambia el número de estudiantes
+                                // subject.setStatus(true);
                                 subject.setStudentsCount(subject.getStudentsCount() - 1);
                                 //Se refresca la tabla.
                                 tbSubjects.refresh();

@@ -24,9 +24,7 @@ import view.exercise.ExerciseController;
  */
 public class HyperlinkUnitEditingCell extends TableCell<Unit, String> {
 
-    private User loggedUser;
     private Hyperlink httpUnitCell;
-    private Stage stage;
 
     /**
      * Default constructor for HyperlinkUnitEditingCell.
@@ -73,10 +71,10 @@ public class HyperlinkUnitEditingCell extends TableCell<Unit, String> {
 
     /**
      * Updates the graphic content of the cell based on the provided item.
-     * Displays the hyperlink to show units.
+     * Displays the hyperlink to show exercises.
      *
-     * @param item
-     * @param empty
+     * @param item The item to update.
+     * @param empty Whether it's empty or not.
      */
     @Override
     protected void updateItem(String item, boolean empty) {

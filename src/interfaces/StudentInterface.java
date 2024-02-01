@@ -1,26 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package interfaces;
 
 import exceptions.CreateErrorException;
+import exceptions.EmailAlreadyExistsException;
+import exceptions.EncryptException;
 import exceptions.FindErrorException;
 import java.util.Collection;
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
 import models.Student;
 import models.User;
-
 
 /**
  *
  * @author irati
  */
 public interface StudentInterface {
- /**
+
+    /**
      * Retrieves a collection of students.
      *
      * @param student
@@ -36,8 +30,15 @@ public interface StudentInterface {
      * @throws FindErrorException If an error occurs during student retrieval.
      */
     public Collection<Student> findAll() throws FindErrorException;
-   
-    public void createStudent (Student student) throws CreateErrorException;
 
-  
+    /**
+     * Method to create a student
+     *
+     * @param student the student to be created
+     * @throws CreateErrorException If an error occurs during creation.
+     * @throws EmailAlreadyExistsException already exists.
+     * @throws EncryptException if there is an error during encrypt.
+     */
+    public void createStudent(Student student) throws CreateErrorException, EmailAlreadyExistsException, EncryptException;
+
 }
