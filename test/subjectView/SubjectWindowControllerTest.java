@@ -24,6 +24,7 @@ import models.LevelType;
 import models.Subject;
 import models.Teacher;
 import models.Unit;
+import models.User;
 import static org.junit.Assert.*;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -72,10 +73,15 @@ public class SubjectWindowControllerTest extends ApplicationTest {
      * @param stage The primary stage for the application.
      * @throws Exception If an exception occurs during the start process.
      */
+    private User user;
+
     @Override
     public void start(Stage stage) throws Exception {
         new SubjectMain().start(stage);
-        
+        user = new User();
+        user.setId(1);
+        user.setUser_type("Teacher");
+
     }
 
     /**
@@ -86,12 +92,12 @@ public class SubjectWindowControllerTest extends ApplicationTest {
         tableView = lookup("#tbSubjects").query();
         Integer count = tableView.getItems().size();
         clickOn("#btnCreateSubject");
-        
+
         ObservableList<Subject> items = tableView.getItems();
 
         //Verifica a que haya una nueva fila en la tabla
         assertEquals(tableView.getItems().size(), count + 1);
-        
+
         int rowIndex = items.size() - 1;
         Subject insertedSubject = items.get(rowIndex);
 
@@ -117,7 +123,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
     public void test2_updateSubject() {
         tableView = lookup("#tbSubjects").query();
         Node row = lookup(".table-row-cell").nth(0).query();
-        
+
         clickOn(row);
         //Seleccionar el nodo de todas las filas para poder hacer click en ella.
         Integer tablerow = tableView.getSelectionModel().getSelectedIndex();
@@ -131,14 +137,14 @@ public class SubjectWindowControllerTest extends ApplicationTest {
 
         //Coger los valores de la asignatura seleccionada antes de ser modificada.
         Subject subjectSelected = (Subject) tableView.getSelectionModel().getSelectedItem();
-        
+
         String name = subjectSelected.getName();
         Set<Teacher> originalTeachers = subjectSelected.getTeachers();
         List<Teacher> originalTeacherList = new ArrayList<>(originalTeachers);
         LevelType levelType = subjectSelected.getLevelType();
         LanguageType languageType = subjectSelected.getLanguageType();
         String hours = subjectSelected.getHours();
-        
+
         Date dateInit = subjectSelected.getDateInit();
         LocalDate dateInitLocal = dateInit.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         Date dateEnd = subjectSelected.getDateEnd();
@@ -148,36 +154,36 @@ public class SubjectWindowControllerTest extends ApplicationTest {
         clickOn(tableColumnName);
         write("AAA");
         push(KeyCode.ENTER);
-        
+
         doubleClickOn(tableColumTeachers);
         push(KeyCode.DOWN);
         push(KeyCode.ENTER);
-        
+
         doubleClickOn(tableColumnLevel);
         if (levelType.equals(LevelType.EXPERIENCED)) {
             push(KeyCode.UP);
         } else {
             push(KeyCode.DOWN);
         }
-        
+     
         doubleClickOn(tableColumnLanguage);
         if (languageType.equals(LanguageType.ENGLISH)) {
             push(KeyCode.UP);
         } else {
             push(KeyCode.DOWN);
         }
-        
+
         doubleClickOn(tableColumnInitDate);
         clickOn(tableColumnInitDate);
-        write("18/11/2023");
+        write("01/01/2023");
         press(KeyCode.ENTER);
         press(KeyCode.ENTER);
-        
+
         doubleClickOn(tableColumnEndDate);
         clickOn(tableColumnEndDate);
-        write("18/02/2024");
+        write("01/01/2024");
         type(KeyCode.ENTER);
-        
+
         clickOn(tableColumnHours);
         write("134");
         type(KeyCode.ENTER);
@@ -185,14 +191,14 @@ public class SubjectWindowControllerTest extends ApplicationTest {
         //Coger los valores de la asignatura modificada.
         Subject modifiedSubject = (Subject) tableView.getSelectionModel().getSelectedItem();
         Date dateInitMo = modifiedSubject.getDateInit();
-        LocalDate dateInitLocalMo = dateInitMo.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(1);
+        LocalDate dateInitLocalMo = dateInitMo.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         Date dateEndMo = modifiedSubject.getDateEnd();
-        LocalDate dateEndLocalMo = dateEndMo.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().plusDays(1);
-        
+        LocalDate dateEndLocalMo = dateEndMo.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
         Set<Teacher> modifiedTeachers = modifiedSubject.getTeachers();
         List<Teacher> modifiedTeacherList = new ArrayList<>(modifiedTeachers);
 
-        //Verificar que los valores no son iguales
+        //Verificar que los valores no son iguales que los de la asignatura selecciona anteriormente.
         assertNotEquals(name, modifiedSubject.getName());
         assertNotEquals(originalTeacherList, modifiedTeacherList);
         assertNotEquals(levelType, modifiedSubject.getLevelType());
@@ -255,7 +261,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
             Date dateInit = subject.getDateInit();
             Instant instant = dateInit.toInstant();
             LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-            
+
             String formattedDate = localDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
             assertTrue(formattedDate.contains("18-11-2023"));
         }
@@ -280,7 +286,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
         //Inserta una búsqueda por fecha
         write("18/02/2024");
         clickOn(buttonSearch);
-        
+
         List<Subject> dataSubject = new ArrayList<>(tableView.getItems());
         //Mira que esa fecha este dentro de las asignaturas que aparecen despues de hacer la búsqueda
         for (Subject subject : dataSubject) {
@@ -288,7 +294,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
             Date dateEnd = subject.getDateEnd();
             Instant instant = dateEnd.toInstant();
             LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-            
+
             String formattedDate = localDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
             assertTrue(formattedDate.contains("18-02-2024"));
         }
@@ -355,7 +361,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
             }
             assertTrue(count >= 1);
         }
-        
+
     }
 
     /**
@@ -397,11 +403,43 @@ public class SubjectWindowControllerTest extends ApplicationTest {
         assertTrue(count >= 1);
     }
 
+    @Test
+    public void test9_searchSusSubjects() {
+        tableView = lookup("#tbSubjects").query();
+        ComboBox combo = lookup("#cbSearchSubject").query();
+        buttonSearch = lookup("#btnSearchSubject").query();
+        Node row = lookup(".table-row-cell").nth(0).query();
+        search = lookup("#tfSearchSubject").query();
+        //Selecciona dentro del comboBox la búsqueda
+        clickOn(combo);
+        push(KeyCode.DOWN);
+        push(KeyCode.DOWN);
+        push(KeyCode.DOWN);
+        push(KeyCode.DOWN);
+        push(KeyCode.DOWN);
+        push(KeyCode.DOWN);
+        clickOn(buttonSearch);
+        List<Subject> dataSubject = new ArrayList<>(tableView.getItems());
+        Integer numberSubjects = 0;
+        for (Subject subject : dataSubject) {
+            boolean teacherFound = false;
+            for (Teacher teacher : subject.getTeachers()) {
+                if (teacher.getId() == user.getId()) {
+                    teacherFound = true;
+                    numberSubjects++;
+                }
+            }
+            assertTrue(teacherFound);
+        }
+        assertTrue("El número de asignaturas con el usuario no coincide con el tamaño total de la lista de asignaturas", tableView.getItems().size() == numberSubjects);
+
+    }
+
     /**
      * Method to delete a subject.
      */
     @Test
-    public void test9_deleteSubject() {
+    public void testA10_deleteSubject() {
         Node tableColumnName = lookup("#tbColNameSub").nth(0).query();
         clickOn(tableColumnName);
         tableView = lookup("#tbSubjects").query();
@@ -418,7 +456,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
         clickOn(row2);
         Subject subjectDeleteAfter = (Subject) tableView.getSelectionModel().getSelectedItem();
         assertNotEquals(subjectDelete, subjectDeleteAfter);
-        
+
         List<Subject> dataSubject = new ArrayList<>(tableView.getItems());
         Boolean notFound = true;
         for (Subject subject : dataSubject) {
@@ -426,9 +464,9 @@ public class SubjectWindowControllerTest extends ApplicationTest {
                 notFound = false;
             }
         }
-        
+
         assertTrue(notFound);
-        
+
     }
-    
+
 }

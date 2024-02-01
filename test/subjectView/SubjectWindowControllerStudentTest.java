@@ -15,12 +15,16 @@ import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import main.SubjectMainStudent;
 import models.Enrolled;
 import models.Subject;
+import models.Teacher;
 import models.User;
 import static org.junit.Assert.assertTrue;
 import org.junit.FixMethodOrder;
@@ -39,9 +43,30 @@ import static org.testfx.matcher.base.NodeMatchers.isVisible;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SubjectWindowControllerStudentTest extends ApplicationTest {
 
+    /**
+     * The TableView used to display subjects.
+     */
     private TableView<Subject> tableView;
+
+    /**
+     * The user associated with the application.
+     */
     private User user;
+
+    /**
+     * The SubjectManager responsible for managing subjects.
+     */
     private SubjectManager subjectManager = SubjectFactory.getModel();
+
+    /**
+     * TextField used for performing searches.
+     */
+    private TextField search;
+
+    /**
+     * Button used to initiate searches or perform specific actions.
+     */
+    private Button buttonSearch;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -59,20 +84,24 @@ public class SubjectWindowControllerStudentTest extends ApplicationTest {
     public void test1_enroll() {
         tableView = lookup("#tbSubjects").query();
         List<Subject> dataSubject = new ArrayList<>(tableView.getItems());
-        Boolean empty = false;
+        Boolean notMatriculated = false;
         Integer position = null;
         Subject selectedSubject = null;
         //Busca en que asignaturas no esta matriculado para clickar en una de ellas.
         for (Subject subject : dataSubject) {
             if (subject.getStatus() == false) {
-                empty = true;
+                notMatriculated = true;
+                //Coge la posicíón de la asignatura modificada.
                 position = dataSubject.indexOf(subject);
                 selectedSubject = subject;
                 break;
+
             }
+
         }
         //Si hay alguna en la que no esta matriculado.
-        if (empty) {
+        if (notMatriculated) {
+            //Hace click en la fila con la posición recogida enteriormente.
             Node row = lookup(".table-row-cell").nth(position).query();
             clickOn(row);
             Node tableColumnMatriculated = lookup("#tbColMatriculated").nth(position + 1).query();
@@ -113,20 +142,22 @@ public class SubjectWindowControllerStudentTest extends ApplicationTest {
     public void test2_unenroll() {
         tableView = lookup("#tbSubjects").query();
         List<Subject> dataSubject = new ArrayList<>(tableView.getItems());
-        Boolean empty = false;
+        Boolean matriculated = false;
         Integer position = null;
         Subject selectedSubject = null;
         //Busca en que asignaturas esta matriculado para clickar en una de ellas.
         for (Subject subject : dataSubject) {
             if (subject.getStatus() == true) {
-                empty = true;
+                matriculated = true;
+                //Coge la posición
                 position = dataSubject.indexOf(subject);
                 selectedSubject = subject;
                 break;
             }
         }
 
-        if (empty) {
+        if (matriculated) {
+            //Hace click en la fila con la posición recogida enteriormente.
             Node row = lookup(".table-row-cell").nth(position).query();
             clickOn(row);
             Node tableColumnMatriculated = lookup("#tbColMatriculated").nth(position + 1).query();
@@ -161,6 +192,37 @@ public class SubjectWindowControllerStudentTest extends ApplicationTest {
             assertTrue("La cadena no contiene el valor esperado", subjectUpdated.getStudentsCount().toString().equals(String.valueOf(numberStudents - 1)));
 
         }
+
+    }
+
+    @Test
+    public void test3_searchSusSubjects() {
+        tableView = lookup("#tbSubjects").query();
+        ComboBox combo = lookup("#cbSearchSubject").query();
+        buttonSearch = lookup("#btnSearchSubject").query();
+        search = lookup("#tfSearchSubject").query();
+        //Selecciona dentro del comboBox la búsqueda
+        clickOn(combo);
+        push(KeyCode.DOWN);
+        push(KeyCode.DOWN);
+        push(KeyCode.DOWN);
+        push(KeyCode.DOWN);
+        push(KeyCode.DOWN);
+        push(KeyCode.DOWN);
+        clickOn(buttonSearch);
+        List<Subject> dataSubject = new ArrayList<>(tableView.getItems());
+        Integer numberSubjects = 0;
+        for (Subject subject : dataSubject) {
+            boolean studentFound = false;
+            for (Enrolled enrolled : subject.getEnrollments()) {
+                if (enrolled.getId().getStudentId() == user.getId()) {
+                    studentFound = true;
+                    numberSubjects++;
+                }
+            }
+            assertTrue(studentFound);
+        }
+        assertTrue("El número de asignaturas con el usuario no coincide con el tamaño total de la lista de asignaturas", tableView.getItems().size() == numberSubjects);
 
     }
 
