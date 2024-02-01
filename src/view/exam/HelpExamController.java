@@ -4,6 +4,7 @@ package view.exam;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -30,7 +31,9 @@ public class HelpExamController {
         Scene scene = new Scene(root);
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.setTitle("Help");
+        stage.setTitle("Help Exam");
+        //Se añadirá a la ventana el icono de una estrella.
+        stage.getIcons().add(new Image("resources/Logo.jpg"));
         stage.setResizable(false);
         stage.setMinWidth(800);
         stage.setMinHeight(600);
