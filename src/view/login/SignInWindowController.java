@@ -277,19 +277,15 @@ public class SignInWindowController {
                 byte[] encryptedPassword = null;
                 try {
                     encryptedPassword = asimetricaClient.encryptedData(tfPassword.getText());
-                } catch (Exception ex) {
-                    showErrorAlert("Error during login");
+                } catch (EncryptException ex) {
+                    showErrorAlert("Error trying to login. Please try later.");
                 }
 
                 //Create an user 
                 User user = new User();
                 user.setEmail(tfEmail.getText());
                 String passwordEncrypted = null;
-                try {
-                    passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
-                } catch (Exception ex) {
-                    showErrorAlert("Error during login");
-                }
+                passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
 
                 user.setPassword(passwordEncrypted);
 
@@ -322,6 +318,8 @@ public class SignInWindowController {
          * la excepción “LoginCredentialException”.
          */
         catch (FindErrorException ex) {
+            showErrorAlert(ex.getMessage());
+        } catch (EncryptException ex) {
             showErrorAlert(ex.getMessage());
         } catch (WrongEmailFormatException e) {
             lblEmailError.setText(e.getMessage());

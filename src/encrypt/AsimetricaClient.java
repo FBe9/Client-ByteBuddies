@@ -1,6 +1,7 @@
 package encrypt;
 
 import static com.google.common.io.ByteStreams.toByteArray;
+import exceptions.EncryptException;
 import java.io.InputStream;
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -21,7 +22,7 @@ public class AsimetricaClient {
      * @param password The password to be encrypted.
      * @return The encrypted data.
      */
-    public byte[] encryptedData(String password) {
+    public byte[] encryptedData(String password) throws EncryptException {
         byte[] encryptedData = null;
         try {
             
@@ -36,7 +37,7 @@ public class AsimetricaClient {
             encryptedData = c.doFinal(password.getBytes());
 
         } catch (Exception e) {
-            e.printStackTrace();
+           throw new EncryptException();
         }
         return encryptedData;
     }
