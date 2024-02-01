@@ -6,16 +6,17 @@ import java.util.Collection;
 import models.Student;
 import models.User;
 
-
 /**
+ * Interface for student model
  *
  * @author irati
  */
 public interface StudentInterface {
- /**
+
+    /**
      * Retrieves a collection of students.
      *
-     * @param student
+     * @param student The student.
      * @return A collection of students.
      * @throws FindErrorException If an error occurs during student retrieval.
      */
@@ -28,12 +29,13 @@ public interface StudentInterface {
      * @throws FindErrorException If an error occurs during student retrieval.
      */
     public Collection<Student> findAll() throws FindErrorException;
-   /**
-    * Method to create a student
-    * @param student the student to be created
-    * @throws CreateErrorException If an error occurs during creation.
-    */
-    public void createStudent (Student student) throws CreateErrorException;
 
-  
+    /**
+     * Method to create a student
+     *
+     * @param student the student to be created
+     * @throws CreateErrorException If an error occurs during creation.
+     */
+    public void createStudent(Student student) throws CreateErrorException;
+
 }

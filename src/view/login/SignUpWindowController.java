@@ -2,7 +2,6 @@ package view.login;
 
 import encrypt.AsimetricaClient;
 import exceptions.CreateErrorException;
-
 import exceptions.WrongEmailFormatException;
 import exceptions.WrongNameFormatException;
 import exceptions.WrongPasswordFormatException;
@@ -11,7 +10,6 @@ import factories.UserFactory;
 import interfaces.StudentInterface;
 import interfaces.UserInterface;
 import java.util.Date;
-
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -405,6 +403,11 @@ public class SignUpWindowController {
 
     }
 
+    /**
+     * Shows an alert containing the exception message.
+     * 
+     * @param errorMsg The message to show.
+     */
     public void showErrorAlert(String errorMsg) {
         Alert alert = new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.OK);
         alert.showAndWait();

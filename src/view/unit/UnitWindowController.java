@@ -115,8 +115,8 @@ public class UnitWindowController {
     /**
      * Initializes the controller class.
      *
-     * @param root
-     * @param loggedUser
+     * @param root The root window.
+     * @param loggedUser The current logged user.
      */
     public void initStage(Parent root, User loggedUser) {
         try {
@@ -715,7 +715,8 @@ public class UnitWindowController {
                 clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits(comboValue));
                 tbvUnit.setItems((ObservableList) clientsDataU);
                 tbvUnit.refresh();
-
+                tfSearch.setText("");
+                dpSearch.setValue(null);
             }
         } catch (FindErrorException ex) {
             Logger.getLogger("Error while recharging the table").log(Level.SEVERE, null, ex);
@@ -771,7 +772,7 @@ public class UnitWindowController {
         } catch (FindErrorException | UpdateErrorException ex) {
             Logger.getLogger("Error while updating name from the unit").log(Level.SEVERE, null, ex);
             new Alert(Alert.AlertType.ERROR, "Error while updating name from the unit", ButtonType.OK).showAndWait();
-            
+
         }
     }
 

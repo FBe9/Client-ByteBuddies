@@ -91,6 +91,11 @@ public class HyperLinkEditingCellExam extends TableCell<Subject, String> {
         }
     }
 
+    /**
+     * Shows an alert containing the exception message.
+     * 
+     * @param errorMsg The message to show.
+     */
     public void showErrorAlert(String errorMsg) {
         Alert alert = new Alert(Alert.AlertType.ERROR, errorMsg, ButtonType.OK);
         alert.showAndWait();

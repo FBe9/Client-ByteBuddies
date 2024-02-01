@@ -6,6 +6,7 @@ import models.Teacher;
 
 /**
  * Interface for teacher model
+ *
  * @author irati
  */
 public interface TeacherInterface {

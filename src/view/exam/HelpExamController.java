@@ -1,4 +1,3 @@
-
 package view.exam;
 
 import javafx.fxml.FXML;
@@ -11,7 +10,7 @@ import javafx.stage.Stage;
 
 /**
  * Controller class for the Exam help window.
- * 
+ *
  * @author Alex
  */
 public class HelpExamController {
@@ -24,7 +23,7 @@ public class HelpExamController {
 
     /**
      * Initialises and shows the window .
-     * 
+     *
      * @param root The root of the FXML hierarchy.
      */
     public void initialize(Parent root) {

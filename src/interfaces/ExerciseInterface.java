@@ -9,7 +9,7 @@ import models.Exercise;
 
 /**
  * Interface for managing exercises.
- * 
+ *
  * @author Leire
  */
 public interface ExerciseInterface {
