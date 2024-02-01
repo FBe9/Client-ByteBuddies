@@ -28,7 +28,7 @@ import models.User;
 public class ButtonEditingCell extends TableCell<Exam, String> {
 
     private static final Logger LOGGER = Logger.getLogger("ButtonEditingCell");
-    
+
     /**
      * Interface instance to send and/or receive the files.
      */

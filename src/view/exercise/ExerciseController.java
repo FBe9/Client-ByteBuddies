@@ -995,7 +995,7 @@ public class ExerciseController {
     /**
      * Return the stage
      *
-     * @param stage
+     * @param stage The stage to set.
      */
     public void setStage(Stage stage) {
         this.stage = stage;

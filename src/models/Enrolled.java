@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Represents enrollment information in the system. 
+ * Represents enrollment information in the system.
  *
  * @author irati
  */
@@ -26,7 +26,6 @@ public class Enrolled implements Serializable {
     }
 
     // ... other constructors and methods
-    
     /**
      * Gets the unique identifier for enrollment.
      *

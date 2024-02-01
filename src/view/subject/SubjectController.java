@@ -12,10 +12,8 @@ import exceptions.WrongNumberFormatException;
 import factories.EnrolledFactory;
 import factories.SubjectFactory;
 import interfaces.EnrolledInterface;
-
 import interfaces.SubjectManager;
 import java.text.DateFormat;
-
 import javafx.event.ActionEvent;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -141,6 +139,9 @@ public class SubjectController {
     String regexLetters = "^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]+$";
     String regexNumbers = "^[0-9]+$";
 
+    /**
+     * Default constructor for the SubjectWindowController class.
+     */
     public SubjectController() {
         subjectManager = SubjectFactory.getModel();
 
@@ -150,6 +151,7 @@ public class SubjectController {
      * Initialises the controller class.
      *
      * @param root The parent window.
+     * @param user The current user.
      */
     public void initStage(Parent root, User user) {
         //Asignar user

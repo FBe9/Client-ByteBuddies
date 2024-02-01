@@ -13,7 +13,6 @@ import services.TeacherRESTClient;
 /**
  * The implementation of TeacherInterface
  *
- *
  * @author irati
  */
 public class TeacherInterfaceImplementation implements TeacherInterface {
@@ -33,7 +32,7 @@ public class TeacherInterfaceImplementation implements TeacherInterface {
     public TeacherInterfaceImplementation() {
         webClient = new TeacherRESTClient();
     }
-   
+
     /**
      * Finds all teachers.
      *

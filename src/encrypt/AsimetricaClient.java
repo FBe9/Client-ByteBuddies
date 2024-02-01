@@ -25,7 +25,7 @@ public class AsimetricaClient {
     public byte[] encryptedData(String password) throws EncryptException {
         byte[] encryptedData = null;
         try {
-            
+
             InputStream input = getClass().getResourceAsStream("public.der");
             byte fileKey[] = toByteArray(input);
             input.close();
@@ -58,6 +58,5 @@ public class AsimetricaClient {
         }
         return buf.toString();
     }
-
 
 }

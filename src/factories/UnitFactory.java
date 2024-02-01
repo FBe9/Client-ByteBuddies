@@ -11,8 +11,16 @@ import interfaces.UnitInterface;
  */
 public class UnitFactory {
 
+    /**
+     * The instance of UnitInterface.
+     */
     public static UnitInterface model;
 
+    /**
+     * When there isn't an instance of UnitInterface, it creates a new one.
+     * 
+     * @return The instance of UnitInterface.
+     */
     public static UnitInterface getModel() {
         if (model == null) {
             model = new UnitManagerImplementation();

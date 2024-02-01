@@ -21,7 +21,7 @@ import javax.ws.rs.client.WebTarget;
 public class EnrolledRESTClient {
 
     /**
-     * Represents a webTarget to interact with a web resource 
+     * Represents a webTarget to interact with a web resource
      */
     private WebTarget webTarget;
     /**

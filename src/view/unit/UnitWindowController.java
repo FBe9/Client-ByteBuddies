@@ -30,6 +30,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
@@ -44,7 +45,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import models.Subject;
-import models.Teacher;
 import models.Unit;
 import models.User;
 import net.sf.jasperreports.engine.JRException;
@@ -94,7 +94,14 @@ public class UnitWindowController {
     private Button btnPrint;
     @FXML
     private DatePicker dpSearch;
-
+    @FXML
+    private ContextMenu contextMenu;
+    @FXML
+    private MenuItem cmiCreateUnit;
+    @FXML
+    private MenuItem cmiDeleteUnit;
+    @FXML
+    private MenuItem cmiPrintReport;
     //The stage of the window.
     private Stage stage;
     //Logger for the aplication. 
@@ -104,18 +111,12 @@ public class UnitWindowController {
     private User loggedUser;
     private UnitInterface clientU;
     private SubjectManager clientS;
-    @FXML
-    private MenuItem cmiCreateUnit;
-    @FXML
-    private MenuItem cmiDeleteUnit;
-    @FXML
-    private MenuItem cmiPrintReport;
 
     /**
      * Initializes the controller class.
      *
-     * @param root
-     * @param loggedUser
+     * @param root The root window.
+     * @param loggedUser The current logged user.
      */
     public void initStage(Parent root, User loggedUser) {
         try {
@@ -175,6 +176,10 @@ public class UnitWindowController {
                 btnCreateUnit.setVisible(false);
                 btnDeleteUnit.setVisible(false);
                 tbvUnit.setEditable(false);
+                contextMenu.hide();
+                cmiCreateUnit.setDisable(true);
+                cmiDeleteUnit.setDisable(true);
+                cmiPrintReport.setDisable(true);
             }
             //El campo “tfSearch” será visible y el date picker “dpSearch” estará invisible.
             tfSearch.setVisible(true);
@@ -205,7 +210,7 @@ public class UnitWindowController {
                             java.util.Date date = dateFormatter.parse(string);
                             return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
                         } catch (ParseException e) {
-                            LOGGER.severe("Error parsing the datePicker content " + e.getMessage());
+                            LOGGER.log(Level.SEVERE, "Error parsing the datePicker content {0}", e.getMessage());
                         }
                     }
                     return null;
@@ -710,7 +715,8 @@ public class UnitWindowController {
                 clientsDataU = FXCollections.observableArrayList(clientU.findSubjectUnits(comboValue));
                 tbvUnit.setItems((ObservableList) clientsDataU);
                 tbvUnit.refresh();
-
+                tfSearch.setText("");
+                dpSearch.setValue(null);
             }
         } catch (FindErrorException ex) {
             Logger.getLogger("Error while recharging the table").log(Level.SEVERE, null, ex);
@@ -766,7 +772,7 @@ public class UnitWindowController {
         } catch (FindErrorException | UpdateErrorException ex) {
             Logger.getLogger("Error while updating name from the unit").log(Level.SEVERE, null, ex);
             new Alert(Alert.AlertType.ERROR, "Error while updating name from the unit", ButtonType.OK).showAndWait();
-            
+
         }
     }
 

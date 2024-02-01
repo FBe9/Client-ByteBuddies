@@ -26,6 +26,9 @@ public class ExerciseRESTClient {
     private final ResourceBundle configFile = ResourceBundle.getBundle("config.config");
     private final String BASE_URI = configFile.getString("BASE_URI");
 
+    /**
+     * Constructs a new ExerciseRESTClient instance.
+     */
     public ExerciseRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.exercise");

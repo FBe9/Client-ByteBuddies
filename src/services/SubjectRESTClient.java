@@ -26,6 +26,9 @@ public class SubjectRESTClient {
     private Client client;
     private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
 
+    /**
+     * Constructs a new SubjectRESTClient instance.
+     */
     public SubjectRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.subject");
@@ -232,6 +235,7 @@ public class SubjectRESTClient {
         WebTarget resource = webTarget.path(java.text.MessageFormat.format("findSubjectByTeacher/{0}", new Object[]{name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
+
     /**
      * Closes the underlying client.
      */

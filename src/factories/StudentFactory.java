@@ -4,11 +4,15 @@ import implementation.StudentInterfaceImplementation;
 import interfaces.StudentInterface;
 
 /**
- *  Factory class to obtain the implementation of a Student.
+ * Factory class to obtain the implementation of a Student.
+ *
  * @author irati
  */
 public class StudentFactory {
 
+    /**
+     * The instance of UserInterface.
+     */
     public static StudentInterface model;
 
     /**

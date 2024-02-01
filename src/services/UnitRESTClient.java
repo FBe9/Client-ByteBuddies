@@ -25,6 +25,9 @@ public class UnitRESTClient {
     private final Client client;
     private static final String BASE_URI = ResourceBundle.getBundle("config.config").getString("BASE_URI");
 
+    /**
+     * Constructs a new UnitRESTClient instance.
+     */
     public UnitRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("entities.unit");

@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
@@ -98,14 +97,14 @@ public class DateExamEditingCell extends TableCell<Exam, Date> {
                 dateText = dateFormatter.format(date);
                 setText(dateText);
                 setGraphic(null);
-            }  else{
+            } else {
                 if (!getTableView().getItems().get(getIndex()).getDescription().equals("")) {
-                    try{
+                    try {
                         setText(dateFormatter.format(getTableView().getItems().get(getIndex()).getDateInit()));
-                    } catch(NullPointerException ex){
+                    } catch (NullPointerException ex) {
                         setText("");
                     }
-                } else{
+                } else {
                     setText("");
                 }
                 setGraphic(null);
