@@ -910,7 +910,7 @@ public class ExerciseController {
                 Desktop.getDesktop().open(file);
             } catch (IOException | FindErrorException ex) {
                 Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
+            }
         } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "There are no files selected for this exercise yet.", ButtonType.OK);
             alert.showAndWait();
@@ -933,7 +933,7 @@ public class ExerciseController {
                 Desktop.getDesktop().open(file);
             } catch (IOException | FindErrorException ex) {
                 Logger.getLogger(Exercise.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
+            }
         } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "There are no files solution selected for this exercise yet.", ButtonType.OK);
             alert.showAndWait();
