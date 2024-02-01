@@ -17,8 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,10 +42,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javax.swing.WindowConstants;
 import models.Exam;
-import models.Student;
 import models.Subject;
-import models.Teacher;
 import models.User;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -195,13 +192,13 @@ public class ExamWindowController {
     private static final Logger LOGGER = Logger.getLogger("ExamWindowController");
 
     // Others
-    private String allExams = "All exams";
-    private String bySubject = "Exams by subject";
-    private String searchExam = "Search an exam";
-    private String noSubjects = "No subjects";
+    private final String allExams = "All exams";
+    private final String bySubject = "Exams by subject";
+    private final String searchExam = "Search an exam";
+    private final String noSubjects = "No subjects";
     private ObservableList<Subject> userSubjects = FXCollections.observableArrayList();
-    private ObservableList<String> subjectNames = FXCollections.observableArrayList();
-    private ObservableList<Exam> exams = FXCollections.observableArrayList();
+    private final ObservableList<String> subjectNames = FXCollections.observableArrayList();
+    private final ObservableList<Exam> exams = FXCollections.observableArrayList();
     private Exam examEditing = new Exam();
     private Boolean flagNewRow = false;
 
@@ -372,8 +369,8 @@ public class ExamWindowController {
         });
         tvExam.setRowFactory(tv -> {
             TableRow<Exam> row = new TableRow<>();
-            tvExam.getSelectionModel().selectedItemProperty().addListener((obs, oldCell, newCell) ->{
-                if(newCell == null){
+            tvExam.getSelectionModel().selectedItemProperty().addListener((obs, oldCell, newCell) -> {
+                if (newCell == null) {
                     row.disableProperty().unbind();
                     row.setDisable(false);
                 }
@@ -381,7 +378,6 @@ public class ExamWindowController {
             tvExam.editingCellProperty().addListener((obs, oldCell, newCell) -> {
                 if (newCell != null) {
                     row.disableProperty().bind(row.indexProperty().isNotEqualTo(tvExam.getSelectionModel().getSelectedIndex()));
-                } else {
                 }
             });
             return row;
@@ -418,17 +414,14 @@ public class ExamWindowController {
                 (TableColumn.CellEditEvent<Exam, String> t) -> {
                     if (!flagNewRow) {
                         examEditing = t.getRowValue();
-                        //examEditing.setId(t.getRowValue().getId());
                     }
                     examEditing.setDescription(t.getNewValue());
                 }
-                //disabledRowIndex = new disabledRowIndex();
         );
         tcSubject.setOnEditCommit(
                 (TableColumn.CellEditEvent<Exam, Subject> t) -> {
                     if (!flagNewRow) {
                         examEditing = t.getRowValue();
-                        //examEditing.setId(t.getRowValue().getId());
                     }
                     examEditing.setSubject(t.getNewValue());
                 });
@@ -436,7 +429,6 @@ public class ExamWindowController {
                 (TableColumn.CellEditEvent<Exam, String> t) -> {
                     if (!flagNewRow) {
                         examEditing = t.getRowValue();
-                        //examEditing.setId(t.getRowValue().getId());
                     }
                     examEditing.setDuration(t.getNewValue());
                 }
@@ -509,6 +501,8 @@ public class ExamWindowController {
     /**
      * Overrides the current subject to show only exams of that subject, if it
      * is assigned to the user.
+     *
+     * @param subject Sets the subject of the exam view.
      */
     public void setCurrentSubject(Subject subject) {
         //Se guarda en modo de texto la subject obtenida.
@@ -635,14 +629,11 @@ public class ExamWindowController {
             } else {
                 // Una vez valide correctamente, se realiza la búsqueda usando la colección de asignaturas recopilada anteriormente
                 ObservableList<Exam> searchedExams = FXCollections.observableArrayList();
-                //ObservableList<Exam> currentExams = FXCollections.observableArrayList(setExams(userSubjects));
                 if (exams.size() > 0) {
                     // Si la búsqueda arroja resultados se actualizará la tabla
-                    for (Exam e : exams) {
-                        if (e.getDescription().contains(tfSearchExam.getText())) {
-                            searchedExams.add(e);
-                        }
-                    }
+                    exams.stream().filter((e) -> (e.getDescription().contains(tfSearchExam.getText()))).forEachOrdered((e) -> {
+                        searchedExams.add(e);
+                    });
                     tvExam.setItems(searchedExams);
                 } else {
                     // En caso contrario la tabla mostrará un mensaje (Placeholder) indicando que no ha habido resultados
@@ -678,7 +669,6 @@ public class ExamWindowController {
                 } else {
                     tvExam.setItems(exams);
                 }
-                //tvExam.refresh();
                 examEditing = null;
                 // Se deshabilita el botón “btnDeleteExam” y se esconden los botones “btnCancelExam” y “btnSaveExam” y se vuelven a
                 // habilitar el resto de campos, ComboBoxes y botones que se han deshabilitado anteriormente.
@@ -687,6 +677,7 @@ public class ExamWindowController {
                 btnPrintExam.setDisable(false);
                 btnCancelExam.setDisable(true);
                 btnSaveExam.setDisable(true);
+                cbSearchCriteria.getSelectionModel().select(allExams);
                 tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex());
                 flagNewRow = false;
             }
@@ -695,54 +686,55 @@ public class ExamWindowController {
         if (event.getSource() == btnSaveExam) {
             LOGGER.info("btnSaveExam pressed.");
             // Se validará que todas las celdas estén informadas
-            //Exam saveExam = tvExam.getSelectionModel().getSelectedItem();
             if (examEditing.getDescription().isEmpty() || examEditing.getSubject() == null
-                    || examEditing.getDescription().isEmpty() || examEditing.getDateInit() == null) {
+                    || examEditing.getDuration().isEmpty() || examEditing.getDateInit() == null) {
                 // Si hay alguna celda que no tenga contenido, se avisará al usuario a través de una alerta indicando que debe rellenar todas las celdas.
                 new Alert(Alert.AlertType.ERROR, "You must fill all cells to save an exam.").showAndWait();
             } else {
-                // Se muestra un mensaje de confirmación indicando que se va a guardar nueva información, indicar también el nombre del examen que se va a guardar
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                        "A new exam will be saved: " + examEditing.getDescription(),
-                        ButtonType.OK, ButtonType.CANCEL);
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    try {
-                        // Si elige “Ok”, se comprueba si el Examen a guardar ya existe o no llamando al método “findExamById” de la Interfaz “ExamInterface”
+                if (examEditing.getDuration().matches("[0-9]")) {
+                    // Se muestra un mensaje de confirmación indicando que se va a guardar nueva información, indicar también el nombre del examen que se va a guardar
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                            "A new exam will be saved: " + examEditing.getDescription(),
+                            ButtonType.OK, ButtonType.CANCEL);
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
                         try {
-                            if (examInterface.findExamById(examEditing.getId()).getId() != 0) {
-                                examInterface.updateExam(examEditing);
-                            } else {
+                            // Si elige “Ok”, se comprueba si el Examen a guardar ya existe o no llamando al método “findExamById” de la Interfaz “ExamInterface”
+                            try {
+                                if (examInterface.findExamById(examEditing.getId()).getId() != 0) {
+                                    examInterface.updateExam(examEditing);
+                                } else {
 
+                                }
+                            } catch (NullPointerException | FindErrorException ex1) {
+                                LOGGER.info("Exam not found, creating a new one.");
+                                Exam ex = new Exam();
+                                ex.setDescription(examEditing.getDescription());
+                                ex.setDuration(examEditing.getDuration());
+                                ex.setSubject(examEditing.getSubject());
+                                ex.setDateInit(examEditing.getDateInit());
+                                examInterface.createExam(ex);
+                                if (flagNewRow) {
+                                    exams.add(examEditing);
+                                }
                             }
-                        } catch (NullPointerException | FindErrorException ex1) {
-                            LOGGER.info("Exam not found, creating a new one.");
-                            Exam ex = new Exam();
-                            Subject sub = new Subject();
-                            ex.setDescription(examEditing.getDescription());
-                            ex.setDuration(examEditing.getDuration());
-                            ex.setSubject(examEditing.getSubject());
-                            ex.setDateInit(examEditing.getDateInit());
-                            examInterface.createExam(ex);
-                            if (flagNewRow) {
-                                exams.remove(exams.size() - 1);
-                                exams.add(ex);
-                            }
+                        } catch (CreateErrorException | UpdateErrorException ex) {
+                            Logger.getLogger(ExamWindowController.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    } catch (CreateErrorException | UpdateErrorException ex) {
-                        Logger.getLogger(ExamWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                        cbSearchCriteria.setDisable(false);
+                        btnCreateExam.setDisable(false);
+                        btnPrintExam.setDisable(false);
+                        btnCancelExam.setDisable(true);
+                        btnSaveExam.setDisable(true);
+                        cbSearchCriteria.getSelectionModel().select(allExams);
+                        tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex());
+                        flagNewRow = false;
+                    } else {
+                        // Si elige “Cancel” se cancelará la actualización o creación.
                     }
                 } else {
-                    // Si elige “Cancel” se cancelará la actualización o creación.
+                    new Alert(Alert.AlertType.ERROR, "The duration must only be numbers.").showAndWait();
                 }
-
-                cbSearchCriteria.setDisable(false);
-                btnCreateExam.setDisable(false);
-                btnPrintExam.setDisable(false);
-                btnCancelExam.setDisable(true);
-                btnSaveExam.setDisable(true);
-                tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex());
-                flagNewRow = false;
             }
         }
     }
@@ -755,12 +747,10 @@ public class ExamWindowController {
     private void handleOnActionExit(Event event) {
         LOGGER.info("Exit pressed.");
         // Se observará que no se esté editando la tabla o que no haya datos sin guardar.
-        // TO FINISH
-
         try {
             //Ask user for confirmation on exit
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                    "Are you sure you want to exit the application?",
+                    "Are you sure you want to exit the application?\nALL UNSAVED data will be LOST.",
                     ButtonType.OK, ButtonType.CANCEL);
             Optional<ButtonType> result = alert.showAndWait();
             //If OK to exit
@@ -812,6 +802,9 @@ public class ExamWindowController {
         LOGGER.info("New row created.");
     }
 
+    /**
+     * Sends a delete request to the server and deletes the exam from the table.
+     */
     public void deleteExam() {
         LOGGER.info("Deleting an exam.");
         // Se muestra un mensaje de confirmación.
@@ -842,26 +835,27 @@ public class ExamWindowController {
         tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex()); // Esta linea causa que el boton btnDeleteExam se deshabilite
     }
 
+    /**
+     * Generates and shows a printable report of all current data in the table.
+     */
     public void printReport() {
         // Genera un informe con la información disponible de la tabla Exams
         try {
             JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/ExamReport.jrxml"));
-            //Data for the report: a collection of UserBean passed as a JRDataSource 
-            //implementation 
+            // Data for the report: a collection of UserBean passed as a JRDataSource 
+            // implementation 
             JRBeanCollectionDataSource dataItems
                     = new JRBeanCollectionDataSource((Collection<Exam>) this.tvExam.getItems());
-            //Map of parameter to be passed to the report
+            // Map of parameter to be passed to the report
             Map<String, Object> parameters = new HashMap<>();
-            //Fill report with data
+            // Fill report with data
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
-            //Create and show the report window. The second parameter false value makes 
-            //report window not to close app.
+            // Create and show the report window. The second parameter false value makes 
+            // report window not to close app.
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
-            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+            jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         } catch (JRException ex) {
-            //If there is an error show message and
-            //log it.
             new Alert(Alert.AlertType.ERROR, "Error al imprimir:\n" + ex.getMessage()).showAndWait();
             LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
         }

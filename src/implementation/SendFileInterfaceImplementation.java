@@ -62,7 +62,6 @@ public class SendFileInterfaceImplementation implements SendFileInterface {
         } else {
             exercise.setFileSolution(file.getAbsolutePath());
         }
-        //exerciseInterface.
     }
 
     /**
@@ -81,7 +80,6 @@ public class SendFileInterfaceImplementation implements SendFileInterface {
                 throw new FindErrorException(ex.getMessage());
             }
         } else if(object instanceof Exercise){
-            //exerciseInterface.getExerciseByID_XML(responseType, path);
         }
         return new File(path);
     }

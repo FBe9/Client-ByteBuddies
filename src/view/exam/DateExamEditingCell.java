@@ -84,7 +84,7 @@ public class DateExamEditingCell extends TableCell<Exam, Date> {
     @Override
     protected void updateItem(Date date, boolean empty) {
         super.updateItem(date, empty);
-        Locale locale = Locale.getDefault();
+        locale = Locale.getDefault();
         dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 
         if (empty) {
@@ -98,13 +98,15 @@ public class DateExamEditingCell extends TableCell<Exam, Date> {
                 dateText = dateFormatter.format(date);
                 setText(dateText);
                 setGraphic(null);
-            } else {
+            }  else{
                 if (!getTableView().getItems().get(getIndex()).getDescription().equals("")) {
                     try{
                         setText(dateFormatter.format(getTableView().getItems().get(getIndex()).getDateInit()));
                     } catch(NullPointerException ex){
                         setText("");
                     }
+                } else{
+                    setText("");
                 }
                 setGraphic(null);
             }
@@ -119,13 +121,9 @@ public class DateExamEditingCell extends TableCell<Exam, Date> {
         if (!isEmpty()) {
             super.startEdit();
             datePicker = new DatePicker();
-            datePicker.focusedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> arg0,
-                        Boolean arg1, Boolean arg2) {
-                    if (!arg2) {
-                        commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                    }
+            datePicker.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) -> {
+                if (!arg2) {
+                    commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
                 }
             });
             datePicker.setOnAction((e) -> {

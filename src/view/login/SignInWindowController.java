@@ -355,6 +355,7 @@ public class SignInWindowController {
             if (result.isPresent()) {
                 userInterface.resetPassword(result.get());
             }
+            new Alert(Alert.AlertType.INFORMATION, "An email with the recovery password was sent to: " + result.get()).showAndWait();
         }
     }
 
