@@ -7,8 +7,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Entity representing Unit. It has the following
- * fields: unit id, name, description, dateInit, dateEnd, hours, exercises list and subject object. 
+ * Entity representing Unit. It has the following fields: unit id, name,
+ * description, dateInit, dateEnd, hours, exercises list and subject object.
  *
  * @author Nerea
  */
@@ -25,7 +25,7 @@ public class Unit implements Serializable {
      */
     private final SimpleStringProperty name;
     /**
-     * The description 
+     * The description
      */
     private final SimpleStringProperty description;
     /**
@@ -54,7 +54,7 @@ public class Unit implements Serializable {
     public String getId() {
         return this.id.get();
     }
-    
+
     /**
      * Sets the unit ID.
      *
@@ -63,109 +63,109 @@ public class Unit implements Serializable {
     public void setId(String id) {
         this.id.set(id);
     }
-    
+
     /**
-     * Gets the unit Name. 
-     * 
+     * Gets the unit Name.
+     *
      * @return A String with the unit name.
      */
     public String getName() {
         return this.name.get();
     }
-    
+
     /**
      * Sets the unit Name.
-     * 
+     *
      * @param name the unit name to be set
      */
     public void setName(String name) {
         this.name.set(name);
     }
-    
+
     /**
-     * Gets the unit Description.  
-     * 
+     * Gets the unit Description.
+     *
      * @return A String with the unit description.
      */
     public String getDescription() {
         return this.description.get();
     }
-    
+
     /**
      * Sets the unit Description.
-     * 
+     *
      * @param description the unit description to be set.
      */
     public void setDescription(String description) {
         this.description.set(description);
     }
-    
+
     /**
-     * Gets the unit DateInit. 
-     * 
+     * Gets the unit DateInit.
+     *
      * @return A Date with the unit dateInit.
      */
     public Date getDateInit() {
         return this.dateInit.get();
     }
-    
+
     /**
      * Sets the unit DateInit.
-     * 
+     *
      * @param dateInit the unit dateInit to be set.
      */
     public void setDateInit(Date dateInit) {
         this.dateInit.set(dateInit);
     }
-    
+
     /**
-     * Gets the unit DateEnd. 
-     * 
+     * Gets the unit DateEnd.
+     *
      * @return A Date with the unit dateEnd.
      */
     public Date getDateEnd() {
         return this.dateEnd.get();
     }
-    
+
     /**
      * Sets the unit DateEnd.
-     * 
+     *
      * @param dateEnd the unit dateEnd to be set.
      */
     public void setDateEnd(Date dateEnd) {
         this.dateEnd.set(dateEnd);
     }
-   
+
     /**
-     * Gets the unit Hours.  
-     * 
-     * @return An Integer with the unit hours.
+     * Gets the unit Hours.
+     *
+     * @return A String with the unit hours.
      */
     public String getHours() {
         return this.hours.get();
     }
-    
+
     /**
      * Sets the unit Hours.
-     * 
+     *
      * @param hours the unit hours to be set.
      */
     public void setHours(String hours) {
         this.hours.set(hours);
     }
-    
+
     /**
-     * Gets the unit Subject. 
-     * 
+     * Gets the unit Subject.
+     *
      * @return A Subject object with the unit Subject.
      */
     public Subject getSubject() {
         return this.subject.get();
     }
-    
+
     /**
      * Sets the unit Subject.
-     * 
+     *
      * @param subject the unit subject to be set.
      */
     public void setSubject(Subject subject) {
@@ -175,17 +175,17 @@ public class Unit implements Serializable {
     //Constructors
     /**
      * Creates a new instance of the Unit class with specified attributes.
-     * 
+     *
      * @param id the unit id.
      * @param name the name of the unit.
      * @param description the description of the unit.
      * @param dateInit the dateInit of the unit.
      * @param dateEnd the dateEnd of the unit.
-     * @param hours the hours of the unit. 
+     * @param hours the hours of the unit.
      * @param subject the subject of the unit.
      */
     public Unit(String id, String name, String description, Date dateInit, Date dateEnd, String hours, Subject subject) {
-        this.id = new SimpleStringProperty(id); 
+        this.id = new SimpleStringProperty(id);
         this.name = new SimpleStringProperty(name);
         this.description = new SimpleStringProperty(description);
         this.dateInit = new SimpleObjectProperty(dateInit);
@@ -210,7 +210,7 @@ public class Unit implements Serializable {
     //HasCode
     /**
      * Computes the hash code for this object.
-     * 
+     *
      * @return the hash code.
      */
     @Override
@@ -241,8 +241,14 @@ public class Unit implements Serializable {
         return true;
     }
 
+    /**
+     * This method shows only the unit name when you need to see a unit by
+     * string.
+     *
+     * @return A string with the unit name.
+     */
     @Override
     public String toString() {
         return name.getValue();
-    } 
+    }
 }

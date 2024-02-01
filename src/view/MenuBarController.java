@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package view;
 
 import exceptions.ExerciseErrorException;
@@ -65,7 +60,10 @@ public class MenuBarController {
     private static final Logger LOGGER = Logger.getLogger("package view");
 
     /**
-     * Initializes the controller class.
+     * Abre la ventana de Subject pasandole el usuario conectado a la aplicación
+     * y el stage donde abrir la ventana.
+     *
+     * @param event El evento de apertura de ventana.
      */
     public void handleSubjectMenuItemAction(Event event) {
         try {
@@ -80,6 +78,12 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Abre la ventana de Unit pasandole el usuario conectado a la aplicación y
+     * el stage donde abrir la ventana.
+     *
+     * @param event El evento de apertura de ventana.
+     */
     public void handleUnitMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/unit/UnitWindow.fxml"));
@@ -93,6 +97,12 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Abre la ventana de Exam pasandole el usuario conectado a la aplicación y
+     * el stage donde abrir la ventana.
+     *
+     * @param event El evento de apertura de ventana.
+     */
     public void handleExamMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exam/ExamWindow.fxml"));
@@ -108,6 +118,12 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Abre la ventana de Exercise pasandole el usuario conectado a la
+     * aplicación y el stage donde abrir la ventana.
+     *
+     * @param event El evento de apertura de ventana.
+     */
     public void handleExerciseMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exercise/exercise.fxml"));
@@ -121,6 +137,12 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Abre la ventana de help de Subject pasandole el usuario conectado a la
+     * aplicación y el stage donde abrir la ventana.
+     *
+     * @param event El evento de apertura de ventana.
+     */
     public void handleSubjectHelpMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/HelpSubject.fxml"));
@@ -133,6 +155,12 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Abre la ventana de help de Unit pasandole el usuario conectado a la
+     * aplicación y el stage donde abrir la ventana.
+     *
+     * @param event El evento de apertura de ventana.
+     */
     public void handleUnitHelpMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/unit/HelpUnit.fxml"));
@@ -145,6 +173,12 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Abre la ventana de help de Exam pasandole el usuario conectado a la
+     * aplicación y el stage donde abrir la ventana.
+     *
+     * @param event El evento de apertura de ventana.
+     */
     public void handleExamHelpMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exam/HelpExam.fxml"));
@@ -157,6 +191,12 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Abre la ventana de help de Exercise pasandole el usuario conectado a la
+     * aplicación y el stage donde abrir la ventana.
+     *
+     * @param event El evento de apertura de ventana.
+     */
     public void handleExerciseHelpMenuItemAction(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exercise/HelpExercise.fxml"));
@@ -169,6 +209,12 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Espera a la confirmación del usuario para cerrar la aplicación y despues
+     * la cierra.
+     *
+     * @param event El evento de clausura de ventana.
+     */
     public void handleCloseApplicationMenuItemAction(Event event) {
         try {
             //Ask user for confirmation on exit
@@ -190,10 +236,16 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Espera a la confirmación del usuario para cerrar la sesion en la
+     * aplicación y despues de cerrarla abre la ventana de sign in.
+     *
+     * @param event El evento de cerrar sesión.
+     */
     public void handleLogOutMenuItemAction(Event event) {
         try {
             //Ask user for confirmation on exit
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, loggedUser.getName()+", are you sure that you want to log out?");
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, loggedUser.getName() + ", are you sure that you want to log out?");
             Optional<ButtonType> action = alert.showAndWait();
 
             //If OK to exit 
@@ -221,10 +273,21 @@ public class MenuBarController {
         }
     }
 
+    /**
+     * Se asigna el usuario, que corresponde con el usuario conectado a la
+     * aplicación.
+     *
+     * @param user El usuario conectado a la aplicación.
+     */
     public static void setUser(User user) {
         loggedUser = user;
     }
 
+    /**
+     * Se asigna el stage para abrir la ventana.
+     *
+     * @param stage El stage donde abrir la ventana.
+     */
     public static void setStage(Stage stage) {
         stageMenu = stage;
     }

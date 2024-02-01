@@ -10,10 +10,15 @@ import javafx.stage.Stage;
 import view.login.SignInWindowController;
 
 /**
+ * The application start window. 
+ * This window starts the app by calling the
+ * SignInWindowController to open it.
  *
  * @author Nerea
+ * @author Irati
  */
 public class Application extends javafx.application.Application {
+
     /**
      * Start method for the Application.
      *
@@ -40,5 +45,5 @@ public class Application extends javafx.application.Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }
