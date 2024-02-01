@@ -15,7 +15,15 @@ import java.util.Locale;
  */
 public class DateSubjectEditingCell extends TableCell<Subject, Date> {
 
+    /**
+     * JavaFX DatePicker component associated with a cell for displaying date.
+     */
     private DatePicker dpSubjectCell;
+
+    /**
+     * Date formatter used to format and parse date information in the
+     * application.
+     */
     private DateFormat dateFormatter;
 
     /**

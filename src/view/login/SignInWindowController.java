@@ -250,16 +250,16 @@ public class SignInWindowController {
              * un user con los valores del email y la contraseña.
              */
 
-                Stage stageNew = new Stage();
+            Stage stageNew = new Stage();
             if (tfEmail.getText().equals("student@gmail.com") && tfPassword.getText().equals("abcd*1234")) {
                 User user = new User();
                 user.setUser_type("Student");
                 user.setId(2);
-                
+
                 FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/subject/subject.fxml"));
                 Parent root = (Parent) loader.load();
                 SubjectController controller = (SubjectController) loader.getController();
-                
+
                 controller.setStage(stageNew);
                 stage.close();
                 controller.initStage(root, user);
@@ -279,11 +279,24 @@ public class SignInWindowController {
                 MenuBarController.setStage(stageNew);
                 MenuBarController.setUser(user);
             } else {
-                byte[] encryptedPassword = AsimetricaClient.encryptedData(tfPassword.getText());
+                AsimetricaClient asimetricaClient = new AsimetricaClient();
+                byte[] encryptedPassword = null;
+                try {
+                    encryptedPassword = asimetricaClient.encryptedData(tfPassword.getText());
+                } catch (Exception ex) {
+                    showErrorAlert("Error during login");
+                }
+
                 //Create an user 
                 User user = new User();
                 user.setEmail(tfEmail.getText());
-                String passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+                String passwordEncrypted = null;
+                try {
+                    passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+                } catch (Exception ex) {
+                    showErrorAlert("Error during login");
+                }
+
                 user.setPassword(passwordEncrypted);
 
                 user = userInterface.login(user);
@@ -298,7 +311,6 @@ public class SignInWindowController {
                 MenuBarController.setStage(stageNew);
                 MenuBarController.setUser(user);
             }
-
 
         } /**
          * Si el metodo signIn no produce excepciones, se cerrará la ventana y

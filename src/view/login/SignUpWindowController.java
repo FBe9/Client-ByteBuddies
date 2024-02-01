@@ -352,8 +352,20 @@ public class SignUpWindowController {
             userStudent.setUser_type("Student");
             userStudent.setSurname(tfLastName.getText());
             userStudent.setEmail(tfEmailSignUp.getText());
-            byte[] encryptedPassword = AsimetricaClient.encryptedData(tfPasswordSignUp.getText());
-            String passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+            AsimetricaClient asimetricaClient = new AsimetricaClient();
+            byte[] encryptedPassword = null;
+            try {
+                encryptedPassword = asimetricaClient.encryptedData(tfPasswordSignUp.getText());
+            } catch (Exception ex) {
+                showErrorAlert("Error during login");
+            }
+
+            String passwordEncrypted = null;
+            try {
+                passwordEncrypted = AsimetricaClient.hexadecimal(encryptedPassword);
+            } catch (Exception ex) {
+                showErrorAlert("Error during login");
+            }
             userStudent.setPassword(passwordEncrypted);
             userStudent.setLevelType(cbLevelType.getSelectionModel().getSelectedItem());
             userStudent.setDateInit(new Date());

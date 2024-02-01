@@ -15,8 +15,6 @@ import interfaces.EnrolledInterface;
 
 import interfaces.SubjectManager;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.DateTimeException;
 
 import javafx.event.ActionEvent;
 import java.time.LocalDate;
@@ -33,7 +31,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -284,7 +281,7 @@ public class SubjectController {
         dpDateSearchSubject.setConverter(new StringConverter<LocalDate>() {
             Locale locale = Locale.getDefault();
             private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
-            
+
             private final DateTimeFormatter defaultFormatter = DateTimeFormatter.ofPattern(ResourceBundle.getBundle("config.config").getString("DATEFORMAT"));
 
             @Override
@@ -441,11 +438,37 @@ public class SubjectController {
         LocalDate endDate = LocalDate.parse(endDateConfig);
         tbColInitDateSub.setOnEditCommit(
                 (TableColumn.CellEditEvent<Subject, Date> t) -> {
+                    Boolean checkDate = true;
                     //Coger la fecha para hacer las comprobaciones
+                    Subject subject = (Subject) t.getTableView().getItems().get(t.getTablePosition().getRow());
                     LocalDate dateInitAnalyze = t.getNewValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate dateEndAnalyze = subject.getDateEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                     //Se validará que ambas fechas estén comprendidas dentro de un período de tiempo. 
                     // El periodo de tiempo válido será definido en un archivo de configuración y podrá ser modificado. 
                     if (dateInitAnalyze.isBefore(endDate) && dateInitAnalyze.isAfter(startDate)) {
+                        checkDate = true;
+                    } else {
+                        //Si las fechas no se encuentran dentro de ese periodo, se lanzará la excepción WrongDateException y se notificará al usuario mediante una alerta con el siguiente mensaje de error: 
+                        //'Our application only stores information from year X to year Y. Please enter a date between these two years.'
+                        checkDate = false;
+                        try {
+
+                            throw new WrongDateFormatException();
+                        } catch (WrongDateFormatException ex) {
+                            tbSubjects.refresh();
+                            showErrorAlert("Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear() + ".");
+                        }
+                    }
+                    if (dateInitAnalyze.isAfter(dateEndAnalyze)) {
+                        checkDate = false;
+                        try {
+                            throw new WrongDateFormatException();
+                        } catch (WrongDateFormatException ex) {
+                            tbSubjects.refresh();
+                            showErrorAlert("The start date must be before the end date of the subject.");
+                        }
+                    }
+                    if (checkDate) {
                         try {
                             ((Subject) t.getTableView().getItems()
                                     .get(t.getTablePosition().getRow()))
@@ -459,16 +482,6 @@ public class SubjectController {
                             //Se cancelará la edición.
                             t.consume();
                             tbSubjects.refresh();
-                        }
-                    } else {
-                        //Si las fechas no se encuentran dentro de ese periodo, se lanzará la excepción WrongDateException y se notificará al usuario mediante una alerta con el siguiente mensaje de error: 
-                        //'Our application only stores information from year X to year Y. Please enter a date between these two years.'
-                        try {
-
-                            throw new WrongDateFormatException();
-                        } catch (WrongDateFormatException ex) {
-                            tbSubjects.refresh();
-                            showErrorAlert("Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear());
                         }
                     }
 
@@ -496,7 +509,7 @@ public class SubjectController {
                             throw new WrongDateFormatException();
                         } catch (WrongDateFormatException ex) {
                             tbSubjects.refresh();
-                            showErrorAlert("Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear());
+                            showErrorAlert("Our application only stores information from year " + startDate.getYear() + " to year " + endDate.getYear() + ".");
 
                         }
                     }
@@ -1136,8 +1149,8 @@ public class SubjectController {
                             //Se verifica que ya haya estado matriculado el alumno.
                             if (user.getId() == enrolled.getId().getStudentId()) {
                                 try {
-                                    enrolled.setIsMatriculate(newValue);
-                                    subject.setStatus(newValue);
+                                    enrolled.setIsMatriculate(true);
+                                    subject.setStatus(true);
                                     //Se llama al update de enrollment con el nuevo valor
                                     enrolledInterface.updateEnrolled(enrolled);
                                     //Se cambia el recuento de estudiante
@@ -1158,14 +1171,14 @@ public class SubjectController {
                             enrolledId.setStudentId(user.getId());
                             enrolledId.setSubjectId(subject.getId());
                             enrollmentNew.setId(enrolledId);
-                            enrollmentNew.setIsMatriculate(newValue);
-                            subject.setStatus(newValue);
+                            enrollmentNew.setIsMatriculate(true);
+                            subject.setStatus(true);
                             try {
                                 //Crea la entrada
                                 enrolledInterface.createEnrolled(enrollmentNew);
                                 //Cambia la suma de estudiantes
                                 subject.setStudentsCount(subject.getStudentsCount() + 1);
-                                // subject.setStatus(true);
+
                                 //Refresca la tabla
                                 tbSubjects.refresh();
                             } catch (CreateErrorException ex) {
@@ -1189,9 +1202,9 @@ public class SubjectController {
                         if (user.getId() == enrolled.getId().getStudentId()) {
                             try {
                                 //Cambia el valor para el enrollment
-                                enrolled.setIsMatriculate(newValue);
+                                enrolled.setIsMatriculate(false);
                                 //Cambiar el valor
-                                subject.setStatus(newValue);
+                                // subject.setStatus(false);
                                 //Cambiar el valor de enrolled
                                 enrolledInterface.updateEnrolled(enrolled);
                                 //Se cambia el número de estudiantes

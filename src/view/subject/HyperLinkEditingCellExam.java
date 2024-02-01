@@ -21,8 +21,19 @@ import view.exam.ExamWindowController;
  */
 public class HyperLinkEditingCellExam extends TableCell<Subject, String> {
 
+    /**
+     * Hyperlink used for navigation or actions in the UI.
+     */
     private Hyperlink link;
+
+    /**
+     * The primary stage for the JavaFX application.
+     */
     private Stage stage;
+
+    /**
+     * User object representing the current user of the application.
+     */
     private User user;
 
     /**
@@ -49,14 +60,14 @@ public class HyperLinkEditingCellExam extends TableCell<Subject, String> {
                 if (currentSubject.getName() != null) {
                     FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/exam/ExamWindow.fxml"));
                     Parent root = (Parent) loader.load();
-                    // Obtain the Sign In window controller
+                    // Se abre la ventana de exam
                     ExamWindowController controller = (ExamWindowController) loader.getController();
                     controller.setUser(user);
                     controller.setStage(stage);
                     controller.initStage(root);
                     controller.setCurrentSubject(currentSubject);
                 } else {
-                    showErrorAlert("Please insert a name before showing units");
+                    showErrorAlert("Please insert a subject name before showing exams");
                 }
 
             } catch (IOException ex) {
