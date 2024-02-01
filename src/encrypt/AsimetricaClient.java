@@ -1,23 +1,11 @@
 package encrypt;
 
 import static com.google.common.io.ByteStreams.toByteArray;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Security;
-import java.security.spec.ECGenParameterSpec;
 import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.Cipher;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * This class provides methods for asymmetric encryption using the RSA

@@ -253,7 +253,8 @@ public class ExerciseController {
 
         //Se rellenará el combobox “cbLevelTypeCreate” con una lista de los 
         //tres tipos de nivel. Se seleccionará el primero.
-        this.cbLevelTypeCreate.getItems().addAll(LevelType.values());
+        ObservableList<LevelType> levelTypes = FXCollections.observableArrayList(LevelType.BEGGINER, LevelType.MEDIUM, LevelType.EXPERIENCED);
+        this.cbLevelTypeCreate.getItems().addAll(levelTypes);
         cbLevelTypeCreate.getSelectionModel().selectFirst();
 
         //Se rellenará el combobox “cbUnitSearch” con una lista de unidades de 
