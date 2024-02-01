@@ -74,7 +74,12 @@ public class SubjectWindowControllerTest extends ApplicationTest {
      * @throws Exception If an exception occurs during the start process.
      */
     private User user;
-
+     /**
+     * The start method of the JavaFX application.
+     *
+     * @param stage The primary stage for the application.
+     * @throws Exception If an exception occurs during the start process.
+     */
     @Override
     public void start(Stage stage) throws Exception {
         new SubjectMain().start(stage);
@@ -87,6 +92,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
     /**
      * Method to create a subject.
      */
+    //@Ignore
     @Test
     public void test1_insertSubject() {
         tableView = lookup("#tbSubjects").query();
@@ -119,6 +125,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
     /**
      * Method to edit a subject.
      */
+    //@Ignore
     @Test
     public void test2_updateSubject() {
         tableView = lookup("#tbSubjects").query();
@@ -212,6 +219,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
     /**
      * Method to find a subject by its name.
      */
+    //@Ignore
     @Test
     public void test3_searchByName() {
         tableView = lookup("#tbSubjects").query();
@@ -238,6 +246,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
     /**
      * Method to find by start date.
      */
+    //@Ignore
     @Test
     public void test4_searchByStartDate() {
         tableView = lookup("#tbSubjects").query();
@@ -330,6 +339,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
     /**
      * Method to find by number of students matriculated.
      */
+    //@Ignore
     @Test
     public void test7_searchByEnrolledStudents() {
         tableView = lookup("#tbSubjects").query();
@@ -367,6 +377,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
     /**
      * Method to find by unit.
      */
+    //@Ignore
     @Test
     public void test8_searchByUnit() {
         tableView = lookup("#tbSubjects").query();
@@ -402,7 +413,10 @@ public class SubjectWindowControllerTest extends ApplicationTest {
         //Verifica que el número de veces que aparece la asignatura sea mayor o igual al número introducido.
         assertTrue(count >= 1);
     }
-
+    /**
+     * Method to find the subject of a teacher
+     */
+    //@Ignore
     @Test
     public void test9_searchSusSubjects() {
         tableView = lookup("#tbSubjects").query();
@@ -438,6 +452,7 @@ public class SubjectWindowControllerTest extends ApplicationTest {
     /**
      * Method to delete a subject.
      */
+    //@Ignore
     @Test
     public void testA10_deleteSubject() {
         Node tableColumnName = lookup("#tbColNameSub").nth(0).query();

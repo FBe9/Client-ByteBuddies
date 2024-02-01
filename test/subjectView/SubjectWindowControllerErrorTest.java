@@ -47,6 +47,7 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     /**
      * Method to see the errror if the server is not running.
      */
+    //@Ignore
     //@Test
     public void test0_serverConectionError() {
         verifyThat("Unable to connect to the server. Please check the server availability and try again later.", isVisible());
@@ -298,6 +299,7 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
      * Method to check the error if trying to see the exams for a subjects that has
      * a null name.
      */
+    //@Ignore
     @Test
     public void test8_tryToSeeExamOfASubjectWithNullName() {
         tableView = lookup("#tbSubjects").query();
@@ -332,6 +334,7 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     /**
      * Method to check the colum name has only letters.
      */
+    //@Ignore
     @Test
     public void test9_columnNameOnlyLetters() {
         tableView = lookup("#tbSubjects").query();
@@ -355,6 +358,7 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     /**
      * Method to check the column hours only allows numbers
      */
+    //@Ignore
     @Test
     public void testA10_columnHoursOnlyNumbers() {
         tableView = lookup("#tbSubjects").query();

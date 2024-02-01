@@ -24,7 +24,6 @@ import javafx.stage.Stage;
 import main.SubjectMainStudent;
 import models.Enrolled;
 import models.Subject;
-import models.Teacher;
 import models.User;
 import static org.junit.Assert.assertTrue;
 import org.junit.FixMethodOrder;
@@ -67,7 +66,12 @@ public class SubjectWindowControllerStudentTest extends ApplicationTest {
      * Button used to initiate searches or perform specific actions.
      */
     private Button buttonSearch;
-
+     /**
+     * The start method of the JavaFX application.
+     *
+     * @param stage The primary stage for the application.
+     * @throws Exception If an exception occurs during the start process.
+     */
     @Override
     public void start(Stage stage) throws Exception {
         new SubjectMainStudent().start(stage);
@@ -80,6 +84,7 @@ public class SubjectWindowControllerStudentTest extends ApplicationTest {
     /**
      * Method to enroll in a subject
      */
+    //@Ignore
     @Test
     public void test1_enroll() {
         tableView = lookup("#tbSubjects").query();
@@ -137,7 +142,7 @@ public class SubjectWindowControllerStudentTest extends ApplicationTest {
         }
 
     }
-
+    //@Ignore
     @Test
     public void test2_unenroll() {
         tableView = lookup("#tbSubjects").query();
@@ -194,7 +199,7 @@ public class SubjectWindowControllerStudentTest extends ApplicationTest {
         }
 
     }
-
+    //@Ignore
     @Test
     public void test3_searchSusSubjects() {
         tableView = lookup("#tbSubjects").query();
