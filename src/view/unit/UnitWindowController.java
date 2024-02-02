@@ -191,7 +191,7 @@ public class UnitWindowController {
             dpSearch.setConverter(new StringConverter<LocalDate>() {
                 Locale locale = Locale.getDefault();
                 // Formato de fecha para mostrar
-                private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+                DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 
                 // Convierte de LocalDate a String
                 @Override
@@ -772,7 +772,7 @@ public class UnitWindowController {
         } catch (FindErrorException | UpdateErrorException ex) {
             Logger.getLogger("Error while updating name from the unit").log(Level.SEVERE, null, ex);
             new Alert(Alert.AlertType.ERROR, "Error while updating name from the unit", ButtonType.OK).showAndWait();
-            
+
         }
     }
 
