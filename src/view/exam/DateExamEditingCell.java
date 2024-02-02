@@ -120,11 +120,6 @@ public class DateExamEditingCell extends TableCell<Exam, Date> {
         if (!isEmpty()) {
             super.startEdit();
             datePicker = new DatePicker();
-            datePicker.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) -> {
-                if (!arg2) {
-                    commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                }
-            });
             datePicker.setOnAction((e) -> {
                 commitEdit(Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
             });

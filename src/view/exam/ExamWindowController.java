@@ -715,7 +715,8 @@ public class ExamWindowController {
                                 ex.setDateInit(examEditing.getDateInit());
                                 examInterface.createExam(ex);
                                 if (flagNewRow) {
-                                    exams.add(examEditing);
+                                    exams.remove(examEditing);
+                                    exams.add(ex);
                                 }
                             }
                         } catch (CreateErrorException | UpdateErrorException ex) {
