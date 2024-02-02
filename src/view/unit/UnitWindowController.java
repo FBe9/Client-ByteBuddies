@@ -191,7 +191,7 @@ public class UnitWindowController {
             dpSearch.setConverter(new StringConverter<LocalDate>() {
                 Locale locale = Locale.getDefault();
                 // Formato de fecha para mostrar
-                private final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+                DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 
                 // Convierte de LocalDate a String
                 @Override
