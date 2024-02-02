@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import main.SubjectMain;
 import models.Subject;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import static org.testfx.api.FxAssert.verifyThat;
@@ -46,6 +47,7 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     /**
      * Method to see the errror if the server is not running.
      */
+    //@Ignore
     //@Test
     public void test0_serverConectionError() {
         verifyThat("Unable to connect to the server. Please check the server availability and try again later.", isVisible());
@@ -55,16 +57,17 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     /**
      * Method to check the error when written a subject with an existing name
      */
+    //@Ignore
     @Test
     public void test1_SubjectWithSameName() {
         tableView = lookup("#tbSubjects").query();
         //Coge de la lista de asignaturas visibles un nombre que exista para escribirlo.
         List<Subject> dataSubject = new ArrayList<>(tableView.getItems());
         String name = dataSubject.get(0).getName();
-
-        Node row = lookup(".table-row-cell").nth(1).query();
-
+        //Hace click en el primer nodo
+        Node row = lookup(".table-row-cell").nth(0).query();
         clickOn(row);
+        //Coge la posición y le suma uno (Empieza desde 0)
         Integer tablerow = tableView.getSelectionModel().getSelectedIndex();
         Node tableColumnName = lookup("#tbColNameSub").nth(tablerow + 1).query();
         clickOn(tableColumnName);
@@ -80,16 +83,19 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     /**
      * Method to check the error during inserting a date init after the date end
      */
+    //@Ignore
     @Test
     public void test2_dateInitAfterDateEnd() {
         tableView = lookup("#tbSubjects").query();
+        //Parseo de la fecha
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
+        //Selecciona una fila
         Node row = lookup(".table-row-cell").nth(1).query();
 
         clickOn(row);
-
+        //Coge el número de la posición de la fila seleccionada
         Integer tablerow = tableView.getSelectionModel().getSelectedIndex();
+        //Coge el objecto subject de la fila seleccionada.
         Subject subject = (Subject) tableView.getSelectionModel().getSelectedItem();
         // Coge el valor del date end actual para la fila seleccionada
         LocalDate localDateEnd = subject.getDateEnd().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
@@ -111,13 +117,13 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     /**
      * Method to check the error during inserting a end date before init date
      */
+    //@Ignore
     @Test
     public void test3_dateEndBeforeDateInit() {
         tableView = lookup("#tbSubjects").query();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
+        //Selecciona una fila
         Node row = lookup(".table-row-cell").nth(1).query();
-
         clickOn(row);
 
         Integer tablerow = tableView.getSelectionModel().getSelectedIndex();
@@ -142,8 +148,10 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     /**
      * Method to check the error if a date is not between the range dates
      */
+    //@Ignore
     @Test
     public void test4_dateOutOfRange() {
+        //Coge los valores entre los que tiene que estar la fecha
         String startDateConfig = ResourceBundle.getBundle("config.config").getString("STARTDATE");
         String endDateConfig = ResourceBundle.getBundle("config.config").getString("ENDDATE");
 
@@ -159,8 +167,10 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
         //Inserta una fecha fuera del rango 
         Node tableColumnInitDate = lookup("#tbColInitDateSub").nth(tablerow + 1).query();
         if (tableColumnInitDate != null) {
+            //Click en la columna
             clickOn(tableColumnInitDate);
             clickOn(tableColumnInitDate);
+            //Escribe en la columna
             write("01/01/2012");
             push(KeyCode.ENTER);
             //Verifica el mensaje de error
@@ -170,8 +180,10 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
         //Inserta una fecha fuera del rango 
         Node tableColumnEndDate = lookup("#tbColEndDateSub").nth(tablerow + 1).query();
         if (tableColumnEndDate != null) {
+             //Click en la columna
             clickOn(tableColumnEndDate);
             clickOn(tableColumnEndDate);
+            //Escribe en la columna
             write("02/01/2028");
             push(KeyCode.ENTER);
             //Verifica el mensaje de error
@@ -185,6 +197,7 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
      * Checks if there is an error when attempting to create a new subject
      * without completing the creation of another one.
      */
+    //@Ignore
     @Test
     public void test5_TwoSubjectsWithEmptyName() {
         tableView = lookup("#tbSubjects").query();
@@ -213,6 +226,7 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
      * Method to see the error if you try to insert a teacher in a subject that
      * doesn't have name.
      */
+    //@Ignore
     @Test
     public void test6_insertATeacherInANullSubjectName() {
         tableView = lookup("#tbSubjects").query();
@@ -246,9 +260,10 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     }
 
     /**
-     * Method to check the error if trying to the units for a subjects that has
+     * Method to check the error if trying to see the units for a subjects that has
      * a null name
      */
+    //@Ignore
     @Test
     public void test7_tryToSeeUnitOfASubjectWithNullName() {
         tableView = lookup("#tbSubjects").query();
@@ -280,7 +295,11 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
         push(KeyCode.ENTER);
 
     }
-
+    /**
+     * Method to check the error if trying to see the exams for a subjects that has
+     * a null name.
+     */
+    //@Ignore
     @Test
     public void test8_tryToSeeExamOfASubjectWithNullName() {
         tableView = lookup("#tbSubjects").query();
@@ -291,7 +310,7 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
         for (Subject subject : dataSubject) {
             if (subject.getName() == null) {
                 empty = true;
-                position = position = dataSubject.indexOf(subject);
+                position = dataSubject.indexOf(subject);
             }
         }
         Node tableColumExam = null;
@@ -305,6 +324,7 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
             clickOn("#btnCreateSubject");
             int rowCount = tableView.getItems().size();
             tableColumExam = lookup("#tbColExams").nth(rowCount).query();
+            clickOn(tableColumExam);
         }
         //Verifica que se muestre el error
         verifyThat("Please insert a subject name before showing exams", isVisible());
@@ -314,6 +334,7 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     /**
      * Method to check the colum name has only letters.
      */
+    //@Ignore
     @Test
     public void test9_columnNameOnlyLetters() {
         tableView = lookup("#tbSubjects").query();
@@ -337,10 +358,10 @@ public class SubjectWindowControllerErrorTest extends ApplicationTest {
     /**
      * Method to check the column hours only allows numbers
      */
+    //@Ignore
     @Test
     public void testA10_columnHoursOnlyNumbers() {
         tableView = lookup("#tbSubjects").query();
-        List<Subject> dataSubject = new ArrayList<>(tableView.getItems());
         Node row = lookup(".table-row-cell").nth(1).query();
 
         clickOn(row);

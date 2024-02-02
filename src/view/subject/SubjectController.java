@@ -365,7 +365,7 @@ public class SubjectController {
                     Subject subject = t.getTableView().getItems().get(t.getTablePosition().getRow());
 
                     // Vaciar el array actual de profesores
-                    //  subject.getTeachers().clear();
+                    subject.getTeachers().clear();
                     // Añadir los nuevos profesores seleccionados
                     subject.getTeachers().addAll(t.getNewValue());
 
@@ -477,7 +477,12 @@ public class SubjectController {
                                     .setDateInit(t.getNewValue());
                             //Tras la validación y confirmación de que la información es correcta, se llamará a la factoria SubjectFactory para obtener una implematación de la interfaz SubjectManager 
                             //y llamar al método updateSubject, pasando como parámetro un objeto Subject con la información.
-                            subjectManager.updateSubject(tbSubjects.getSelectionModel().getSelectedItem());
+                           if(t.getNewValue()!= null){
+                                subjectManager.updateSubject(tbSubjects.getSelectionModel().getSelectedItem());
+                           }else{
+                               tbSubjects.refresh();
+                           }
+                                            
                         } catch (UpdateErrorException ex) {
                             //Si se produce algún error, se le mostrará al usuario una alerta con el error.  
                             showErrorAlert(ex.getMessage());
