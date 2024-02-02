@@ -153,10 +153,12 @@ public class ExerciseController {
      */
     @FXML
     private Button btmSearch, btmDelete, btmModify, btmCreate, btmPrint, btmFileSend, btmFileSolutionSend, btmFileReceive, btmFileSolutionReceive;
+    
     /**
-     *
+     * Create and Modify label error. If the user writes something other than 
+     * numbers in the numerical fields, a message will be added to the label 
+     * informing about this.
      */
-
     @FXML
     private Label lblErrorCreateModify;
 
