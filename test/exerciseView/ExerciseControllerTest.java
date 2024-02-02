@@ -160,7 +160,7 @@ public class ExerciseControllerTest extends ApplicationTest {
      */
     @Test
     @Ignore
-    public void test1_createExerciseDisabled() {
+    public void test2_createExerciseDisabled() {
         tvExercise = lookup("#tvExercise").query();
         //llenar los campo
         clickOn("#tfHours");
@@ -182,7 +182,7 @@ public class ExerciseControllerTest extends ApplicationTest {
      */
     @Test
     @Ignore
-    public void test1_createExerciseErrorLabel() {
+    public void test3_createExerciseErrorLabel() {
         tvExercise = lookup("#tvExercise").query();
 
         clickOn("#dpDeadline");
@@ -219,7 +219,7 @@ public class ExerciseControllerTest extends ApplicationTest {
      */
     @Test
     @Ignore
-    public void test2_modifyExercise() {
+    public void test4_modifyExercise() {
         tvExercise = lookup("#tvExercise").query();
         ObservableList<Exercise> items = tvExercise.getItems();
         int rowIndex = items.size() - 1;
@@ -247,7 +247,7 @@ public class ExerciseControllerTest extends ApplicationTest {
      */
     @Test
     @Ignore
-    public void test3_searchByNumber() {
+    public void test5_searchByNumber() {
         tvExercise = lookup("#tvExercise").query();
         tfSearch = lookup("#tfSearch").query();
         cbSearchType = lookup("#cbSearchType").query();
@@ -280,7 +280,7 @@ public class ExerciseControllerTest extends ApplicationTest {
      */
     @Test
     @Ignore
-    public void test3_searchByLevelType() {
+    public void test6_searchByLevelType() {
         tvExercise = lookup("#tvExercise").query();
         tfSearch = lookup("#tfSearch").query();
         cbSearchType = lookup("#cbSearchType").query();
@@ -312,7 +312,7 @@ public class ExerciseControllerTest extends ApplicationTest {
      */
     @Test
     @Ignore
-    public void test3_searchByUnit() {
+    public void test7_searchByUnit() {
         tvExercise = lookup("#tvExercise").query();
         cbUnitSearch = lookup("#cbUnitSearch").query();
         cbSearchType = lookup("#cbSearchType").query();
@@ -345,7 +345,7 @@ public class ExerciseControllerTest extends ApplicationTest {
      */
     @Test
     @Ignore
-    public void test3_searchExerciseDontExist() {
+    public void test8_searchExerciseDontExist() {
         cbUnitSearch = lookup("#cbUnitSearch").query();
         btmSearch = lookup("#btmSearch").query();
 
@@ -366,7 +366,7 @@ public class ExerciseControllerTest extends ApplicationTest {
      */
     @Test
     @Ignore
-    public void test4_deleteExercise() {
+    public void test9_deleteExercise() {
         tvExercise = lookup("#tvExercise").query();
         ObservableList<Exercise> items = tvExercise.getItems();
         int rowIndex = items.size() - 1;
