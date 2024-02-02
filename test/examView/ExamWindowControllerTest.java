@@ -101,7 +101,6 @@ public class ExamWindowControllerTest extends ApplicationTest {
         assertEquals(exam.getSubject(), null);
 
         Node newRow = lookup(".table-row-cell").nth(tvExam.getItems().size() - 1).query();
-        //clickOn(newRow);
         Integer rowIndex = tvExam.getSelectionModel().getSelectedIndex();
         Node tcDescription = lookup("#tcDescription").nth(rowIndex + 1).query();
         Node tcDateInit = lookup("#tcDate").nth(rowIndex + 1).query();
@@ -130,60 +129,6 @@ public class ExamWindowControllerTest extends ApplicationTest {
 
         clickOn("#btnSaveExam");
         type(KeyCode.ENTER);
-    }
-    
-    @Ignore
-    @Test
-    public void test1_createExamRightClick() {
-        tvExam = lookup("#tvExam").query();
-        Integer examCount = tvExam.getItems().size();
-        //clickOn("#btnCreateExam");
-        rightClickOn("#tvExam");
-        assertEquals(examCount + 1, tvExam.getItems().size());
-
-        Exam exam = (Exam) tvExam.getItems().get(tvExam.getItems().size() - 1);
-        assertEquals(exam.getDescription(), "");
-        assertEquals(exam.getDateInit(), null);
-        assertEquals(exam.getDuration(), "");
-        assertEquals(exam.getFilePath(), "");
-        assertEquals(exam.getSubject(), null);
-
-        Node newRow = lookup(".table-row-cell").nth(tvExam.getItems().size() - 1).query();
-        //clickOn(newRow);
-        Integer rowIndex = tvExam.getSelectionModel().getSelectedIndex();
-        Node tcDescription = lookup("#tcDescription").nth(rowIndex + 1).query();
-        Node tcDateInit = lookup("#tcDate").nth(rowIndex + 1).query();
-        Node tcDuration = lookup("#tcDuration").nth(rowIndex + 1).query();
-        Node tcSubject = lookup("#tcSubject").nth(rowIndex + 1).query();
-
-        //Generates a randon number
-        int randomNumber = new Random().nextInt(9000) + 1000;
-        doubleClickOn(tcDescription);
-        write("ABCD Exam" + randomNumber);
-        doubleClickOn(tcDateInit);
-        write("19/12/2025");
-        doubleClickOn(tcDuration);
-        write("1");
-        doubleClickOn(tcSubject);
-        push(KeyCode.DOWN);
-        Exam e = (Exam) tvExam.getItems().get(rowIndex);
-        String selecSubject = e.getSubject().getName();
-
-        Exam customExam = (Exam) tvExam.getSelectionModel().getSelectedItem();
-        assertEquals(customExam.getDescription(), "ABCD Exam" + randomNumber);
-        LocalDate dateLocal = customExam.getDateInit().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        assertEquals(dateLocal.toString(), "2025-12-19");
-        assertEquals(customExam.getDuration(), "1");
-        assertEquals(customExam.getSubject().getName(), selecSubject);
-
-        clickOn("#btnSaveExam");
-        type(KeyCode.ENTER);
-    }
-
-    @Ignore
-    @Test
-    public void test2_ReadExam() {
-        
     }
 
     @Ignore

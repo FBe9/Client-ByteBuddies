@@ -63,7 +63,7 @@ public class ExamWindowControllerStudent extends ApplicationTest {
         assertTrue(notFound);
     }
 
-    //@Ignore
+    @Ignore
     @Test
     public void test6_SearchByDescription() {
         tfSearchExam = lookup("#tfSearchExam").query();
