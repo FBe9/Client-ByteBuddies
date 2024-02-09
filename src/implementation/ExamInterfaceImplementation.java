@@ -5,12 +5,15 @@ import exceptions.DeleteErrorException;
 import exceptions.FindErrorException;
 import exceptions.UpdateErrorException;
 import interfaces.ExamInterface;
+import java.net.ConnectException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import models.Exam;
 import services.ExamRESTClient;
@@ -43,7 +46,7 @@ public class ExamInterfaceImplementation implements ExamInterface {
         try {
             LOGGER.info("Creating an exam");
             webClient.createExam_XML(exam);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExamInterface: Error creating an exam: {0}", e.getMessage());
             throw new CreateErrorException("Error creating an exam: " + e.getMessage());
         }
@@ -60,7 +63,7 @@ public class ExamInterfaceImplementation implements ExamInterface {
         try {
             LOGGER.log(Level.INFO, "Updating exam with id {0}", exam.getId());
             webClient.updateExam_XML(exam);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExamInterface: Error updating exam " + exam.getId() + ": {0}", e.getMessage());
             throw new UpdateErrorException("Error updating exam " + exam.getId() + ": " + e.getMessage());
         }
@@ -77,7 +80,7 @@ public class ExamInterfaceImplementation implements ExamInterface {
         try {
             LOGGER.log(Level.INFO, "Deleteing exam {0}", exam.getId());
             webClient.deleteExam(exam.getId());
-        } catch (ClientErrorException ex) {
+        } catch (WebApplicationException ex) {
             LOGGER.log(Level.SEVERE, "Error deleting exam {0}", exam.getId());
             throw new DeleteErrorException("Error deleting exam " + exam.getId());
         }
@@ -96,7 +99,7 @@ public class ExamInterfaceImplementation implements ExamInterface {
             LOGGER.info("Finding all exams...");
             exams = webClient.findAll_XML(new GenericType<List<Exam>>() {
             });
-        } catch (ClientErrorException ex) {
+        } catch (WebApplicationException ex) {
             LOGGER.log(Level.SEVERE, "Error finding exams.");
             throw new FindErrorException("Error finding exams");
         }
@@ -116,7 +119,7 @@ public class ExamInterfaceImplementation implements ExamInterface {
         try {
             LOGGER.log(Level.INFO, "Searching for exam with id: {0}", id);
             exam = webClient.find_XML(Exam.class, id);
-        } catch (ClientErrorException ex) {
+        } catch (WebApplicationException ex) {
             LOGGER.log(Level.SEVERE, "Error finding exam with id: {0}", id);
             throw new FindErrorException("Error finding exam with id: " + id);
         }
@@ -138,7 +141,7 @@ public class ExamInterfaceImplementation implements ExamInterface {
             LOGGER.log(Level.INFO, "Searching for exam like '{0}'", description);
             exams = webClient.findByDescription_XML(new GenericType<Set<Exam>>() {
             }, description);
-        } catch (ClientErrorException ex) {
+        } catch (WebApplicationException ex) {
             LOGGER.log(Level.SEVERE, "Error finding exam like ''{0}''", description);
             throw new FindErrorException("Error finding exam like '" + description + "'");
         }
@@ -160,7 +163,7 @@ public class ExamInterfaceImplementation implements ExamInterface {
             LOGGER.log(Level.INFO, "Searching exams for subject with id {0}", subjectId);
             exams = webClient.findBySubject_XML(new GenericType<Set<Exam>>() {
             }, subjectId);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "Error finding exams for subject {0}", subjectId);
             throw new FindErrorException("Error finding exams for subject " + subjectId);
         }

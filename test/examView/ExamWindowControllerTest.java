@@ -85,7 +85,7 @@ public class ExamWindowControllerTest extends ApplicationTest {
         assertTrue(!isNull);
     }
 
-    @Ignore
+    //@Ignore
     @Test
     public void test1_createExam() {
         tvExam = lookup("#tvExam").query();
@@ -118,18 +118,21 @@ public class ExamWindowControllerTest extends ApplicationTest {
         write("1");
         doubleClickOn(tcSubject);
         push(KeyCode.DOWN);
+        Exam customExam = (Exam) tvExam.getSelectionModel().getSelectedItem();
+        clickOn("#btnSaveExam");
+        type(KeyCode.ENTER);
         Exam e = (Exam) tvExam.getItems().get(rowIndex);
         String selecSubject = e.getSubject().getName();
 
-        Exam customExam = (Exam) tvExam.getSelectionModel().getSelectedItem();
+        
         assertEquals(customExam.getDescription(), "ABCD Exam" + randomNumber);
         LocalDate dateLocal = customExam.getDateInit().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         assertEquals(dateLocal.toString(), "2025-12-19");
         assertEquals(customExam.getDuration(), "1");
         assertEquals(customExam.getSubject().getName(), selecSubject);
 
-        clickOn("#btnSaveExam");
-        type(KeyCode.ENTER);
+        
+        
     }
     
     @Ignore

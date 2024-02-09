@@ -43,6 +43,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javax.swing.WindowConstants;
+import javax.ws.rs.InternalServerErrorException;
 import models.Exam;
 import models.Subject;
 import models.User;
@@ -272,52 +273,7 @@ public class ExamWindowController {
         // Por defecto se mostrará la opción “All exams”
         cbSearchCriteria.getSelectionModel().select(allExams);
 
-        // Se rellena la ComboBox cbBySubject con los nombres de todas las asignaturas a las que pertenezca el usuario
-        try {
-            // Si el usuario es de tipo “Teacher” se usará el método “findSubjectsByTeacher” de la Interfaz “SubjectManager”
-            if (currentUser.getUser_type().equals("Teacher")) {
-                userSubjects = FXCollections.observableArrayList(subjectInterface.findSubjectsByTeacherId(currentUser.getId().toString()));
-            }
-            // Si el usuario es de tipo “Student” se usará el método “findByEnrollments” de la Interfaz “SubjectManager”
-            if (currentUser.getUser_type().equals("Student")) {
-                userSubjects = FXCollections.observableArrayList(subjectInterface.findByEnrollments(currentUser.getId().toString()));
-            }
-            userSubjects.forEach((s) -> {
-                subjectNames.add(s.getName());
-            });
-            cbBySubject.setItems(subjectNames);
-        } catch (FindErrorException ex) {
-            LOGGER.log(Level.INFO, "No subjects found for user {0}", currentUser.getId());
-            // Si el listado de asignaturas de cualquiera de los puntos anteriores está vacío, la ComboBox mostrará un texto indicando que el usuario
-            // no tiene asignaturas
-            cbBySubject.setItems(FXCollections.observableArrayList(noSubjects));
-            cbBySubject.setValue(noSubjects);
-
-            // Si el usuario es “Student”, aparecerá un mensaje en la tabla (Placeholder) indicando al usuario que debe matricularse para ver exámenes
-            if (currentUser.getUser_type().equals("Student")) {
-                tvExam.setPlaceholder(new Label("No exams here. Make sure you are enrolled in at least one subject."));
-            }
-            // Si es “Teacher” el mensaje indicará que debe crear exámenes.
-            if (currentUser.getUser_type().equals("Teacher")) {
-                tvExam.setPlaceholder(new Label("No exams here. Make sure to have at least one subject assigned to you."));
-            }
-            // También se deshabilitará el botón btnCreateExam
-            btnCreateExam.setDisable(true);
-        }
-
-        // La tabla “tvExam” tendrá las siguientes columnas: “Description”, “Subject”, “Duration”, “Date” y “File"
-        // Se carga la tabla “tvExam” con los valores de todos los exámenes que pertenezcan a todas las asignaturas del usuario
-        if (userSubjects.size() > 0) {
-            try {
-                // Tanto si el usuario es de tipo Teacher o de tipo Student, se utilizará la colección obtenida en el apartado anterior para cargar los datos de la tabla
-                for (Subject sub : userSubjects) {
-                    exams.addAll(examInterface.findBySubject(sub.getId().toString()));
-                }
-            } catch (FindErrorException ex) {
-                new Alert(Alert.AlertType.ERROR, "Couldn't find exams!", ButtonType.OK).showAndWait();
-                LOGGER.log(Level.SEVERE, ex.getMessage());
-            }
-        }
+        findAll();
 
         // El resto de columnas se rellenarán con los atributos de su mismo nombre.
         tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -701,13 +657,11 @@ public class ExamWindowController {
                         try {
                             // Si elige “Ok”, se comprueba si el Examen a guardar ya existe o no llamando al método “findExamById” de la Interfaz “ExamInterface”
                             try {
-                                if (examInterface.findExamById(examEditing.getId()).getId() != 0) {
+                                if (examEditing.getId() != 0) {
                                     examInterface.updateExam(examEditing);
-                                } else {
-
                                 }
-                            } catch (NullPointerException | FindErrorException ex1) {
-                                LOGGER.info("Exam not found, creating a new one.");
+                            } catch (NullPointerException ex1) {
+                                LOGGER.info("Exam not found, creating a new one. WRONG ERROR: NULL POINTER");
                                 Exam ex = new Exam();
                                 ex.setDescription(examEditing.getDescription());
                                 ex.setDuration(examEditing.getDuration());
@@ -715,13 +669,19 @@ public class ExamWindowController {
                                 ex.setDateInit(examEditing.getDateInit());
                                 examInterface.createExam(ex);
                                 if (flagNewRow) {
-                                    exams.remove(examEditing);
-                                    exams.add(ex);
+                                    findAll();
+                                    tvExam.setItems(exams);
+                                    flagNewRow = false;
                                 }
+                            } catch (UpdateErrorException ex) {
+                                new Alert(Alert.AlertType.ERROR, "Error updating info. Please try again later.").showAndWait();
+                                LOGGER.log(Level.SEVERE, "Error updating info. Please, try again later. {0}", ex.getMessage());
                             }
-                        } catch (CreateErrorException | UpdateErrorException ex) {
-                            Logger.getLogger(ExamWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (CreateErrorException ex) {
+                            new Alert(Alert.AlertType.ERROR, "Error creating an exam. Please try again later.").showAndWait();
+                            LOGGER.log(Level.SEVERE, "Error creating an exam. Please, try again later. {0}", ex.getMessage());
                         }
+
                         cbSearchCriteria.setDisable(false);
                         btnCreateExam.setDisable(false);
                         btnPrintExam.setDisable(false);
@@ -729,7 +689,7 @@ public class ExamWindowController {
                         btnSaveExam.setDisable(true);
                         cbSearchCriteria.getSelectionModel().select(allExams);
                         tvExam.getSelectionModel().clearSelection(tvExam.getSelectionModel().getSelectedIndex());
-                        flagNewRow = false;
+
                     } else {
                         // Si elige “Cancel” se cancelará la actualización o creación.
                     }
@@ -823,12 +783,14 @@ public class ExamWindowController {
                 examInterface.deleteExam(selectedDeleteExam);
                 // Si ha elegido “Yes” y no ha ocurrido ningún error, la información de la tabla se actualizará
                 exams.remove(selectedExamIndex);
+
+                findAll();
                 tvExam.setItems(exams);
                 tvExam.refresh();
                 new Alert(Alert.AlertType.INFORMATION, "Exam deleted succesfully.").showAndWait();
             } catch (DeleteErrorException ex) {
                 LOGGER.log(Level.SEVERE, "Error deleting exam: {0}", ex.getMessage());
-                new Alert(Alert.AlertType.ERROR, "Error deleting exam.").showAndWait();
+                new Alert(Alert.AlertType.ERROR, "Error deleting exam. Please, try again later.").showAndWait();
             }
         }
         // Si elige “No”, la acción se cancelará
@@ -859,6 +821,55 @@ public class ExamWindowController {
         } catch (JRException ex) {
             new Alert(Alert.AlertType.ERROR, "Error al imprimir:\n" + ex.getMessage()).showAndWait();
             LOGGER.log(Level.SEVERE, "UI GestionUsuariosController: Error printing report: {0}", ex.getMessage());
+        }
+    }
+
+    public void findAll() {
+        // Se rellena la ComboBox cbBySubject con los nombres de todas las asignaturas a las que pertenezca el usuario
+        try {
+            // Si el usuario es de tipo “Teacher” se usará el método “findSubjectsByTeacher” de la Interfaz “SubjectManager”
+            if (currentUser.getUser_type().equals("Teacher")) {
+                userSubjects = FXCollections.observableArrayList(subjectInterface.findSubjectsByTeacherId(currentUser.getId().toString()));
+            }
+            // Si el usuario es de tipo “Student” se usará el método “findByEnrollments” de la Interfaz “SubjectManager”
+            if (currentUser.getUser_type().equals("Student")) {
+                userSubjects = FXCollections.observableArrayList(subjectInterface.findByEnrollments(currentUser.getId().toString()));
+            }
+            userSubjects.forEach((s) -> {
+                subjectNames.add(s.getName());
+            });
+            cbBySubject.setItems(subjectNames);
+        } catch (FindErrorException ex) {
+            LOGGER.log(Level.INFO, "No subjects found for user {0}", currentUser.getId());
+            // Si el listado de asignaturas de cualquiera de los puntos anteriores está vacío, la ComboBox mostrará un texto indicando que el usuario
+            // no tiene asignaturas
+            cbBySubject.setItems(FXCollections.observableArrayList(noSubjects));
+            cbBySubject.setValue(noSubjects);
+
+            // Si el usuario es “Student”, aparecerá un mensaje en la tabla (Placeholder) indicando al usuario que debe matricularse para ver exámenes
+            if (currentUser.getUser_type().equals("Student")) {
+                tvExam.setPlaceholder(new Label("No exams here. Make sure you are enrolled in at least one subject."));
+            }
+            // Si es “Teacher” el mensaje indicará que debe crear exámenes.
+            if (currentUser.getUser_type().equals("Teacher")) {
+                tvExam.setPlaceholder(new Label("No exams here. Make sure to have at least one subject assigned to you."));
+            }
+            // También se deshabilitará el botón btnCreateExam
+            btnCreateExam.setDisable(true);
+        }
+        // La tabla “tvExam” tendrá las siguientes columnas: “Description”, “Subject”, “Duration”, “Date” y “File"
+        // Se carga la tabla “tvExam” con los valores de todos los exámenes que pertenezcan a todas las asignaturas del usuario
+        if (userSubjects.size() > 0) {
+            try {
+                exams.removeAll(exams);
+                // Tanto si el usuario es de tipo Teacher o de tipo Student, se utilizará la colección obtenida en el apartado anterior para cargar los datos de la tabla
+                for (Subject sub : userSubjects) {
+                    exams.addAll(examInterface.findBySubject(sub.getId().toString()));
+                }
+            } catch (FindErrorException ex) {
+                new Alert(Alert.AlertType.ERROR, "Couldn't find exams!", ButtonType.OK).showAndWait();
+                LOGGER.log(Level.SEVERE, ex.getMessage());
+            }
         }
     }
 }
