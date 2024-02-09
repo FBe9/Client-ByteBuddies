@@ -136,7 +136,7 @@ public class SubjectController {
     private ObservableList<Teacher> teachers;
     private ObservableSet<Teacher> teachersPrueba;
     private ResourceBundle configFile;
-    String regexLetters = "^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]+$";
+    String regexLetters = "^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ ]+$";
     String regexNumbers = "^[0-9]+$";
 
     /**
@@ -341,7 +341,7 @@ public class SubjectController {
                         }
 
                         // Verificar la longitud del campo
-                        if (t.getNewValue().length() > 100) {
+                        if (t.getNewValue().length() > 255) {
                             throw new MaxLengthException();
                         }
                     } catch (SubjectNameAlreadyExistsException ex) {
@@ -352,7 +352,7 @@ public class SubjectController {
                         tbSubjects.refresh();
                         showErrorAlert("Invalid input " + t.getNewValue() + ". Please enter only letters.");
                     } catch (MaxLengthException ex) {
-                        tbSubjects.refresh();
+                        loadData();
                         new Alert(Alert.AlertType.ERROR, "You've exceeded the maximum character limit for the field name.", ButtonType.OK).showAndWait();
                     } catch (FindErrorException | UpdateErrorException ex) {
                         showErrorAlert(ex.getMessage());
@@ -477,12 +477,12 @@ public class SubjectController {
                                     .setDateInit(t.getNewValue());
                             //Tras la validación y confirmación de que la información es correcta, se llamará a la factoria SubjectFactory para obtener una implematación de la interfaz SubjectManager 
                             //y llamar al método updateSubject, pasando como parámetro un objeto Subject con la información.
-                           if(t.getNewValue()!= null){
+                            if (t.getNewValue() != null) {
                                 subjectManager.updateSubject(tbSubjects.getSelectionModel().getSelectedItem());
-                           }else{
-                               tbSubjects.refresh();
-                           }
-                                            
+                            } else {
+                                tbSubjects.refresh();
+                            }
+
                         } catch (UpdateErrorException ex) {
                             //Si se produce algún error, se le mostrará al usuario una alerta con el error.  
                             showErrorAlert(ex.getMessage());
@@ -1037,12 +1037,15 @@ public class SubjectController {
         } catch (FindErrorException ex) {
             showErrorAlert(ex.getMessage());
         }
-        for (Subject subject : newSubjects) {
-            if (subject.getName() == null) {
-                noEmptyName = true;
-                showErrorAlert("It looks like you've started creating a subject, but you forgot to give it a name. Please complete that one before creating another.");
+        if (newSubjects != null) {
+            for (Subject subject : newSubjects) {
+                if (subject.getName() == null) {
+                    noEmptyName = true;
+                    showErrorAlert("It looks like you've started creating a subject, but you forgot to give it a name. Please complete that one before creating another.");
+                }
             }
         }
+
         if (!noEmptyName) {
 
             //Crear la subject por defecto
@@ -1061,6 +1064,7 @@ public class SubjectController {
             } catch (CreateErrorException ex) {
                 showErrorAlert(ex.getMessage());
             }
+
             loadData();
 
             //Poner siempre las asignaturas nuevas al final de la tabla
@@ -1079,6 +1083,7 @@ public class SubjectController {
             subjects.addAll(nullNameSubjects);
             //Asignar las asignaturas
             tbSubjects.setItems(subjects);
+            cbSearchSubject.getSelectionModel().select("all subjects");
             //Refresh la tabla
             tbSubjects.refresh();
         }
