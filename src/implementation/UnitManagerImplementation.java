@@ -121,7 +121,7 @@ public class UnitManagerImplementation implements UnitInterface {
             units = webClient.findAllUnits_XML(new GenericType<List<Unit>>() {
             });
 
-        } catch (ClientErrorException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findAllUnits() {0}", e.getMessage());
             throw new FindErrorException("Error finding unit" + e.getMessage());
         }

@@ -8,7 +8,7 @@ import interfaces.ExerciseInterface;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import models.Exercise;
 import services.ExerciseRESTClient;
@@ -42,9 +42,9 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         try {
             LOGGER.log(Level.INFO, "Creating a new Exercise id= {0}", exercise.getId());
             webClient.create_XML(exercise);
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation: Error creating the exercise{0}", e.getMessage());
-            throw new CreateErrorException("Error creating an exercise" + e.getMessage());
+        } catch (Exception e) {
+            LOGGER.severe(e.getMessage());
+            throw new CreateErrorException(e.getMessage());
         }
     }
 
@@ -61,9 +61,9 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         try {
             LOGGER.log(Level.INFO, "Updating the exercise id= {0}", exercise.getId());
             webClient.edit_XML(exercise, id);
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation: Error updating the exercise{0}", e.getMessage());
-            throw new UpdateErrorException("Error updating an exercise" + e.getMessage());
+        } catch (Exception e) {
+            LOGGER.severe(e.getMessage());
+            throw new UpdateErrorException(e.getMessage());
         }
     }
 
@@ -78,7 +78,7 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
     public void removeExercise(String id) throws DeleteErrorException {
         try {
             webClient.remove(id);
-        } catch (ClientErrorException e) {
+        } catch (Exception e) {
             LOGGER.severe(e.getMessage());
             throw new DeleteErrorException(e.getMessage());
         }
@@ -97,7 +97,7 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         Exercise exercise = null;
         try {
             exercise = webClient.getExerciseByID_XML(Exercise.class, id);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation ->  findExerciseByID(Integer id) {0}", e.getMessage());
             throw new ExerciseErrorException("Error finding exercise" + e.getMessage());
         }
@@ -117,7 +117,7 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         try {
             exercises = webClient.getAllExercises_XML(new GenericType<List<Exercise>>() {
             });
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation ->  findAllexercises() {0}", e.getMessage());
             throw new ExerciseErrorException("Error finding exercise" + e.getMessage());
         }
@@ -138,7 +138,7 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         try {
             exercises = webClient.getExercisesByNumber_XML(new GenericType<List<Exercise>>() {
             }, number);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation ->  findExercisesByNumber() {0}", e.getMessage());
             throw new ExerciseErrorException("Error finding exercise" + e.getMessage());
         }
@@ -159,7 +159,7 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         try {
             exercises = webClient.getExercisesByDate_XML(new GenericType<List<Exercise>>() {
             }, date);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation ->  findExercisesByDate() {0}", e.getMessage());
             throw new ExerciseErrorException("Error finding exercise" + e.getMessage());
         }
@@ -180,7 +180,7 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         try {
             exercises = webClient.getExercisesByLevel_XML(new GenericType<List<Exercise>>() {
             }, levelType);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation ->  findExercisesByLevel() {0}", e.getMessage());
             throw new ExerciseErrorException("Error finding exercise" + e.getMessage());
         }
@@ -201,7 +201,7 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         try {
             exercises = webClient.getExercisesByUnitName_XML(new GenericType<List<Exercise>>() {
             }, name);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation ->  findExercisesByNumber() {0}", e.getMessage());
             throw new ExerciseErrorException("Error finding exercise" + e.getMessage());
         }
@@ -224,7 +224,7 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         try {
             exercises = webClient.getExercisesByNumberAndUnitName_XML(new GenericType<List<Exercise>>() {
             }, number, name);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation ->  findExercisesByNumberAndUnitName() {0}", e.getMessage());
             throw new ExerciseErrorException("Error finding exercise" + e.getMessage());
         }
@@ -247,7 +247,7 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         try {
             exercises = webClient.getExercisesByDateAndUnitName_XML(new GenericType<List<Exercise>>() {
             }, date, name);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation ->  findExercisesByNumber() {0}", e.getMessage());
             throw new ExerciseErrorException("Error finding exercise" + e.getMessage());
         }
@@ -270,11 +270,10 @@ public class ExerciseInterfaceImplementation implements ExerciseInterface {
         try {
             exercises = webClient.getExercisesByLevelAndUnitName_XML(new GenericType<List<Exercise>>() {
             }, levelType, name);
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.log(Level.SEVERE, "ExerciseInterfaceImplementation ->  findExercisesByNumber() {0}", e.getMessage());
             throw new ExerciseErrorException("Error finding exercise" + e.getMessage());
         }
         return exercises;
     }
-
 }

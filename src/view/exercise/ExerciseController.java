@@ -153,10 +153,10 @@ public class ExerciseController {
      */
     @FXML
     private Button btmSearch, btmDelete, btmModify, btmCreate, btmPrint, btmFileSend, btmFileSolutionSend, btmFileReceive, btmFileSolutionReceive;
-    
+
     /**
-     * Create and Modify label error. If the user writes something other than 
-     * numbers in the numerical fields, a message will be added to the label 
+     * Create and Modify label error. If the user writes something other than
+     * numbers in the numerical fields, a message will be added to the label
      * informing about this.
      */
     @FXML
@@ -348,7 +348,7 @@ public class ExerciseController {
         //acuerdo a la configuración del sistema.
         this.tcDeadline.setCellFactory(column -> {
             TableCell<Exercise, Date> cell = new TableCell<Exercise, Date>() {
-                private SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+                private SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 
                 @Override
                 protected void updateItem(Date item, boolean empty) {
@@ -619,7 +619,10 @@ public class ExerciseController {
                 exerciseInterface.createExercise(newExercise);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION, "Created successfully", ButtonType.OK);
                 alert.showAndWait();
-                tvExercise.refresh();
+
+                exerciseData = FXCollections.observableArrayList(exerciseInterface.findExercisesByUnitName(unitName));
+                //Añadir modelos a la tabla.
+                this.tvExercise.setItems(exerciseData);
 
                 //Clean fields
                 this.tfNumber.setText("");
@@ -627,8 +630,10 @@ public class ExerciseController {
                 this.tfDescription.setText("");
                 dpDeadline.setValue(null);
 
-            } catch (CreateErrorException e) {
-                new Alert(Alert.AlertType.ERROR, "Failed to create", ButtonType.OK).showAndWait();
+            } catch (CreateErrorException | ExerciseErrorException e) {
+                showErrorAlert("Error create");
+                LOGGER.log(Level.SEVERE,
+                        e.getMessage());
             }
         } catch (FindErrorException ex) {
             showErrorAlert("Error create");
@@ -696,7 +701,6 @@ public class ExerciseController {
                 this.tfDescription.setText("");
                 dpDeadline.setValue(null);
             }
-
         } catch (UpdateErrorException | FindErrorException ex) {
             showErrorAlert("Error modify");
             LOGGER.log(Level.SEVERE,

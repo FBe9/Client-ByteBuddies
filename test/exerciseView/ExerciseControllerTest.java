@@ -119,7 +119,7 @@ public class ExerciseControllerTest extends ApplicationTest {
      * Method to create an exercise.
      */
     @Test
-    @Ignore
+    //@Ignore
     public void test1_createExercise() {
         tvExercise = lookup("#tvExercise").query();
         //get row count
