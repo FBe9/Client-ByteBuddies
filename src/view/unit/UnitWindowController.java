@@ -635,7 +635,7 @@ public class UnitWindowController {
             //Si se produce algún error, se le mostrará al usuario una alerta con el error y se cancelará la creación de la asignatura.
         } catch (FindErrorException | CreateErrorException ex) {
             Logger.getLogger("There was a problem while creating the unit").log(Level.SEVERE, null, ex);
-            new Alert(Alert.AlertType.INFORMATION, "There was a problem while creating the unit", ButtonType.OK).showAndWait();
+            new Alert(Alert.AlertType.INFORMATION, "There was a problem while creating the unit: "+ ex.getMessage(), ButtonType.OK).showAndWait();
         }
     }
 
@@ -773,7 +773,7 @@ public class UnitWindowController {
             Logger.getLogger("Unit name already exists in " + subjectUnit + " subject.").log(Level.SEVERE, null, ex);
         } catch (FindErrorException | UpdateErrorException ex) {
             Logger.getLogger("Error while updating name from the unit").log(Level.SEVERE, null, ex);
-            new Alert(Alert.AlertType.ERROR, "Error while updating name from the unit", ButtonType.OK).showAndWait();
+            new Alert(Alert.AlertType.ERROR, "Error while updating name from the unit: "+ ex.getMessage(), ButtonType.OK).showAndWait();
 
         }
     }
@@ -821,8 +821,8 @@ public class UnitWindowController {
             new Alert(Alert.AlertType.ERROR, "Unit name already exists in " + event.getNewValue().toString() + " subject.", ButtonType.OK).showAndWait();
             Logger.getLogger("Unit name already exists in " + event.getNewValue().toString() + " subject.").log(Level.SEVERE, null, ex);
         } catch (FindErrorException | UpdateErrorException ex) {
-            new Alert(Alert.AlertType.ERROR, "Error while updating Subject from the unit: " + unit.getName(), ButtonType.OK).showAndWait();
-            Logger.getLogger("Error while updating Subject from the unit: " + unit.getName()).log(Level.SEVERE, null, ex);
+            new Alert(Alert.AlertType.ERROR, "Error while updating Subject from the unit " + unit.getName()+": "+ex.getMessage(), ButtonType.OK).showAndWait();
+            Logger.getLogger("Error while updating Subject from the unit " + unit.getName()+": "+ex.getMessage()).log(Level.SEVERE, null, ex);
             event.consume();
             tbvUnit.refresh();
         }
@@ -858,8 +858,8 @@ public class UnitWindowController {
             //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la edición.
         } catch (UpdateErrorException ex) {
             //Si se produce algún error, se le mostrará al usuario una alerta con el error.  
-            Logger.getLogger("Error while updating description from the unit: " + unit.getName()).log(Level.SEVERE, null, ex);
-            new Alert(Alert.AlertType.ERROR, "Error while updating description from the unit: " + unit.getName(), ButtonType.OK).showAndWait();
+            Logger.getLogger("Error while updating description from the unit " + unit.getName()+": "+ex.getMessage()).log(Level.SEVERE, null, ex);
+            new Alert(Alert.AlertType.ERROR, "Error while updating description from the unit " + unit.getName()+": "+ex.getMessage(), ButtonType.OK).showAndWait();
             //Se cancelará la edición.
             event.consume();
             tbvUnit.refresh();
@@ -905,8 +905,8 @@ public class UnitWindowController {
 
         } catch (UpdateErrorException ex) {
             //Si se produce algún error, se le mostrará al usuario una alerta con el error.  
-            Logger.getLogger("Error while updating date init from the unit: " + unit.getName()).log(Level.SEVERE, null, ex);
-            new Alert(Alert.AlertType.ERROR, "Error while updating date init from the unit: " + unit.getName(), ButtonType.OK).showAndWait();
+            Logger.getLogger("Error while updating date init from the unit " + unit.getName()+": "+ex.getMessage()).log(Level.SEVERE, null, ex);
+            new Alert(Alert.AlertType.ERROR, "Error while updating date init from the unit " + unit.getName()+": "+ex.getMessage(), ButtonType.OK).showAndWait();
             tbvUnit.refresh();
             //Se cancelará la edición.
             event.consume();
@@ -965,8 +965,8 @@ public class UnitWindowController {
             }
         } catch (UpdateErrorException ex) {
             //Si se produce algún error, se le mostrará al usuario una alerta con el error.  
-            Logger.getLogger("Error while updating date end from the unit: " + unit.getName()).log(Level.SEVERE, null, ex);
-            new Alert(Alert.AlertType.ERROR, "Error while updating date end from the unit: " + unit.getName(), ButtonType.OK).showAndWait();
+            Logger.getLogger("Error while updating date end from the unit " + unit.getName()+": "+ex.getMessage()).log(Level.SEVERE, null, ex);
+            new Alert(Alert.AlertType.ERROR, "Error while updating date end from the unit " + unit.getName()+": "+ex.getMessage(), ButtonType.OK).showAndWait();
             //Se cancelará la edición.
             event.consume();
             tbvUnit.refresh();
@@ -1013,8 +1013,8 @@ public class UnitWindowController {
         } catch (UpdateErrorException ex) {
             //Si se produce algún error, se le mostrará al usuario una alerta con el error.  
             //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la edición.
-            new Alert(Alert.AlertType.ERROR, "Error while updating hours end from the unit: " + unit.getName(), ButtonType.OK).showAndWait();
-            LOGGER.log(Level.SEVERE, "Error while updating hours from the unit: " + unit.getName(), ex.getMessage());
+            new Alert(Alert.AlertType.ERROR, "Error while updating hours end from the unit " + unit.getName()+": "+ex.getMessage(), ButtonType.OK).showAndWait();
+            LOGGER.log(Level.SEVERE, "Error while updating hours from the unit " + unit.getName()+": "+ex.getMessage(), ex.getMessage());
             //Se cancelará la edición.
             event.consume();
             tbvUnit.refresh();
