@@ -345,6 +345,7 @@ public class UnitWindowController {
             //Comprobar qué valor está seleccionado:
             String selectedValue = (String) cbSubjects.getSelectionModel().getSelectedItem();
             if (selectedValue.equalsIgnoreCase("All subjects units")) {
+                btnSearch.setDisable(false);
                 //Si no hay nada seleccionado: Se carga la tabla con valor de todas las unidades de todas las asignaturas en las que esté registrado el usuario conectado a la aplicación. El usuario puede ser de dos tipos:
                 if (loggedUser.getUser_type().equalsIgnoreCase("Teacher")) {
                     //Si el usuario es de tipo “Teacher”: Se usará el método “findUnitsFromTeacherSubjects” para rellenar la tabla pasandole el id del usuario conectado a la aplicación. 
@@ -547,6 +548,7 @@ public class UnitWindowController {
                 }
                 //Si no se ha producido ningún error, la tabla se actualizará.
                 actualizarTabla();
+                tbvUnit.getSelectionModel().clearSelection(tbvUnit.getSelectionModel().getSelectedIndex());
             }
             //Si se produce algún error, se le mostrará al usuario una alerta con el error  y se cancelará la eliminación de la unit.
         } catch (DeleteErrorException e) {

@@ -5,6 +5,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import models.Unit;
 
 /**
  * Jersey REST client generated for REST resource:UnitFacadeREST
@@ -42,7 +43,7 @@ public class UnitRESTClient {
      * catch.
      */
     public void createUnit_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML),Unit.class);
     }
 
     /**
@@ -54,7 +55,7 @@ public class UnitRESTClient {
      * catch.
      */
     public void createUnit_JSON(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON),Unit.class);
     }
 
     /**
@@ -66,7 +67,7 @@ public class UnitRESTClient {
      * catch.
      */
     public void updateAlbum_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML),Unit.class);
     }
 
     /**
@@ -78,7 +79,7 @@ public class UnitRESTClient {
      * catch.
      */
     public void updateAlbum_JSON(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON),Unit.class);
     }
 
     /**
@@ -89,7 +90,7 @@ public class UnitRESTClient {
      * catch.
      */
     public void removeUnit(Integer id) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
+        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete(Unit.class);
     }
 
     /**
@@ -120,7 +121,7 @@ public class UnitRESTClient {
      * @throws WebApplicationException An Exception with the http errors to be
      * catch.
      */
-    public <T> T findUnitByID_JSON(Class<T> responseType, String id) throws WebApplicationException {
+    public <T> T findUnitByID_JSON(GenericType<T> responseType, String id) throws WebApplicationException {
 
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));

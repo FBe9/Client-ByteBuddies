@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import models.Unit;
 import services.UnitRESTClient;
@@ -44,9 +44,9 @@ public class UnitManagerImplementation implements UnitInterface {
             LOGGER.log(Level.INFO, "Creating a new Unit id= {0}", unit.getId());
             webClient.createUnit_XML(unit);
 
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation: Error creating a unit{0}", e.getMessage());
-            throw new CreateErrorException("Error creating a unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation: Error creating a unit. {0}", e.getMessage());
+            throw new CreateErrorException("Error creating a unit: " + e.getMessage());
         }
     }
 
@@ -62,9 +62,9 @@ public class UnitManagerImplementation implements UnitInterface {
         try {
             LOGGER.log(Level.INFO, "Updating the unit  id= {0}", unit.getId());
             webClient.updateAlbum_XML(unit);
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation: Error updating a unit{0}", e.getMessage());
-            throw new UpdateErrorException("Error updating a unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation: Error updating a unit. {0}", e.getMessage());
+            throw new UpdateErrorException("Error updating a unit: " + e.getMessage());
         }
     }
 
@@ -78,10 +78,10 @@ public class UnitManagerImplementation implements UnitInterface {
     @Override
     public void removeUnit(Unit unit) throws DeleteErrorException {
         try {
-            LOGGER.log(Level.INFO, "Deleting the unit  id= {0}", unit.getId());
+            LOGGER.log(Level.INFO, "Deleting the unit  id= . {0}", unit.getId());
             webClient.removeUnit(Integer.parseInt(unit.getId()));
 
-        } catch (ClientErrorException e) {
+        } catch (WebApplicationException e) {
             LOGGER.severe(e.getMessage());
             throw new DeleteErrorException(e.getMessage());
         }
@@ -100,9 +100,9 @@ public class UnitManagerImplementation implements UnitInterface {
         Unit unit = null;
         try {
             unit = webClient.findUnitByID_XML(Unit.class, id);
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitByID(Integer id) {0}", e.getMessage());
-            throw new FindErrorException("Error finding unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitByID(Integer id) . {0}", e.getMessage());
+            throw new FindErrorException("Error finding unit: " + e.getMessage());
         }
         return unit;
     }
@@ -121,9 +121,9 @@ public class UnitManagerImplementation implements UnitInterface {
             units = webClient.findAllUnits_XML(new GenericType<List<Unit>>() {
             });
 
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findAllUnits() {0}", e.getMessage());
-            throw new FindErrorException("Error finding unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findAllUnits() . {0}", e.getMessage());
+            throw new FindErrorException("Error finding unit: " + e.getMessage());
         }
         return units;
     }
@@ -144,9 +144,9 @@ public class UnitManagerImplementation implements UnitInterface {
             units = webClient.findSubjectUnits_XML(new GenericType<List<Unit>>() {
             }, name);
 
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnits(String name) {0}", e.getMessage());
-            throw new FindErrorException("Error finding unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnits(String name) . {0}", e.getMessage());
+            throw new FindErrorException("Error finding unit: " + e.getMessage());
         }
         return units;
     }
@@ -167,9 +167,9 @@ public class UnitManagerImplementation implements UnitInterface {
         try {
             units = webClient.findSubjectUnitsByName_XML(new GenericType<List<Unit>>() {
             }, name, subject);
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByName(String name, String subject) {0}", e.getMessage());
-            throw new FindErrorException("Error finding unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByName(String name, String subject) . {0}", e.getMessage());
+            throw new FindErrorException("Error finding unit: " + e.getMessage());
         }
         return units;
     }
@@ -191,9 +191,9 @@ public class UnitManagerImplementation implements UnitInterface {
             unit = webClient.findOneSubjectUnitByName_XML(new GenericType<Unit>() {
             }, name, subject);
 
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findOneSubjectUnitByName(String name, String subject) {0}", e.getMessage());
-            throw new FindErrorException("Error finding unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findOneSubjectUnitByName(String name, String subject) . {0}", e.getMessage());
+            throw new FindErrorException("Error finding unit: " + e.getMessage());
         }
         return unit;
     }
@@ -217,9 +217,9 @@ public class UnitManagerImplementation implements UnitInterface {
             units = webClient.findSubjectUnitsByDateInit_XML(new GenericType<List<Unit>>() {
             }, dateText, subject);
 
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByDateInit(Date dateInit, String subject) {0}", e.getMessage());
-            throw new FindErrorException("Error finding unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByDateInit(Date dateInit, String subject) . {0}", e.getMessage());
+            throw new FindErrorException("Error finding unit: " + e.getMessage());
         }
         return units;
     }
@@ -243,9 +243,9 @@ public class UnitManagerImplementation implements UnitInterface {
             units = webClient.findSubjectUnitsByDateEnd_XML(new GenericType<List<Unit>>() {
             }, dateText, subject);
 
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByDateEnd(Date dateEnd, String subject) {0}", e.getMessage());
-            throw new FindErrorException("Error finding unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByDateEnd(Date dateEnd, String subject) . {0}", e.getMessage());
+            throw new FindErrorException("Error finding unit: " + e.getMessage());
         }
         return units;
     }
@@ -268,9 +268,9 @@ public class UnitManagerImplementation implements UnitInterface {
             units = webClient.findSubjectUnitsByHours_XML(new GenericType<List<Unit>>() {
             }, hours, subject);
 
-        } catch (ClientErrorException e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByHours(Integer hours, String subject) {0}", e.getMessage());
-            throw new FindErrorException("Error finding unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findSubjectUnitsByHours(Integer hours, String subject) . {0}", e.getMessage());
+            throw new FindErrorException("Error finding unit: " + e.getMessage());
         }
         return units;
     }
@@ -294,9 +294,9 @@ public class UnitManagerImplementation implements UnitInterface {
             },
                     userId);
 
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitsFromTeacherSubjects(String userId) {0}", e.getMessage());
-            throw new FindErrorException("Error finding Unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitsFromTeacherSubjects(String userId) . {0}", e.getMessage());
+            throw new FindErrorException("Error finding Unit: " + e.getMessage());
         }
         return units;
     }
@@ -319,9 +319,9 @@ public class UnitManagerImplementation implements UnitInterface {
             units = webClient.findUnitsFromStudentSubjects_XML(new GenericType<List<Unit>>() {
             }, userId);
 
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitsFromStudentSubjects(String userId) {0}", e.getMessage());
-            throw new FindErrorException("Error finding unit" + e.getMessage());
+        } catch (WebApplicationException e) {
+            LOGGER.log(Level.SEVERE, "UnitManagerImplementation ->  findUnitsFromStudentSubjects(String userId) . {0}", e.getMessage());
+            throw new FindErrorException("Error finding unit: " + e.getMessage());
         }
         return units;
     }
